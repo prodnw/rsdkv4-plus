@@ -441,7 +441,7 @@ public:
 
     char gameWindowText[0x40];
     char gameDescriptionText[0x100];
-    const char *gameVersion  = "v4";
+    const char *gameVersion  = "Retro Engine V4 - Vengeance Version 1.0.0";
     const char *gamePlatform = nullptr;
 
     int gameTypeID       = 0;
