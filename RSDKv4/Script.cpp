@@ -576,7 +576,6 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "3"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENTATION_STAGE", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "REGULAR_STAGE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "BONUS_STAGE", "2"),
@@ -591,6 +590,7 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MAT_WORLD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MAT_VIEW", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MAT_TEMP", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_LEFT", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_RIGHT", "0"),
 #if !RETRO_REV00
@@ -4162,12 +4162,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         time_t initialTimer = time(NULL);
                         struct tm *actualTimer = localtime(&initialTimer);
 
-                        scriptEng.operands[i] = (int)((actualTimer->tm_year + 1900 - 2000) << 26 | 
-                                     (actualTimer->tm_mon + 1) << 22 |
-                                     actualTimer->tm_mday << 17 |
-                                     actualTimer->tm_hour << 12 |
-                                     actualTimer->tm_min << 6 |
-                                     actualTimer->tm_sec);
+                        scriptEng.operands[i] = (int)(((actualTimer->tm_year + 1900 - 2000) & 0x3F) << 26 | 
+                                     ((actualTimer->tm_mon + 1) & 0xF) << 22 |
+                                     (actualTimer->tm_mday & 0x1F) << 17 |
+                                     (actualTimer->tm_hour & 0x1F) << 12 |
+                                     (actualTimer->tm_min & 0x3F) << 6 |
+                                     (actualTimer->tm_sec & 0x3F));
                          break;
                 }
             }
@@ -4738,7 +4738,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_DRAWSPRITEFX:
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
-				break;
                 switch (scriptEng.operands[1]) {
                     default: break;
                     case FX_SCALE:
