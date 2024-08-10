@@ -2,7 +2,7 @@
 #define DRAWING_H
 
 #define SURFACE_COUNT (24)
-#define GFXDATA_SIZE  (0x800 * 0x800)
+#define GFXDATA_SIZE  (0x1200 * 0x1200)
 
 #if RETRO_REV03
 #define DRAWLAYER_COUNT (8)
