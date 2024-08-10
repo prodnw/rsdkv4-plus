@@ -284,8 +284,6 @@ void InitUserdata()
         ini.SetInteger("Window", "ScreenWidth", SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE);
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         ini.SetInteger("Window", "RefreshRate", Engine.refreshRate = 60);
-	    if (Engine.refreshRate > 60)
-	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
 
@@ -444,8 +442,6 @@ void InitUserdata()
             SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE;
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         if (!ini.GetInteger("Window", "RefreshRate", &Engine.refreshRate))
-            Engine.refreshRate = 60;		
-        if (Engine.refreshRate > 60)
             Engine.refreshRate = 60;
         if (!ini.GetInteger("Window", "DimLimit", &Engine.dimLimit))
             Engine.dimLimit = 300; // 5 mins
@@ -1320,7 +1316,6 @@ void GetWindowScaleMode() { scriptEng.checkResult = Engine.scalingMode; }
 void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
-void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1372,17 +1367,6 @@ void SetWindowVSync(int *enabled, int *unused)
 
     Engine.vsync = *enabled;
 }
-
-void SetFrameRate(int *enabled, int *unused)
-{
-    if (!enabled)
-        return;
-
-    Engine.refreshRate = *enabled;
-    if (Engine.refreshRate > 60)
-        Engine.refreshRate = 60;
-}
-
 void ApplyWindowChanges()
 {
 #if RETRO_USING_OPENGL

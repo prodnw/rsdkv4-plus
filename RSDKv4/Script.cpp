@@ -6434,8 +6434,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
-
-                    case VAR_ENGINETIMER: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

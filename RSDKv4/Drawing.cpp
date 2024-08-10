@@ -4086,6 +4086,7 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
                     DrawAlphaBlendedSpriteFlipped(XPos - frame->width - frame->pivotX, frame->pivotY + YPos, frame->width, frame->height, frame->sprX,
                                       frame->sprY, FLIP_X, entity->alpha, frame->sheetID);
                     break;
+
                 case FLIP_Y:
                     DrawAlphaBlendedSpriteFlipped(frame->pivotX + XPos, YPos - frame->height - frame->pivotY, frame->width, frame->height, frame->sprX,
                                       frame->sprY, FLIP_Y, entity->alpha, frame->sheetID);

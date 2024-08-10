@@ -233,8 +233,6 @@ void GetWindowBorderless();
 void SetWindowBorderless(int *borderless, int *unused);
 void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
-void GetFrameRate();
-void SetFrameRate(int *enabled, int *unused);
 void ApplyWindowChanges();
 
 #endif
