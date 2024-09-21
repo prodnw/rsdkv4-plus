@@ -1,8 +1,8 @@
 #ifndef DRAWING_H
 #define DRAWING_H
 
-#define SURFACE_COUNT (24)
-#define GFXDATA_SIZE  (0x800 * 0x800)
+#define SURFACE_COUNT (32)
+#define GFXDATA_SIZE  (0x1200 * 0x1200)
 
 #if RETRO_REV03
 #define DRAWLAYER_COUNT (8)
@@ -137,6 +137,10 @@ void DrawBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int 
 void DrawAlphaBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int alpha, int sheetID);
 void DrawAdditiveBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int alpha, int sheetID);
 void DrawSubtractiveBlendedSprite(int XPos, int YPos, int width, int height, int sprX, int sprY, int alpha, int sheetID);
+
+void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int alpha,
+                       int sheetID);
+void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int sprY, int direction, int alpha, int sheetID);
 
 void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos);
 

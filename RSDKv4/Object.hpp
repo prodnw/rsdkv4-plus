@@ -3,7 +3,7 @@
 
 #define NATIVEENTITY_COUNT (0x100)
 
-#define ENTITY_COUNT     (0x4A0)
+#define ENTITY_COUNT     (0xDE0)
 #define TEMPENTITY_START (ENTITY_COUNT - 0x80)
 #define OBJECT_COUNT     (0x100)
 #define TYPEGROUP_COUNT  (0x103)
