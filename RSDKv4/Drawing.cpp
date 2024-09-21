@@ -54,7 +54,7 @@ int InitRenderDevice()
 {
     char gameTitle[0x40];
 
-    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : "");
+    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : " (Using Data Folder)");
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL2
@@ -3360,336 +3360,6 @@ void DrawSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY
 #endif
 }
 
-void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int sprY, int direction, int alpha, int sheetID)
-{
-#if RETRO_SOFTWARE_RENDER
-
-	if (!alpha || alpha >= 0xFF)
-		return DrawSpriteFlipped(XPos, YPos, width, height, sprX, sprY, direction, sheetID);
-
-
-    int widthFlip  = width;
-    int heightFlip = height;
-
-    if (width + XPos > GFX_LINESIZE) {
-        width = GFX_LINESIZE - XPos;
-    }
-    if (XPos < 0) {
-        sprX -= XPos;
-        width += XPos;
-        widthFlip += XPos + XPos;
-        XPos = 0;
-    }
-    if (height + YPos > SCREEN_YSIZE) {
-        height = SCREEN_YSIZE - YPos;
-    }
-    if (YPos < 0) {
-        sprY -= YPos;
-        height += YPos;
-        heightFlip += YPos + YPos;
-        YPos = 0;
-    }
-    if (width <= 0 || height <= 0)
-        return;
-
-    GFXSurface *surface = &gfxSurface[sheetID];
-    int pitch;
-    int gfxPitch;
-    byte *lineBuffer;
-    byte *gfxData;
-    ushort *frameBufferPtr;
-
-	ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-    ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
-
-    switch (direction) {
-        case FLIP_NONE:
-            pitch          = GFX_LINESIZE - width;
-            gfxPitch       = surface->width - width;
-            lineBuffer     = &gfxLineBuffer[YPos];
-            gfxData        = &graphicData[sprX + surface->width * sprY + surface->dataPosition];
-            frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];
-
-            while (height--) {
-                activePalette   = fullPalette[*lineBuffer];
-                activePalette32 = fullPalette32[*lineBuffer];
-                lineBuffer++;
-                int w = width;
-                while (w--) {
-                    if (*gfxData > 0) {
-						ushort color = activePalette[*gfxData];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                    ++gfxData;
-                    ++frameBufferPtr;
-                }
-                frameBufferPtr += pitch;
-                gfxData += gfxPitch;
-            }
-            break;
-        case FLIP_X:
-            pitch          = GFX_LINESIZE - width;
-            gfxPitch       = width + surface->width;
-            lineBuffer     = &gfxLineBuffer[YPos];
-            gfxData        = &graphicData[widthFlip - 1 + sprX + surface->width * sprY + surface->dataPosition];
-            frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];
-            while (height--) {
-                activePalette   = fullPalette[*lineBuffer];
-                activePalette32 = fullPalette32[*lineBuffer];
-                lineBuffer++;
-                int w = width;
-                while (w--) {
-                    if (*gfxData > 0) {
-						ushort color = activePalette[*gfxData];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                    --gfxData;
-                    ++frameBufferPtr;
-                }
-                frameBufferPtr += pitch;
-                gfxData += gfxPitch;
-            }
-            break;
-        case FLIP_Y:
-            pitch          = GFX_LINESIZE - width;
-            gfxPitch       = width + surface->width;
-            lineBuffer     = &gfxLineBuffer[YPos];
-            gfxData        = &graphicData[sprX + surface->width * (sprY + heightFlip - 1) + surface->dataPosition];
-            frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];
-            while (height--) {
-                activePalette   = fullPalette[*lineBuffer];
-                activePalette32 = fullPalette32[*lineBuffer];
-                lineBuffer++;
-                int w = width;
-                while (w--) {
-                    if (*gfxData > 0) {
-						ushort color = activePalette[*gfxData];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                    ++gfxData;
-                    ++frameBufferPtr;
-                }
-                frameBufferPtr += pitch;
-                gfxData -= gfxPitch;
-            }
-            break;
-        case FLIP_XY:
-            pitch          = GFX_LINESIZE - width;
-            gfxPitch       = surface->width - width;
-            lineBuffer     = &gfxLineBuffer[YPos];
-            gfxData        = &graphicData[widthFlip - 1 + sprX + surface->width * (sprY + heightFlip - 1) + surface->dataPosition];
-            frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];
-            while (height--) {
-                activePalette   = fullPalette[*lineBuffer];
-                activePalette32 = fullPalette32[*lineBuffer];
-                lineBuffer++;
-                int w = width;
-                while (w--) {
-                    if (*gfxData > 0) {
-						ushort color = activePalette[*gfxData];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                    --gfxData;
-                    ++frameBufferPtr;
-                }
-                frameBufferPtr += pitch;
-                gfxData -= gfxPitch;
-            }
-            break;
-        default: break;
-    }
-#endif
-}
-
-
-void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int alpha,
-                       int sheetID)
-{
-#if RETRO_SOFTWARE_RENDER
-	if (!alpha || alpha >= 0xFF)
-		return DrawSpriteRotated(direction, XPos, YPos, pivotX, pivotY, sprX, sprY, width, height, rotation, sheetID);
-
-    int sprXPos    = (pivotX + sprX) << 9;
-    int sprYPos    = (pivotY + sprY) << 9;
-    int fullwidth  = width + sprX;
-    int fullheight = height + sprY;
-    int angle      = rotation & 0x1FF;
-    if (angle < 0)
-        angle += 0x200;
-    if (angle)
-        angle = 0x200 - angle;
-    int sine   = sin512LookupTable[angle];
-    int cosine = cos512LookupTable[angle];
-    int xPositions[4];
-    int yPositions[4];
-
-    if (direction == FLIP_X) {
-        xPositions[0] = XPos + ((sine * (-pivotY - 2) + cosine * (pivotX + 2)) >> 9);
-        yPositions[0] = YPos + ((cosine * (-pivotY - 2) - sine * (pivotX + 2)) >> 9);
-        xPositions[1] = XPos + ((sine * (-pivotY - 2) + cosine * (pivotX - width - 2)) >> 9);
-        yPositions[1] = YPos + ((cosine * (-pivotY - 2) - sine * (pivotX - width - 2)) >> 9);
-        xPositions[2] = XPos + ((sine * (height - pivotY + 2) + cosine * (pivotX + 2)) >> 9);
-        yPositions[2] = YPos + ((cosine * (height - pivotY + 2) - sine * (pivotX + 2)) >> 9);
-        int a         = pivotX - width - 2;
-        int b         = height - pivotY + 2;
-        xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
-        yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
-    }
-    else {
-        xPositions[0] = XPos + ((sine * (-pivotY - 2) + cosine * (-pivotX - 2)) >> 9);
-        yPositions[0] = YPos + ((cosine * (-pivotY - 2) - sine * (-pivotX - 2)) >> 9);
-        xPositions[1] = XPos + ((sine * (-pivotY - 2) + cosine * (width - pivotX + 2)) >> 9);
-        yPositions[1] = YPos + ((cosine * (-pivotY - 2) - sine * (width - pivotX + 2)) >> 9);
-        xPositions[2] = XPos + ((sine * (height - pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
-        yPositions[2] = YPos + ((cosine * (height - pivotY + 2) - sine * (-pivotX - 2)) >> 9);
-        int a         = width - pivotX + 2;
-        int b         = height - pivotY + 2;
-        xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
-        yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
-    }
-
-    int left = GFX_LINESIZE;
-    for (int i = 0; i < 4; ++i) {
-        if (xPositions[i] < left)
-            left = xPositions[i];
-    }
-    if (left < 0)
-        left = 0;
-
-    int right = 0;
-    for (int i = 0; i < 4; ++i) {
-        if (xPositions[i] > right)
-            right = xPositions[i];
-    }
-    if (right > GFX_LINESIZE)
-        right = GFX_LINESIZE;
-    int maxX = right - left;
-
-    int top = SCREEN_YSIZE;
-    for (int i = 0; i < 4; ++i) {
-        if (yPositions[i] < top)
-            top = yPositions[i];
-    }
-    if (top < 0)
-        top = 0;
-
-    int bottom = 0;
-    for (int i = 0; i < 4; ++i) {
-        if (yPositions[i] > bottom)
-            bottom = yPositions[i];
-    }
-    if (bottom > SCREEN_YSIZE)
-        bottom = SCREEN_YSIZE;
-    int maxY = bottom - top;
-
-    if (maxX <= 0 || maxY <= 0)
-        return;
-
-    GFXSurface *surface    = &gfxSurface[sheetID];
-    int pitch              = GFX_LINESIZE - maxX;
-    int lineSize           = surface->widthShift;
-    ushort *frameBufferPtr = &Engine.frameBuffer[left + GFX_LINESIZE * top];
-    byte *lineBuffer       = &gfxLineBuffer[top];
-    int startX             = left - XPos;
-    int startY             = top - YPos;
-    int shiftPivot         = (sprX << 9) - 1;
-    fullwidth <<= 9;
-    int shiftheight = (sprY << 9) - 1;
-    fullheight <<= 9;
-    byte *gfxData = &graphicData[surface->dataPosition];
-    if (cosine < 0 || sine < 0)
-        sprYPos += sine + cosine;
-
-	ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-    ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
-
-    if (direction == FLIP_X) {
-        int drawX = sprXPos - (cosine * startX - sine * startY) - 0x100;
-        int drawY = cosine * startY + sprYPos + sine * startX;
-        while (maxY--) {
-            activePalette   = fullPalette[*lineBuffer];
-            activePalette32 = fullPalette32[*lineBuffer];
-            lineBuffer++;
-            int finalX = drawX;
-            int finalY = drawY;
-            int w      = maxX;
-            while (w--) {
-                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
-                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
-                    if (index > 0) {
-						ushort color = activePalette[index];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                }
-                ++frameBufferPtr;
-                finalX -= cosine;
-                finalY += sine;
-            }
-            drawX += sine;
-            drawY += cosine;
-            frameBufferPtr += pitch;
-        }
-    }
-    else {
-        int drawX = sprXPos + cosine * startX - sine * startY;
-        int drawY = cosine * startY + sprYPos + sine * startX;
-        while (maxY--) {
-            activePalette   = fullPalette[*lineBuffer];
-            activePalette32 = fullPalette32[*lineBuffer];
-            lineBuffer++;
-            int finalX = drawX;
-            int finalY = drawY;
-            int w      = maxX;
-            while (w--) {
-                if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
-                    byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
-                    if (index > 0) {
-						ushort color = activePalette[index];
-
-						int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-						int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-						int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
-
-						*frameBufferPtr = R | G | B;
-					}
-                }
-                ++frameBufferPtr;
-                finalX += cosine;
-                finalY += sine;
-            }
-            drawX -= sine;
-            drawY += cosine;
-            frameBufferPtr += pitch;
-        }
-    }
-#endif
-}
-
 void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
                         int sheetID)
 {
@@ -4078,23 +3748,23 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
         case ROTSTYLE_NONE:
             switch (entity->direction) {
                 case FLIP_NONE:
-                    DrawAlphaBlendedSpriteFlipped(frame->pivotX + XPos, frame->pivotY + YPos, frame->width, frame->height, frame->sprX, frame->sprY, FLIP_NONE, entity->alpha,
+                    DrawSpriteFlipped(frame->pivotX + XPos, frame->pivotY + YPos, frame->width, frame->height, frame->sprX, frame->sprY, FLIP_NONE,
                                       frame->sheetID);
                     break;
 
                 case FLIP_X:
-                    DrawAlphaBlendedSpriteFlipped(XPos - frame->width - frame->pivotX, frame->pivotY + YPos, frame->width, frame->height, frame->sprX,
-                                      frame->sprY, FLIP_X, entity->alpha, frame->sheetID);
+                    DrawSpriteFlipped(XPos - frame->width - frame->pivotX, frame->pivotY + YPos, frame->width, frame->height, frame->sprX,
+                                      frame->sprY, FLIP_X, frame->sheetID);
                     break;
-
                 case FLIP_Y:
-                    DrawAlphaBlendedSpriteFlipped(frame->pivotX + XPos, YPos - frame->height - frame->pivotY, frame->width, frame->height, frame->sprX,
-                                      frame->sprY, FLIP_Y, entity->alpha, frame->sheetID);
+
+                    DrawSpriteFlipped(frame->pivotX + XPos, YPos - frame->height - frame->pivotY, frame->width, frame->height, frame->sprX,
+                                      frame->sprY, FLIP_Y, frame->sheetID);
                     break;
 
                 case FLIP_XY:
-                    DrawAlphaBlendedSpriteFlipped(XPos - frame->width - frame->pivotX, YPos - frame->height - frame->pivotY, frame->width, frame->height,
-                                      frame->sprX, frame->sprY, FLIP_XY, entity->alpha, frame->sheetID);
+                    DrawSpriteFlipped(XPos - frame->width - frame->pivotX, YPos - frame->height - frame->pivotY, frame->width, frame->height,
+                                      frame->sprX, frame->sprY, FLIP_XY, frame->sheetID);
                     break;
 
                 default: break;
@@ -4102,17 +3772,17 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
             break;
 
         case ROTSTYLE_FULL:
-            DrawAlphaBlendedSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-                              entity->rotation, entity->alpha, frame->sheetID);
+            DrawSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
+                              entity->rotation, frame->sheetID);
             break;
 
         case ROTSTYLE_45DEG:
             if (entity->rotation >= 0x100)
-                DrawAlphaBlendedSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
-                                  frame->height, 0x200 - ((0x214 - entity->rotation) >> 6 << 6), entity->alpha, frame->sheetID);
+                DrawSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                  frame->height, 0x200 - ((0x214 - entity->rotation) >> 6 << 6), frame->sheetID);
             else
-                DrawAlphaBlendedSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
-                                  frame->height, (entity->rotation + 20) >> 6 << 6, entity->alpha, frame->sheetID);
+                DrawSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
+                                  frame->height, (entity->rotation + 20) >> 6 << 6, frame->sheetID);
             break;
 
         case ROTSTYLE_STATICFRAMES: {
@@ -4175,8 +3845,8 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
             }
 
             frame = &animFrames[sprAnim->frameListOffset + frameID];
-            DrawAlphaBlendedSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-                              rotation, entity->alpha, frame->sheetID);
+            DrawSpriteRotated(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
+                              rotation, frame->sheetID);
             // DrawSpriteRotozoom(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
             // frame->height,
             //                  rotation, entity->scale, frame->sheetID);

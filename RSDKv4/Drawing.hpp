@@ -2,7 +2,7 @@
 #define DRAWING_H
 
 #define SURFACE_COUNT (24)
-#define GFXDATA_SIZE  (0x1200 * 0x1200)
+#define GFXDATA_SIZE  (0x800 * 0x800)
 
 #if RETRO_REV03
 #define DRAWLAYER_COUNT (8)
@@ -130,11 +130,6 @@ void DrawScaledChar(int direction, int XPos, int YPos, int pivotX, int pivotY, i
 #endif
 void DrawSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation,
                        int sheetID);
-                       
-void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int alpha,
-                       int sheetID);
-void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, int sprX, int sprY, int direction, int alpha, int sheetID);
-
 void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
                         int sheetID);
 
