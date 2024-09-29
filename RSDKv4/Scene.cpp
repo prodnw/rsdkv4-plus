@@ -46,10 +46,6 @@ int lastXSize = -1;
 bool pauseEnabled     = true;
 bool timeEnabled      = true;
 bool debugMode        = false;
-int frameCounter      = 0;
-int stageMilliseconds = 0;
-int stageSeconds      = 0;
-int stageMinutes      = 0;
 
 // Category and Scene IDs
 int activeStageList   = 0;
@@ -150,12 +146,8 @@ void ProcessStage(void)
             cameraShakeY                 = 0;
             vertexCount                  = 0;
             faceCount                    = 0;
-            frameCounter                 = 0;
             pauseEnabled                 = false;
             timeEnabled                  = false;
-            stageMilliseconds            = 0;
-            stageSeconds                 = 0;
-            stageMinutes                 = 0;
             stageMode                    = STAGEMODE_NORMAL;
 
 #if RSDK_AUTOBUILD
@@ -227,21 +219,6 @@ void ProcessStage(void)
             if (pauseEnabled && keyPress.start) {
                 stageMode = STAGEMODE_NORMAL_STEP;
                 PauseSound();
-            }
-
-            if (timeEnabled) {
-                if (++frameCounter == 60) {
-                    frameCounter = 0;
-                    if (++stageSeconds > 59) {
-                        stageSeconds = 0;
-                        if (++stageMinutes > 59)
-                            stageMinutes = 0;
-                    }
-                }
-                stageMilliseconds = 100 * frameCounter / 60;
-            }
-            else {
-                frameCounter = 60 * stageMilliseconds / 100;
             }
 
             // Update
@@ -359,21 +336,6 @@ void ProcessStage(void)
                 PauseSound();
             }
 
-            if (timeEnabled) {
-                if (++frameCounter == 60) {
-                    frameCounter = 0;
-                    if (++stageSeconds > 59) {
-                        stageSeconds = 0;
-                        if (++stageMinutes > 59)
-                            stageMinutes = 0;
-                    }
-                }
-                stageMilliseconds = 100 * frameCounter / 60;
-            }
-            else {
-                frameCounter = 60 * stageMilliseconds / 100;
-            }
-
             // Update
             Process2PObjects();
 
@@ -410,21 +372,6 @@ void ProcessStage(void)
 
             if (keyPress.C) {
                 keyPress.C = false;
-
-                if (timeEnabled) {
-                    if (++frameCounter == 60) {
-                        frameCounter = 0;
-                        if (++stageSeconds > 59) {
-                            stageSeconds = 0;
-                            if (++stageMinutes > 59)
-                                stageMinutes = 0;
-                        }
-                    }
-                    stageMilliseconds = 100 * frameCounter / 60;
-                }
-                else {
-                    frameCounter = 60 * stageMilliseconds / 100;
-                }
 
                 ProcessObjects();
                 if (cameraTarget > -1) {
@@ -551,21 +498,6 @@ void ProcessStage(void)
             CheckKeyPress(&keyPress);
             if (keyPress.C) {
                 keyPress.C = false;
-
-                if (timeEnabled) {
-                    if (++frameCounter == 60) {
-                        frameCounter = 0;
-                        if (++stageSeconds > 59) {
-                            stageSeconds = 0;
-                            if (++stageMinutes > 59)
-                                stageMinutes = 0;
-                        }
-                    }
-                    stageMilliseconds = 100 * frameCounter / 60;
-                }
-                else {
-                    frameCounter = 60 * stageMilliseconds / 100;
-                }
 
                 // Update
                 Process2PObjects();
