@@ -354,9 +354,6 @@ const char variableNames[][0x20] = {
 #if RETRO_USE_HAPTICS
     "engine.hapticsEnabled",
 #endif
-
-// Custom
-    "engine.timer",
 };
 #endif
 
@@ -882,7 +879,6 @@ enum ScrVar {
 #if !RETRO_REV00
     VAR_ENGINEDEVICETYPE, // v4-style device type aka Standard/Mobile/Etc
 #endif
-     VAR_ENGINETIMER,
 
 #if RETRO_REV03
     // Extras
@@ -4157,17 +4153,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
-                    case VAR_ENGINETIMER:
-                        time_t initialTimer = time(NULL);
-                        struct tm *actualTimer = localtime(&initialTimer);
-
-                        scriptEng.operands[i] = (int)(((actualTimer->tm_year + 1900 - 2000) & 0x3F) << 26 | 
-                                     ((actualTimer->tm_mon + 1) & 0xF) << 22 |
-                                     (actualTimer->tm_mday & 0x1F) << 17 |
-                                     (actualTimer->tm_hour & 0x1F) << 12 |
-                                     (actualTimer->tm_min & 0x3F) << 6 |
-                                     (actualTimer->tm_sec & 0x3F));
-                         break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
