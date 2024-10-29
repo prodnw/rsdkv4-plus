@@ -216,10 +216,6 @@ void ProcessStage(void)
             lastYSize = -1;
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
-            if (pauseEnabled && keyPress.start) {
-                stageMode = STAGEMODE_NORMAL_STEP;
-                PauseSound();
-            }
 
             // Update
             ProcessObjects();
@@ -253,11 +249,6 @@ void ProcessStage(void)
             lastYSize = -1;
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
-
-            if (pauseEnabled && keyPress.start) {
-                stageMode = STAGEMODE_PAUSED_STEP;
-                PauseSound();
-            }
 
             // Update
             ProcessPausedObjects();
@@ -331,10 +322,6 @@ void ProcessStage(void)
             lastYSize = -1;
             CheckKeyDown(&keyDown);
             CheckKeyPress(&keyPress);
-            if (pauseEnabled && keyPress.start) {
-                stageMode = STAGEMODE_2P_STEP;
-                PauseSound();
-            }
 
             // Update
             Process2PObjects();
