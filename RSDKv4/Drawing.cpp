@@ -39,6 +39,7 @@ bool mixFiltersOnJekyll = false;
 GLint defaultFramebuffer = -1;
 GLuint framebufferHiRes  = -1;
 GLuint renderbufferHiRes = -1;
+GLuint videoBuffer       = 0;
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE

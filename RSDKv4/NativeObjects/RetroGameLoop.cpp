@@ -80,6 +80,11 @@ void RetroGameLoop_Main(void *objPtr)
             RestoreNativeObjects();
             break;
 
+        case ENGINE_VIDEOWAIT:
+            if (ProcessVideo() == 1)
+                Engine.gameMode = ENGINE_MAINGAME;
+            break;
+
 #if !RETRO_USE_ORIGINAL_CODE && RETRO_USE_NETWORKING
         case ENGINE_CONNECT2PVS: {
             CREATE_ENTITY(MultiplayerScreen)->bg = CREATE_ENTITY(MenuBG);
