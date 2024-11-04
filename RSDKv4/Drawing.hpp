@@ -77,6 +77,8 @@ extern GLuint videoBuffer;
 
 int InitRenderDevice();
 void FlipScreen();
+void FlipScreenVideo();
+void RenderFromRetroBuffer();
 void ReleaseRenderDevice(bool refresh = false);
 
 void GenerateBlendLookupTable();

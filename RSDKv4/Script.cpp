@@ -464,6 +464,10 @@ const FunctionInfo functions[] = {
     FunctionInfo("ResumeMusic", 0),
     FunctionInfo("SwapMusicTrack", 4),
 
+    // Video
+    FunctionInfo("LoadVideo", 1),
+    FunctionInfo("NextVideoFrame", 0),
+
     // Sound FX
     FunctionInfo("PlaySfx", 2),
     FunctionInfo("StopSfx", 1),
@@ -981,6 +985,8 @@ enum ScrFunc {
     FUNC_PAUSEMUSIC,
     FUNC_RESUMEMUSIC,
     FUNC_SWAPMUSICTRACK,
+    FUNC_LOADVIDEO,
+    FUNC_NEXTVIDEOFRAME,
     FUNC_PLAYSFX,
     FUNC_STOPSFX,
     FUNC_SETSFXATTRIBUTES,
@@ -5046,6 +5052,19 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     SwapMusicTrack(scriptText, scriptEng.operands[1], 0, scriptEng.operands[3]);
                 else
                     SwapMusicTrack(scriptText, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
+                break;
+                            case FUNC_LOADVIDEO:
+                opcodeSize = 0;
+                PauseSound();
+                if (FindStringToken(scriptText, ".rsv", 1) <= -1)
+                    PlayVideoFile(scriptText); // not an rsv
+                else
+                    scriptInfo->spriteSheetID = AddGraphicsFile(scriptText);
+                ResumeSound();
+                break;
+            case FUNC_NEXTVIDEOFRAME:
+                opcodeSize = 0;
+                UpdateVideoFrame();
                 break;
             case FUNC_PLAYSFX:
                 opcodeSize = 0;
