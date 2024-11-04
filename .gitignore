@@ -44,6 +44,7 @@ cmake/
 ![Dd]ependencies/ios/[Ii]nfo.plist
 [Dd]ependencies/all/*
 ![Dd]ependencies/all/dependencies.txt
+![Dd]ependencies/all/theoraplay
 ![Dd]ependencies/all/stb-image
 ![Dd]ependencies/all/tinyxml2
 ![Dd]ependencies/all/asio
