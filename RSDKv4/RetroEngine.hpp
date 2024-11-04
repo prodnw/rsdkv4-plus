@@ -337,6 +337,7 @@ extern bool engineDebugMode;
 #include "Script.hpp"
 #include "Sprite.hpp"
 #include "Text.hpp"
+#include "Video.hpp"
 #include "Networking.hpp"
 #include "Renderer.hpp"
 #include "Userdata.hpp"

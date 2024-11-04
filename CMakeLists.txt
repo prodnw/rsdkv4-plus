@@ -49,6 +49,7 @@ set(RETRO_FILES
     RSDKv4/String.cpp
     RSDKv4/Text.cpp
     RSDKv4/Userdata.cpp
+    RSDKv4/Video.cpp
     RSDKv4/NativeObjects/AboutScreen.cpp
     RSDKv4/NativeObjects/AchievementDisplay.cpp
     RSDKv4/NativeObjects/AchievementsButton.cpp
