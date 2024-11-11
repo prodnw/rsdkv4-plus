@@ -1,6 +1,12 @@
 #include "RetroEngine.hpp"
 #include <string>
 
+enum VideoStatus {
+    VIDEOSTATUS_NOTPLAYING,
+    VIDEOSTATUS_PLAYING_OGV,
+    VIDEOSTATUS_PLAYING_RSV,
+};
+
 int currentVideoFrame = 0;
 int videoFrameCount   = 0;
 int videoWidth        = 0;
@@ -99,16 +105,16 @@ void PlayVideoFile(char *filePath)
         callbacks.close    = videoClose;
         callbacks.userdata = (void *)file;
 #if RETRO_USING_SDL2 && !RETRO_USING_OPENGL
-        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_IYUV, GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0);
+        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_IYUV, 1);
 #endif
 
         // TODO: does SDL1.2 support YUV?
 #if RETRO_USING_SDL1 && !RETRO_USING_OPENGL
-        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0);
+        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, 1);
 #endif
 
 #if RETRO_USING_OPENGL
-        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0);
+        videoDecoder = THEORAPLAY_startDecode(&callbacks, /*FPS*/ 30, THEORAPLAY_VIDFMT_RGBA, 1);
 #endif
 
         if (!videoDecoder) {
@@ -192,7 +198,7 @@ void UpdateVideoFrame()
             ++currentVideoFrame;
         }
         else {
-            videoPlaying = 0;
+            videoPlaying = VIDEOSTATUS_NOTPLAYING;
             CloseFile();
         }
     }
@@ -215,13 +221,11 @@ int ProcessVideo()
         }
 
         if (!THEORAPLAY_isDecoding(videoDecoder) || (videoSkipped && fadeMode >= 0xFF)) {
-            StopVideoPlayback();
-            ResumeSound();
-            return 1; // video finished
+            return QuitVideo();
         }
 
         // Don't pause or it'll go wild
-        if (videoPlaying == 1) {
+        if (videoPlaying == VIDEOSTATUS_PLAYING_OGV) {
             const Uint32 now = (SDL_GetTicks() - vidBaseticks);
 
             if (!videoVidData)
@@ -271,12 +275,24 @@ int ProcessVideo()
                 THEORAPLAY_freeVideo(videoVidData);
                 videoVidData = NULL;
             }
+            else if (!videoVidData) {
+                // something is wrong with THEORAPLAY_isDecoding, so 
+                // here's some tape & glue
+                return QuitVideo();
+            }
 
-            return 2; // its playing as expected
+            return VIDEOSTATUS_PLAYING_RSV; // its playing as expected
         }
     }
 
-    return 0; // its not even initialised
+    return VIDEOSTATUS_NOTPLAYING; // its not even initialised
+}
+
+int QuitVideo()
+{
+    StopVideoPlayback();
+    ResumeSound();
+    return VIDEOSTATUS_PLAYING_OGV; // video finished
 }
 
 void StopVideoPlayback()

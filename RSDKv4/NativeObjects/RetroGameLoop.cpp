@@ -81,8 +81,10 @@ void RetroGameLoop_Main(void *objPtr)
             break;
 
         case ENGINE_VIDEOWAIT:
+            ClearScreen(1);
             if (ProcessVideo() == 1)
                 Engine.gameMode = ENGINE_MAINGAME;
+            FlipScreen();
             break;
 
 #if !RETRO_USE_ORIGINAL_CODE && RETRO_USE_NETWORKING

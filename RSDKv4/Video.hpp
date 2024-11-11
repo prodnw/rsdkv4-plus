@@ -24,6 +24,7 @@ extern float videoAR;
 void PlayVideoFile(char *filepath);
 void UpdateVideoFrame();
 int ProcessVideo();
+int QuitVideo();
 void StopVideoPlayback();
 
 void SetupVideoBuffer(int width, int height);

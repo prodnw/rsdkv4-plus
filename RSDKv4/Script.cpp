@@ -49,7 +49,7 @@ struct FunctionInfo {
         StrCopy(name, functionName);
         opcodeSize = opSize;
     }
-    
+
 #if RETRO_REV03
     char name[0x30];
 #else
@@ -1539,8 +1539,8 @@ void ConvertConditionalStatement(char *text)
             StrCopy(text, dest);
 
             jumpTableStack[++jumpTableStackPos] = jumpTablePos;
-            jumpTable[jumpTablePos++]       = -1;
-            jumpTable[jumpTablePos++]       = 0;
+            jumpTable[jumpTablePos++]           = -1;
+            jumpTable[jumpTablePos++]           = 0;
         }
     }
     else if (FindStringToken(text, "while", 1) == 0) {
@@ -1570,8 +1570,8 @@ void ConvertConditionalStatement(char *text)
             StrCopy(text, dest);
 
             jumpTableStack[++jumpTableStackPos] = jumpTablePos;
-            jumpTable[jumpTablePos++]       = scriptCodePos - scriptCodeOffset;
-            jumpTable[jumpTablePos++]       = 0;
+            jumpTable[jumpTablePos++]           = scriptCodePos - scriptCodeOffset;
+            jumpTable[jumpTablePos++]           = 0;
         }
     }
     else if (FindStringToken(text, "foreach", 1) == 0) {
@@ -1594,8 +1594,8 @@ void ConvertConditionalStatement(char *text)
             StrCopy(text, dest);
 
             jumpTableStack[++jumpTableStackPos] = jumpTablePos;
-            jumpTable[jumpTablePos++]       = scriptCodePos - scriptCodeOffset;
-            jumpTable[jumpTablePos++]       = 0;
+            jumpTable[jumpTablePos++]           = scriptCodePos - scriptCodeOffset;
+            jumpTable[jumpTablePos++]           = 0;
         }
     }
 }
@@ -1618,10 +1618,10 @@ bool ConvertSwitchStatement(char *text)
     StrAdd(switchText, ")");
     StrCopy(text, switchText);
     jumpTableStack[++jumpTableStackPos] = jumpTablePos;
-    jumpTable[jumpTablePos++]       = 0x10000;
-    jumpTable[jumpTablePos++]       = -0x10000;
-    jumpTable[jumpTablePos++]       = -1;
-    jumpTable[jumpTablePos++]       = 0;
+    jumpTable[jumpTablePos++]           = 0x10000;
+    jumpTable[jumpTablePos++]           = -0x10000;
+    jumpTable[jumpTablePos++]           = -1;
+    jumpTable[jumpTablePos++]           = 0;
 
     return true;
 }
@@ -1669,7 +1669,7 @@ void ConvertFunctionText(char *text)
             jumpTable[jumpTableStack[jumpTableStackPos]] = scriptCodePos - scriptCodeOffset;
 
         if (StrComp("endif", functions[opcode].name) == 1) {
-            int jPos                = jumpTableStack[jumpTableStackPos];
+            int jPos            = jumpTableStack[jumpTableStackPos];
             jumpTable[jPos + 1] = scriptCodePos - scriptCodeOffset;
             if (jumpTable[jPos] == -1)
                 jumpTable[jPos] = (scriptCodePos - scriptCodeOffset) - 1;
@@ -1677,11 +1677,11 @@ void ConvertFunctionText(char *text)
         }
 
         if (StrComp("endswitch", functions[opcode].name)) {
-            int jPos                = jumpTableStack[jumpTableStackPos];
+            int jPos            = jumpTableStack[jumpTableStackPos];
             jumpTable[jPos + 3] = scriptCodePos - scriptCodeOffset;
             if (jumpTable[jPos + 2] == -1) {
                 jumpTable[jPos + 2] = (scriptCodePos - scriptCodeOffset) - 1;
-                int caseCnt             = abs(jumpTable[jPos + 1] - jumpTable[jPos]) + 1;
+                int caseCnt         = abs(jumpTable[jPos + 1] - jumpTable[jPos]) + 1;
 
                 int jOffset = jPos + 4;
                 for (int c = 0; c < caseCnt; ++c) {
@@ -2468,9 +2468,9 @@ bool ReadSwitchCase(char *text)
         return true;
     }
     else if (FindStringToken(text, "default", 1) == 0) {
-        int jumpTablepos                = jumpTableStack[jumpTableStackPos];
+        int jumpTablepos            = jumpTableStack[jumpTableStackPos];
         jumpTable[jumpTablepos + 2] = scriptCodePos - scriptCodeOffset;
-        int cnt                         = abs(jumpTable[jumpTablepos + 1] - jumpTable[jumpTablepos]) + 1;
+        int cnt                     = abs(jumpTable[jumpTablepos + 1] - jumpTable[jumpTablepos]) + 1;
 
         int jOffset = jumpTablepos + 4;
         for (int i = 0; i < cnt; ++i) {
@@ -2665,8 +2665,7 @@ bool ConvertStringToInteger(const char *text, int *value)
                 charVal = text[charID] - 'A';
                 charVal += 10;
             }
-            for (; --strlen; charVal *= base)
-                ;
+            for (; --strlen; charVal *= base);
             *value += charVal;
         }
         --strLength;
@@ -2844,11 +2843,11 @@ void ParseScriptFile(char *scriptName, int scriptID)
                     }
 
                     if (StrComp(scriptText, "eventObjectUpdate")) {
-                        parseMode                                          = PARSEMODE_FUNCTION;
+                        parseMode                                            = PARSEMODE_FUNCTION;
                         objectScriptList[scriptID].eventUpdate.scriptCodePtr = scriptCodePos;
                         objectScriptList[scriptID].eventUpdate.jumpTablePtr  = jumpTablePos;
-                        scriptCodeOffset                                   = scriptCodePos;
-                        jumpTableOffset                                    = jumpTablePos;
+                        scriptCodeOffset                                     = scriptCodePos;
+                        jumpTableOffset                                      = jumpTablePos;
                     }
 
                     if (StrComp(scriptText, "eventObjectDraw")) {
@@ -4160,21 +4159,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 scriptText[strLen] = 0;
                 for (int c = 0; c < strLen; ++c) {
                     switch (c % 4) {
-                        case 0: 
-                            scriptText[c] = scriptCode[scriptCodePtr] >> 24;
-                            break;
+                        case 0: scriptText[c] = scriptCode[scriptCodePtr] >> 24; break;
 
-                        case 1: 
-                            scriptText[c] = (0xFFFFFF & scriptCode[scriptCodePtr]) >> 16;
-                            break;
+                        case 1: scriptText[c] = (0xFFFFFF & scriptCode[scriptCodePtr]) >> 16; break;
 
-                        case 2: 
-                            scriptText[c] = (0xFFFF & scriptCode[scriptCodePtr]) >> 8;
-                            break;
+                        case 2: scriptText[c] = (0xFFFF & scriptCode[scriptCodePtr]) >> 8; break;
 
-                        case 3: 
-                            scriptText[c] = scriptCode[scriptCodePtr++];
-                            break;
+                        case 3: scriptText[c] = scriptCode[scriptCodePtr++]; break;
 
                         default: break;
                     }
@@ -4395,7 +4386,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 else
                     scriptCodePtr = scriptCodeStart
                                     + jumpTable[jumpTableStart + scriptEng.operands[0] + 4
-                                                    + (scriptEng.operands[1] - jumpTable[jumpTableStart + scriptEng.operands[0]])];
+                                                + (scriptEng.operands[1] - jumpTable[jumpTableStart + scriptEng.operands[0]])];
                 opcodeSize = 0;
                 break;
             case FUNC_BREAK:
@@ -5053,7 +5044,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 else
                     SwapMusicTrack(scriptText, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
-                            case FUNC_LOADVIDEO:
+            case FUNC_LOADVIDEO:
                 opcodeSize = 0;
                 PauseSound();
                 if (FindStringToken(scriptText, ".rsv", 1) <= -1)
@@ -5089,7 +5080,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_REV03
                     // Yes, the right side also calls for LWall
                     case CSIDE_LENTITY: ObjectLWallCollision(scriptEng.operands[2], 0, objectEntityList[scriptEng.operands[1]].collisionPlane); break;
-                    case CSIDE_RENTITY: ObjectLWallCollision(scriptEng.operands[2] - 1, 0, objectEntityList[scriptEng.operands[1]].collisionPlane); break;
+                    case CSIDE_RENTITY:
+                        ObjectLWallCollision(scriptEng.operands[2] - 1, 0, objectEntityList[scriptEng.operands[1]].collisionPlane);
+                        break;
 #endif
                 }
                 break;

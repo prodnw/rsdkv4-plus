@@ -318,16 +318,16 @@ void FlipScreen()
 #if RETRO_USING_OPENGL
 
 #if !RETRO_USE_ORIGINAL_CODE
-        if (dimAmount < 1.0 && stageMode != STAGEMODE_PAUSED)
-            DrawRectangle(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
+    if (dimAmount < 1.0 && stageMode != STAGEMODE_PAUSED)
+        DrawRectangle(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
 #endif
-        if (Engine.gameMode == ENGINE_VIDEOWAIT) {
-            FlipScreenVideo();
-        }
-        else {
-            TransferRetroBuffer();
-            // RenderFromRetroBuffer();
-        }
+    if (Engine.gameMode == ENGINE_VIDEOWAIT) {
+        FlipScreenVideo();
+    }
+    else {
+        TransferRetroBuffer();
+        // RenderFromRetroBuffer();
+    }
 #endif
 
 #if RETRO_SOFTWARE_RENDER && !RETRO_USING_OPENGL
@@ -504,13 +504,16 @@ void FlipScreen()
     }
     else {
         // Apply dimming
-        SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
-        if (dimAmount < 1.0)
+        // In RSDKv3, a DrawRectangle would be used for the fade - but I believe that it doesn't draw to the videoBuffer?
+        int fade = Engine.gameMode == ENGINE_VIDEOWAIT ? fadeMode : 0xFF - (dimAmount * 0xFF);
+        SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, fade);
+
+        if (dimAmount < 1.0 || Engine.gameMode == ENGINE_VIDEOWAIT)
             SDL_RenderFillRect(Engine.renderer, NULL);
+
         // no change here
         SDL_RenderPresent(Engine.renderer);
     }
-    SDL_ShowWindow(Engine.window);
 #endif
 
 #if RETRO_USING_SDL1
@@ -561,13 +564,86 @@ void FlipScreen()
 
 #endif // !RETRO_SOFTWARE_RENDER
 
+#if RETRO_USING_OPENGL
+    if (dimAmount < 1.0 && stageMode != STAGEMODE_PAUSED)
+        DrawRectangle(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
+
+    if (Engine.gameMode == ENGINE_VIDEOWAIT)
+        FlipScreenVideo();
+#endif // !RETRO_USING_OPENGL
+
 #endif
 }
 
 #define normalize(val, minVal, maxVal) ((float)(val) - (float)(minVal)) / ((float)(maxVal) - (float)(minVal))
+int viewWidth   = 0;
+int viewHeight  = 0;
+int viewOffsetX = 0;
+
+struct DrawVertexCD {
+    short x;
+    short y;
+    short u;
+    short v;
+
+    Color colour;
+};
+
 void FlipScreenVideo()
 {
+#if RETRO_USING_OPENGL
+    DrawVertexCD screenVerts[4];
 
+    screenVerts[0].u = 0;
+    screenVerts[0].v = 0;
+
+    screenVerts[1].u = FACEBUFFER_SIZE;
+    screenVerts[1].v = 0;
+
+    screenVerts[2].u = 0;
+    screenVerts[2].v = FACEBUFFER_SIZE;
+
+    screenVerts[3].u = FACEBUFFER_SIZE;
+    screenVerts[3].v = FACEBUFFER_SIZE;
+
+    float best = minVal(viewWidth / (float)videoWidth, viewHeight / (float)videoHeight);
+
+    float w = videoWidth * best;
+    float h = videoHeight * best;
+
+    float x = normalize((viewWidth - w) / 2, 0, viewWidth) * 2 - 1.0f;
+    float y = -(normalize((viewHeight - h) / 2, 0, viewHeight) * 2 - 1.0f);
+
+    w = normalize(w, 0, viewWidth) * 2;
+    h = -(normalize(h, 0, viewHeight) * 2);
+
+    screenVerts[0].x = x;
+    screenVerts[0].y = y;
+
+    screenVerts[1].x = w + x;
+    screenVerts[1].y = y;
+
+    screenVerts[2].x = x;
+    screenVerts[2].y = h + y;
+
+    screenVerts[3].x = w + x;
+    screenVerts[3].y = h + y;
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glLoadIdentity();
+    glBindTexture(GL_TEXTURE_2D, videoBuffer);
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glViewport(viewOffsetX, 0, viewWidth, viewHeight);
+
+    glVertexPointer(2, GL_FLOAT, sizeof(DrawVertexCD), &screenVerts[0].x);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertexCD), &screenVerts[0].u);
+
+    glDisable(GL_BLEND);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &drawVertexList);
+#endif
 }
 
 void ReleaseRenderDevice(bool refresh)
