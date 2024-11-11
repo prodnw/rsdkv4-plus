@@ -37,6 +37,7 @@ extern byte fadeA;
 extern byte fadeR;
 extern byte fadeG;
 extern byte fadeB;
+extern int fadeX;
 
 extern int paletteMode;
 
@@ -127,13 +128,16 @@ inline void RotatePalette(int palID, byte startIndex, byte endIndex, bool right)
     }
 }
 
-inline void SetFade(byte R, byte G, byte B, ushort A)
+inline void SetFade(byte mode, byte R, byte G, byte B, int A)
 {
-    fadeMode = 1;
+    fadeMode = mode;
     fadeR    = R;
     fadeG    = G;
     fadeB    = B;
-    fadeA    = A > 0xFF ? 0xFF : A;
+	if (fadeMode == 1)
+		fadeA    = A > 0xFF ? 0xFF : A;
+	else
+		fadeX = A;
 }
 
 #if RETRO_REV00
