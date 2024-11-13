@@ -220,6 +220,10 @@ int ProcessVideo()
             videoSkipped = true;
         }
 
+        if (fadeMode <= 0) {
+            PlaySfxByName("Menu Decide", false);
+        }
+
         if (!THEORAPLAY_isDecoding(videoDecoder) || (videoSkipped && fadeMode >= 0xFF)) {
             return QuitVideo();
         }
