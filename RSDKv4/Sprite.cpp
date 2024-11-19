@@ -295,7 +295,7 @@ int LoadBMPFile(const char *filePath, byte sheetID)
 
         if (gfxDataPosition >= GFXDATA_SIZE) {
             gfxDataPosition = 0;
-            PrintLog("WARNING: Exceeded max gfx size!");
+            PrintLog("WARNING: Exceeded max image size! Make the size shorter!");
         }
 
         CloseFile();
@@ -373,7 +373,7 @@ int LoadGIFFile(const char *filePath, byte sheetID)
         }
         else {
             gfxDataPosition = 0;
-            PrintLog("WARNING: Exceeded max gfx size!");
+            PrintLog("WARNING: Exceeded max image size! Make the size shorter!");
         }
 
         CloseFile();
@@ -408,7 +408,7 @@ int LoadPVRFile(const char *filePath, byte sheetID)
 
         if (gfxDataPosition >= GFXDATA_SIZE) {
             gfxDataPosition = 0;
-            PrintLog("WARNING: Exceeded max gfx size!");
+            PrintLog("WARNING: Exceeded max image size! Make the size shorter!");
         }
 
 #if RETRO_SOFTWARE_RENDER
