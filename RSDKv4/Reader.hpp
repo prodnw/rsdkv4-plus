@@ -38,7 +38,7 @@
 #define RETRO_PACK_COUNT     (0x4)
 
 struct FileInfo {
-    char fileName[0x100];
+    char fileName[0x500];
     int fileSize;
     int vfileSize;
     int readPos;
@@ -75,7 +75,7 @@ struct RSDKContainer {
 
 extern RSDKContainer rsdkContainer;
 
-extern char fileName[0x100];
+extern char fileName[0x500];
 extern byte fileBuffer[0x2000];
 extern int fileSize;
 extern int vFileSize;
