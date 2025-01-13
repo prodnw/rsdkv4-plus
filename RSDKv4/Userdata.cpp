@@ -512,15 +512,15 @@ void InitUserdata()
         if (!ini.GetInteger("Controller 1", "C", &inputDevice[INPUT_BUTTONC].contMappings))
             inputDevice[INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_X;
         if (!ini.GetInteger("Controller 1", "X", &inputDevice[INPUT_BUTTONX].contMappings))
-            inputDevice[INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_Y;
+            inputDevice[INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
         if (!ini.GetInteger("Controller 1", "Y", &inputDevice[INPUT_BUTTONY].contMappings))
-            inputDevice[INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_ZL;
+            inputDevice[INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_Y;
         if (!ini.GetInteger("Controller 1", "Z", &inputDevice[INPUT_BUTTONZ].contMappings))
-            inputDevice[INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_ZR;
+            inputDevice[INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
         if (!ini.GetInteger("Controller 1", "L", &inputDevice[INPUT_BUTTONL].contMappings))
-            inputDevice[INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
+            inputDevice[INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_ZL;
         if (!ini.GetInteger("Controller 1", "R", &inputDevice[INPUT_BUTTONR].contMappings))
-            inputDevice[INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
+            inputDevice[INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_ZR;
         if (!ini.GetInteger("Controller 1", "Start", &inputDevice[INPUT_START].contMappings))
             inputDevice[INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
         if (!ini.GetInteger("Controller 1", "Select", &inputDevice[INPUT_SELECT].contMappings))
@@ -581,17 +581,17 @@ void InitUserdata()
         if (!ini.GetInteger("Controller 1", "C", &inputDevice[INPUT_BUTTONC].contMappings))
             inputDevice[INPUT_BUTTONC].contMappings = 7;
         if (!ini.GetInteger("Controller 1", "X", &inputDevice[INPUT_BUTTONX].contMappings))
-            inputDevice[INPUT_BUTTONX].contMappings = 8;
+            inputDevice[INPUT_BUTTONX].contMappings = 9;
         if (!ini.GetInteger("Controller 1", "Y", &inputDevice[INPUT_BUTTONY].contMappings))
-            inputDevice[INPUT_BUTTONY].contMappings = 9;
+            inputDevice[INPUT_BUTTONY].contMappings = 10;
         if (!ini.GetInteger("Controller 1", "Z", &inputDevice[INPUT_BUTTONZ].contMappings))
-            inputDevice[INPUT_BUTTONZ].contMappings = 10;
+            inputDevice[INPUT_BUTTONZ].contMappings = 11;
         if (!ini.GetInteger("Controller 1", "L", &inputDevice[INPUT_BUTTONL].contMappings))
-            inputDevice[INPUT_BUTTONL].contMappings = 11;
+            inputDevice[INPUT_BUTTONL].contMappings = 12;
         if (!ini.GetInteger("Controller 1", "R", &inputDevice[INPUT_BUTTONR].contMappings))
-            inputDevice[INPUT_BUTTONR].contMappings = 12;
+            inputDevice[INPUT_BUTTONR].contMappings = 13;
         if (!ini.GetInteger("Controller 1", "Start", &inputDevice[INPUT_START].contMappings))
-            inputDevice[INPUT_START].contMappings = 13;
+            inputDevice[INPUT_START].contMappings = 8;
         if (!ini.GetInteger("Controller 1", "Select", &inputDevice[INPUT_SELECT].contMappings))
             inputDevice[INPUT_SELECT].contMappings = 14;
 
@@ -624,7 +624,7 @@ void InitUserdata()
 
         int nummaps = SDL_GameControllerAddMappingsFromFile(buffer);
         if (nummaps >= 0)
-            PrintLog("loaded %d controller mappings from '%s'\n", buffer, nummaps);
+            PrintLog("Loaded %d controller mappings from '%s'\n", buffer, nummaps);
     }
 #endif
 
