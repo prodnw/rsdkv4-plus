@@ -194,6 +194,9 @@ const char variableNames[][0x20] = {
     "stage.activeList",
     "stage.listPos",
     "stage.timeEnabled",
+    "stage.milliSeconds",
+    "stage.seconds",
+    "stage.minutes",
     "stage.actNum",
     "stage.pauseEnabled",
     "stage.listSize",
@@ -754,6 +757,9 @@ enum ScrVar {
     VAR_STAGEACTIVELIST,
     VAR_STAGELISTPOS,
     VAR_STAGETIMEENABLED,
+    VAR_STAGEMILLISECONDS,
+    VAR_STAGESECONDS,
+    VAR_STAGEMINUTES,
     VAR_STAGEACTNUM,
     VAR_STAGEPAUSEENABLED,
     VAR_STAGELISTSIZE,
@@ -3951,6 +3957,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEACTIVELIST: scriptEng.operands[i] = activeStageList; break;
                     case VAR_STAGELISTPOS: scriptEng.operands[i] = stageListPosition; break;
                     case VAR_STAGETIMEENABLED: scriptEng.operands[i] = timeEnabled; break;
+                    case VAR_STAGEMILLISECONDS: scriptEng.operands[i] = stageMilliseconds; break;
+                    case VAR_STAGESECONDS: scriptEng.operands[i] = stageSeconds; break;
+                    case VAR_STAGEMINUTES: scriptEng.operands[i] = stageMinutes; break;
                     case VAR_STAGEACTNUM: scriptEng.operands[i] = actID; break;
                     case VAR_STAGEPAUSEENABLED: scriptEng.operands[i] = pauseEnabled; break;
                     case VAR_STAGELISTSIZE: scriptEng.operands[i] = stageListCount[activeStageList]; break;
@@ -6125,6 +6134,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEACTIVELIST: activeStageList = scriptEng.operands[i]; break;
                     case VAR_STAGELISTPOS: stageListPosition = scriptEng.operands[i]; break;
                     case VAR_STAGETIMEENABLED: timeEnabled = scriptEng.operands[i]; break;
+                    case VAR_STAGEMILLISECONDS: stageMilliseconds = scriptEng.operands[i]; break;
+                    case VAR_STAGESECONDS: stageSeconds = scriptEng.operands[i]; break;
+                    case VAR_STAGEMINUTES: stageMinutes = scriptEng.operands[i]; break;
                     case VAR_STAGEACTNUM: actID = scriptEng.operands[i]; break;
                     case VAR_STAGEPAUSEENABLED: pauseEnabled = scriptEng.operands[i]; break;
                     case VAR_STAGELISTSIZE: break;
