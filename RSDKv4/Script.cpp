@@ -579,6 +579,7 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "4"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "6"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENTATION_STAGE", "0"),
@@ -4823,10 +4824,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         break;
 
                         case FX_ALL:
-                            DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                            (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
-                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-                                            entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
+						DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
+									     (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+									     spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+									     entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
                         break;
                 }
                 break;
@@ -4915,7 +4916,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 break;
                         }
                         break;
-
                     case FX_ALL:
                         DrawSpriteAllFX(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
                             -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,

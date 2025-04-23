@@ -4087,22 +4087,25 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
 }
 
 void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
-                        int sheetID, int alpha, int ink, int flags)
+                     int sheetID, int alpha, int ink, int flags)
 {
 #if RETRO_SOFTWARE_RENDER
-	//check flags
-	if (flags && FX_INK == 0)
-		ink = INK_NONE;
-	if (flags && FX_SCALE == 0)
-		scale = 0x200;
-	if (flags && FX_ROTATE == 0)
-		rotation = 0;
-	if (flags && 3 == 0)
-		direction = FLIP_NONE;
-	
-	if (alpha > 0xFF)
+    //check flags
+    if ((flags & FX_INK) == 0)
+        ink = INK_NONE;
+    if ((flags & FX_SCALE) == 0)
+        scale = 0x200;
+    if ((flags & FX_ROTATE) == 0)
+        rotation = 0;
+    if ((flags & 3) == 0)
+        direction = FLIP_NONE;
+    
+    if ((ink > INK_NONE) && (alpha < 0))
+        return;
+    
+    if (alpha > 0xFF)
         alpha = 0xFF;
-	
+    
     if (scale == 0)
         return;
 
@@ -4132,7 +4135,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
         xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
         yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
     }
-	else if (direction == FLIP_Y) {
+    else if (direction == FLIP_Y) {
         xPositions[0] = XPos + ((sine * (pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
         yPositions[0] = YPos + ((cosine * (pivotY + 2) - sine * (-pivotX - 2)) >> 9);
         xPositions[1] = XPos + ((sine * (pivotY + 2) + cosine * (width - pivotX + 2)) >> 9);
@@ -4144,7 +4147,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
         xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
         yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
     }
-	else if (direction == FLIP_XY) {
+    else if (direction == FLIP_XY) {
         xPositions[0] = XPos + ((sine * (pivotY + 2) + cosine * (pivotX + 2)) >> 9);
         yPositions[0] = YPos + ((cosine * (pivotY + 2) - sine * (pivotX + 2)) >> 9);
         xPositions[1] = XPos + ((sine * (pivotY + 2) + cosine * (pivotX - width - 2)) >> 9);
@@ -4209,12 +4212,11 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
     if (maxX <= 0 || maxY <= 0)
         return;
 
-	//ink tables here	
-	ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-	ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
-	ushort *blendTablePtr  = &blendLookupTable[0x20 * alpha];
-	ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
-	
+    //ink tables here -- unused by this function
+    //ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
+    //ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
+    //ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
+    
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = GFX_LINESIZE - maxX;
     int lineSize           = surface->widthShift;
@@ -4244,41 +4246,53 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                        
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE:
+                                *frameBufferPtr = activePalette[index];
+                                break;
+                            case INK_BLEND:
+                                *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
+                                break;
+                            case INK_ALPHA:
+                                //R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                //G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                //B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                                
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								R = minVal((blendTablePtr[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((blendTablePtr[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal(blendTablePtr[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                //R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                //G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                //B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                //R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                //G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                //B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
                 }
                 ++frameBufferPtr;
                 finalX -= cosine;
@@ -4303,41 +4317,53 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                        
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE:
+                                *frameBufferPtr = activePalette[index];
+                                break;
+                            case INK_BLEND:
+                                *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
+                                break;
+                            case INK_ALPHA:
+                                //R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                //G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                //B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                                
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								R = minVal((blendTablePtr[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((blendTablePtr[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal(blendTablePtr[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                //R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                //G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                //B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                //R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                //G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                //B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
 
                 }
                 ++frameBufferPtr;
@@ -4363,41 +4389,53 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                        
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE:
+                                *frameBufferPtr = activePalette[index];
+                                break;
+                            case INK_BLEND:
+                                *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
+                                break;
+                            case INK_ALPHA:
+                                //R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                //G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                //B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                                
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								R = minVal((blendTablePtr[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((blendTablePtr[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal(blendTablePtr[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                //R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                //G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                //B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                //R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                //G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                //B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
 
                 }
                 ++frameBufferPtr;
@@ -4423,41 +4461,53 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
                 if (finalX > shiftPivot && finalX < fullwidth && finalY > shiftheight && finalY < fullheight) {
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
-						
-						ushort color = activePalette[index];
-						int R;
-						int G;
-						int B;
-						switch (ink) {
-							case INK_NONE:
-								*frameBufferPtr = activePalette[index];
-								break;
-							case INK_BLEND:
-								*frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
-								break;
-							case INK_ALPHA:
-								R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-								G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-								B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                        
+                        ushort color = activePalette[index];
+                        int R;
+                        int G;
+                        int B;
+                        switch (ink) {
+                            case INK_NONE:
+                                *frameBufferPtr = activePalette[index];
+                                break;
+                            case INK_BLEND:
+                                *frameBufferPtr = ((activePalette[index] & 0xF7DE) >> 1) + ((*frameBufferPtr & 0xF7DE) >> 1);
+                                break;
+                            case INK_ALPHA:
+                                //R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
+                                //G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
+                                //B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+                                
+                                R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+                                G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+                                B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_ADD:
-								R = minVal((blendTablePtr[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-								G = minVal((blendTablePtr[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-								B = minVal(blendTablePtr[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_ADD:
+                                //R = minVal((pixelBlend[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                //G = minVal((pixelBlend[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                //B = minVal(pixelBlend[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-							case INK_SUB:
-								R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-								G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-								B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                                R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+                                G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+                                B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
 
-								*frameBufferPtr = R | G | B;
-								break;
-						}
-					}
+                                *frameBufferPtr = R | G | B;
+                                break;
+                            case INK_SUB:
+                                //R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
+                                //G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
+                                //B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+                
+                                R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+                                G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+                                B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
+
+                                *frameBufferPtr = R | G | B;
+                                break;
+                        }
+                    }
                 }
                 ++frameBufferPtr;
                 finalX += cosine;
