@@ -1,13 +1,13 @@
 ![](header.png?raw=true)
 
-# **FORK CREDITS**
- * ProdNW
- * JD
- * Elsie The Pict
- * SDG
- * Geared
-
 A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (2013).
+
+# **FORK CREDITS**
+ * ProdNW - Code porting + minor edits
+ * JD - Video Player
+ * Elsie The Pict - Code from Forever's engine fork
+ * SDG - Chunk and Tile limit increase
+ * Geared - Other misc. stuff
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
