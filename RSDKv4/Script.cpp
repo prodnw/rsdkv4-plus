@@ -4824,35 +4824,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         break;
 
                         case FX_ALL:
-                        switch (entity->direction) {
-                            default:
-                            case FLIP_NONE:
-                                DrawSpriteAllFX((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE, entity->alpha,
-                                                entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], scriptInfo->spriteSheetID);
-                                break;
-                            case FLIP_X:
-                                DrawSpriteAllFX((scriptEng.operands[2] >> 16) - xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
-                                                (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_X, entity->alpha,
-                                                entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], scriptInfo->spriteSheetID);
-                                break;
-                            case FLIP_Y:
-                                DrawSpriteAllFX((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                (scriptEng.operands[3] >> 16) - yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
-                                                spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y,
-                                                entity->alpha, entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], 
-                                                scriptInfo->spriteSheetID);
-                                break;
-                            case FLIP_XY:
-                                DrawSpriteAllFX((scriptEng.operands[2] >> 16) - xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
-                                                (scriptEng.operands[3] >> 16) - yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
-                                                spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_XY,
-                                                entity->alpha, entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], 
-                                                scriptInfo->spriteSheetID);
-                                break;
-                        }
+                            DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
+                                           (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                                           spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+                                           entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
                         break;
                 }
                 break;
@@ -4942,35 +4917,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         }
                         break;
                     case FX_ALL:
-                    switch (entity->direction) {
-                        default:
-                        case FLIP_NONE:
-                            DrawSpriteAllFX(entity->direction, scriptEng.operands[2] + spriteFrame->pivotX, scriptEng.operands[3] + spriteFrame->pivotY,
-                                            spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE,
-                                            entity->alpha, entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1],
-                                            scriptInfo->spriteSheetID);
-                            break;
-                        case FLIP_X:
-                            DrawSpriteAllFX(entity->direction, scriptEng.operands[2] - spriteFrame->width - spriteFrame->pivotX,
-                                            scriptEng.operands[3] + spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
-                                            spriteFrame->sprX, spriteFrame->sprY, FLIP_X, entity->alpha, entity->inkEffect,
-                                            entity->rotation, entity->scale, scriptEng.operands[1], scriptInfo->spriteSheetID);
-                            break;
-                        case FLIP_Y:
-                            DrawSpriteAllFX(entity->direction, scriptEng.operands[2] + spriteFrame->pivotX,
-                                            scriptEng.operands[3] - spriteFrame->height - spriteFrame->pivotY, spriteFrame->width,
-                                            spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y, entity->alpha,
-                                            entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], 
-                                            scriptInfo->spriteSheetID);
-                            break;
-                        case FLIP_XY:
-                            DrawSpriteAllFX(entity->direction, scriptEng.operands[2] - spriteFrame->width - spriteFrame->pivotX,
-                                            scriptEng.operands[3] - spriteFrame->height - spriteFrame->pivotY, spriteFrame->width,
-                                            spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_XY, entity->alpha,
-                                            entity->inkEffect, entity->rotation, entity->scale, scriptEng.operands[1], 
-                                            scriptInfo->spriteSheetID);
-                            break;
-                    }
+                        DrawSpriteAllFX(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
+                                        -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
+                                        entity->rotation, entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
                     break;
                 }
                 break;
