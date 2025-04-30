@@ -4086,8 +4086,8 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
 #endif
 }
 
-void DrawSpriteAllFX(int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int direction, int alpha, int ink,
-                     int rotation, int scale, int sheetID)
+void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int alpha, int ink,
+                     int rotation, int scale, int flags, int sheetID)
 {
 #if RETRO_SOFTWARE_RENDER
     //check flags
