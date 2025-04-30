@@ -1,5 +1,12 @@
 ![](header.png?raw=true)
 
+# **FORK CREDITS**
+ * ProdNW
+ * JD
+ * Elsie The Pict
+ * SDG
+ * Geared
+
 A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (2013).
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
