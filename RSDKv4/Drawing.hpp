@@ -10,17 +10,9 @@
 #define DRAWLAYER_COUNT (7)
 #endif
 
-#define FX_SCALE (0)
-#define FX_ROTATE (1)
-#define FX_ROTOZOOM (2)
-#define FX_INK (3)
-#define FX_TINT (4)
-#define FX_FLIP (5)
-#define FX_ALL (6)
-
 enum FlipFlags { FLIP_NONE, FLIP_X, FLIP_Y, FLIP_XY };
 enum InkFlags { INK_NONE, INK_BLEND, INK_ALPHA, INK_ADD, INK_SUB };
-//enum DrawFXFlags { FX_SCALE, FX_ROTATE, FX_ROTOZOOM, FX_INK, FX_TINT, FX_FLIP, FX_ALL};
+enum DrawFXFlags { FX_SCALE, FX_ROTATE, FX_ROTOZOOM, FX_INK, FX_TINT, FX_FLIP, FX_ALL};
 
 struct DrawListEntry {
     int entityRefs[ENTITY_COUNT];
