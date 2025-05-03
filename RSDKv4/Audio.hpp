@@ -1,8 +1,8 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#define TRACK_COUNT (0x10)
-#define SFX_COUNT   (0x100)
+#define TRACK_COUNT (0x100)
+#define SFX_COUNT   (0x1000)
 #if !RETRO_USE_ORIGINAL_CODE
 #define CHANNEL_COUNT (0x10) // 4 in the original, 16 for convenience
 #else

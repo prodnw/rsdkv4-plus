@@ -1,12 +1,12 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
-#define NATIVEENTITY_COUNT (0x100)
+#define NATIVEENTITY_COUNT (0x2000)
 
-#define ENTITY_COUNT     (0xDE0)
+#define ENTITY_COUNT     (0x2000)
 #define TEMPENTITY_START (ENTITY_COUNT - 0x80)
-#define OBJECT_COUNT     (0x100)
-#define TYPEGROUP_COUNT  (0x103)
+#define OBJECT_COUNT     (0x2000)
+#define TYPEGROUP_COUNT  (0x2000)
 
 enum ObjectControlModes {
     CONTROLMODE_NONE   = -1,

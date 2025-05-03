@@ -69,6 +69,9 @@ const char variableNames[][0x20] = {
     "temp5",
     "temp6",
     "temp7",
+    "temp8",
+    "temp9",
+    "temp10",
     "checkResult",
     "arrayPos0",
     "arrayPos1",
@@ -601,9 +604,10 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
 #if !RETRO_REV00
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
 #endif
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_RUNNING", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_CHAOSCONTROL", "4"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
@@ -611,6 +615,8 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_PSN", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_IOS", "4"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_ANDROID", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_NINTENDO", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_STEAM", "7"),
 };
 // clang-format on
 
@@ -640,6 +646,9 @@ enum ScrVar {
     VAR_TEMP5,
     VAR_TEMP6,
     VAR_TEMP7,
+    VAR_TEMP8,
+    VAR_TEMP9,
+    VAR_TEMP10,
     VAR_CHECKRESULT,
     VAR_ARRAYPOS0,
     VAR_ARRAYPOS1,
@@ -3418,6 +3427,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP5: scriptEng.operands[i] = scriptEng.temp[5]; break;
                     case VAR_TEMP6: scriptEng.operands[i] = scriptEng.temp[6]; break;
                     case VAR_TEMP7: scriptEng.operands[i] = scriptEng.temp[7]; break;
+                    case VAR_TEMP8: scriptEng.operands[i] = scriptEng.temp[8]; break;
+                    case VAR_TEMP9: scriptEng.operands[i] = scriptEng.temp[9]; break;
+                    case VAR_TEMP10: scriptEng.operands[i] = scriptEng.temp[10]; break;
                     case VAR_CHECKRESULT: scriptEng.operands[i] = scriptEng.checkResult; break;
                     case VAR_ARRAYPOS0: scriptEng.operands[i] = scriptEng.arrayPosition[0]; break;
                     case VAR_ARRAYPOS1: scriptEng.operands[i] = scriptEng.arrayPosition[1]; break;
@@ -5731,6 +5743,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP5: scriptEng.temp[5] = scriptEng.operands[i]; break;
                     case VAR_TEMP6: scriptEng.temp[6] = scriptEng.operands[i]; break;
                     case VAR_TEMP7: scriptEng.temp[7] = scriptEng.operands[i]; break;
+                    case VAR_TEMP8: scriptEng.temp[8] = scriptEng.operands[i]; break;
+                    case VAR_TEMP9: scriptEng.temp[9] = scriptEng.operands[i]; break;
+                    case VAR_TEMP10: scriptEng.temp[10] = scriptEng.operands[i]; break;
                     case VAR_CHECKRESULT: scriptEng.checkResult = scriptEng.operands[i]; break;
                     case VAR_ARRAYPOS0: scriptEng.arrayPosition[0] = scriptEng.operands[i]; break;
                     case VAR_ARRAYPOS1: scriptEng.arrayPosition[1] = scriptEng.operands[i]; break;

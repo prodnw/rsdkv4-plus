@@ -418,7 +418,9 @@ void RetroEngine::Init()
     }
 
 #if !RETRO_USE_ORIGINAL_CODE
-    gameType = GAME_SONIC2;
+    // If none of the below are recognised, default to just be unknown
+    gameType = GAME_UNKNOWN;
+
 #if RETRO_USE_MOD_LOADER
     if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
 #else
@@ -426,7 +428,32 @@ void RetroEngine::Init()
 #endif
         gameType = GAME_SONIC1;
     }
-#endif
+
+    if (strstr(gameWindowText, "Sonic 2")) {
+        gameType = GAME_SONIC2;
+    }
+
+    if (strstr(gameWindowText, "Sonic 3")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic 3 & Knuckles")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic & Knuckles")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic CD")) {
+        gameType = GAME_SONICCD;
+    }
+
+    if (strstr(gameWindowText, "Sonic Vengeance")) {
+        gameType = GAME_SONICVENGEANCE;
+    }
+
+    // Feel free to add your own game types!
 
 #if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;

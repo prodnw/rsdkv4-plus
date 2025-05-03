@@ -1,7 +1,7 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
-#define PALETTE_COUNT       (0x8)
+#define PALETTE_COUNT       (0x32)
 #define PALETTE_COLOR_COUNT (0x100)
 
 struct Color {
