@@ -3,10 +3,10 @@
 
 #define NATIVEENTITY_COUNT (0x2000)
 
-#define ENTITY_COUNT     (0x2000)
+#define ENTITY_COUNT     (0xDE0)
 #define TEMPENTITY_START (ENTITY_COUNT - 0x80)
-#define OBJECT_COUNT     (0x2000)
-#define TYPEGROUP_COUNT  (0x2000)
+#define OBJECT_COUNT     (0x200)
+#define TYPEGROUP_COUNT  (0x103)
 
 enum ObjectControlModes {
     CONTROLMODE_NONE   = -1,
