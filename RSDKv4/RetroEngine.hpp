@@ -45,16 +45,14 @@ typedef unsigned int uint;
 // Platforms (RSDKv4 only defines these 7 (I assume), but feel free to add your own custom platform define for easier platform code changes)
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)
-#define RETRO_XBOX     (2)
-#define RETRO_PLAYSTATION (3)
+#define RETRO_XBOX_360 (2)
+#define RETRO_PS3      (3)
 #define RETRO_iOS      (4)
 #define RETRO_ANDROID  (5)
 #define RETRO_WP7      (6)
 // Custom Platforms start here
 #define RETRO_UWP   (7)
 #define RETRO_LINUX (8)
-#define RETRO_NINTENDO (9)
-#define RETRO_STEAM (10)
 
 // Platform types (Game manages platform-specific code such as HUD position using this rather than the above)
 #define RETRO_STANDARD (0)
@@ -85,7 +83,6 @@ typedef unsigned int uint;
 #define RETRO_PLATFORM   (RETRO_OSX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
-
 #elif defined __ANDROID__
 #define RETRO_PLATFORM   (RETRO_ANDROID)
 #define RETRO_DEVICETYPE (RETRO_MOBILE)
@@ -93,21 +90,9 @@ typedef unsigned int uint;
 #elif defined(__linux__)
 #define RETRO_PLATFORM   (RETRO_LINUX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
-#elif defined __XBOX__
-#define RETRO_PLATFORM   (RETRO_XBOX)
-#define RETRO_DEVICETYPE (RETRO_STANDARD)
-#define DEFAULT_FULLSCREEN true
-#elif defined __PLAYSTATION__
-#define RETRO_PLATFORM   (RETRO_PLAYSTATION)
-#define RETRO_DEVICETYPE (RETRO_STANDARD)
-#define DEFAULT_FULLSCREEN true
-#elif defined __NINTENDO__
-#define RETRO_PLATFORM   (RETRO_NINTENDO)
-#define RETRO_DEVICETYPE (RETRO_STANDARD)
-#define DEFAULT_FULLSCREEN true
 #else
 //#error "No Platform was defined"
-#define RETRO_PLATFORM   (RETRO_WIN)
+#define RETRO_PLATFORM   (RETRO_LINUX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
 
@@ -305,12 +290,6 @@ enum RetroGameType {
     GAME_SONIC3  = 3,
     GAME_SONICCD = 4,
     GAME_SONICVENGEANCE = 5,
-    GAME_UNKNOWN1 = 5,
-    GAME_UNKNOWN2 = 6,
-    GAME_UNKNOWN3 = 7,
-    GAME_UNKNOWN4 = 8,
-    GAME_UNKNOWN5 = 9,
-    GAME_UNKNOWN6 = 10,
 };
 
 // General Defines

@@ -1,9 +1,9 @@
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
-#define ANIFILE_COUNT     (0x1000)
-#define ANIMATION_COUNT   (0x4000)
-#define SPRITEFRAME_COUNT (0x10000)
+#define ANIFILE_COUNT     (0x100)
+#define ANIMATION_COUNT   (0x400)
+#define SPRITEFRAME_COUNT (0x1000)
 
 #define HITBOX_COUNT     (0x20)
 #define HITBOX_DIR_COUNT (0x8)

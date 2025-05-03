@@ -418,10 +418,8 @@ void RetroEngine::Init()
     }
 
 #if !RETRO_USE_ORIGINAL_CODE
-    // If none of the below are recognised, default to just be unknown
     gameType = GAME_UNKNOWN;
-
-    if (strstr(gameWindowText, "Sonic Vengeance")) {
+    if (strstr(gameWindowText, "Sonic Vengeance") || forceSonic1) {
         gameType = GAME_SONICVENGEANCE;
     }
 #endif
@@ -439,19 +437,17 @@ void RetroEngine::Init()
         gameType = GAME_SONIC3;
     }
 
-    if (strstr(gameWindowText, "Sonic 3 & Knuckles")) {
+    if (strstr(gameWindowText, "Sonic & Knuckles")) {
         gameType = GAME_SONIC3;
     }
 
-    if (strstr(gameWindowText, "Sonic & Knuckles")) {
+    if (strstr(gameWindowText, "Sonic 3 & Knuckles")) {
         gameType = GAME_SONIC3;
     }
 
     if (strstr(gameWindowText, "Sonic CD")) {
         gameType = GAME_SONICCD;
     }
-
-    // Feel free to add your own game types!
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE

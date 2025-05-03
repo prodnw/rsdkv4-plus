@@ -1,14 +1,18 @@
 #ifndef USERDATA_H
 #define USERDATA_H
 
-#define GLOBALVAR_COUNT (0x400)
+#define GLOBALVAR_COUNT (0x100)
 
-#define ACHIEVEMENT_COUNT (0x200)
-#define LEADERBOARD_COUNT (0x200)
+#define ACHIEVEMENT_COUNT (0x40)
+#define LEADERBOARD_COUNT (0x80)
 
-#define SAVEDATA_SIZE (0x4000)
+#define SAVEDATA_SIZE (0x2000)
 
-#define NATIIVEFUNCTION_COUNT (0x100)
+#if RETRO_USE_MOD_LOADER
+#define NATIIVEFUNCTION_COUNT (0x30)
+#else
+#define NATIIVEFUNCTION_COUNT (0x10)
+#endif
 
 #define intToVoid(x) (void *)(size_t)(x)
 #define voidToInt(x) (int)(size_t)(x)
