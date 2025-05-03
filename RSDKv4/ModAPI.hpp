@@ -1,7 +1,7 @@
 #ifndef MOD_API_H
 #define MOD_API_H
 
-#define PLAYER_COUNT (0x100)
+#define PLAYER_COUNT (0x10)
 
 extern char playerNames[PLAYER_COUNT][0x20];
 extern byte playerCount;
