@@ -93,24 +93,18 @@ typedef unsigned int uint;
 #elif defined(__linux__)
 #define RETRO_PLATFORM   (RETRO_LINUX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
-
 #elif defined __XBOX__
 #define RETRO_PLATFORM   (RETRO_XBOX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #define DEFAULT_FULLSCREEN true
-#endif
-
 #elif defined __PLAYSTATION__
 #define RETRO_PLATFORM   (RETRO_PLAYSTATION)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #define DEFAULT_FULLSCREEN true
-#endif
-
 #elif defined __NINTENDO__
 #define RETRO_PLATFORM   (RETRO_NINTENDO)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #define DEFAULT_FULLSCREEN true
-#endif
 #else
 //#error "No Platform was defined"
 #define RETRO_PLATFORM   (RETRO_WIN)
