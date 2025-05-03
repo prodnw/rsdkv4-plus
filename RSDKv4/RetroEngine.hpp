@@ -106,6 +106,7 @@ typedef unsigned int uint;
 #define DEFAULT_FULLSCREEN true
 #endif
 
+/*
 #elif defined __PLAYSTATION__
 #define RETRO_PLATFORM   (RETRO_PLAYSTATION)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
@@ -123,6 +124,7 @@ typedef unsigned int uint;
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #define DEFAULT_FULLSCREEN true
 #endif
+*/
 
 #define DEFAULT_SCREEN_XSIZE 424
 #define DEFAULT_FULLSCREEN   false
