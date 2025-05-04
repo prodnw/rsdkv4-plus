@@ -425,10 +425,48 @@ void RefreshEngine()
             Engine.forceSonic1 = true;
     }
 
-    Engine.gameType = GAME_SONIC2;
-    if (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) {
-        Engine.gameType = GAME_SONIC1;
+    gameType = GAME_UNKNOWN;
+    if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
+        gameType = GAME_SONIC1;
     }
+
+    if (strstr(gameWindowText, "Sonic 2")) {
+        gameType = GAME_SONIC2;
+    }
+
+    if (strstr(gameWindowText, "Sonic 3")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic & Knuckles")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic 3 & Knuckles")) {
+        gameType = GAME_SONIC3;
+    }
+
+    if (strstr(gameWindowText, "Sonic CD")) {
+        gameType = GAME_SONICCD;
+    }
+
+    if (strstr(gameWindowText, "Sonic Nexus")) {
+        gameType = GAME_SONICNEXUS;
+    }
+
+    if (strstr(gameWindowText, "Sonic Vengeance")) {
+        gameType = GAME_SONICVENGEANCE;
+    }
+
+    if (strstr(gameWindowText, "Sonic 1 Forever") || forceSonic1) {
+        gameType = GAME_SONIC1FOREVER;
+    }
+
+    if (strstr(gameWindowText, "Sonic 2 Absolute" )) {
+        gameType = GAME_SONIC2ABSOLUTE;
+    }
+
+    // Feel free to insert your own games!
 
     achievementCount = 0;
     if (Engine.gameType == GAME_SONIC1) {
