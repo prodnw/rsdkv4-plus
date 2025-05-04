@@ -11,7 +11,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * New fading - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
  * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
  * New temp values - temp8, temp9, temp10
- * New native functions
+ * New functions (be sure to add these as values in GameConfig.bin!)
     * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making)
     * "SetUpdateChecker" - Links with "CheckUpdates"
     * "GetUpdateChecker" - Links with "CheckUpdates"
