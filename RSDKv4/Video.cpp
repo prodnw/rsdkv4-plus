@@ -354,9 +354,9 @@ void SetupVideoBuffer(int width, int height)
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
-#endif
 
     InitVideoBuffer(width, height);
+#endif
 }
 
 void InitVideoBuffer(int width, int height)
