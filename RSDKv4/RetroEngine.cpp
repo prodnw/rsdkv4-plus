@@ -450,6 +450,14 @@ void RetroEngine::Init()
         gameType = GAME_SONICVENGEANCE;
     }
 
+    if (strstr(gameWindowText, "Sonic 1 Forever") || forceSonic1) {
+        gameType = GAME_SONIC1FOREVER;
+    }
+
+    if (strstr(gameWindowText, "Sonic 2 Absolute" )) {
+        gameType = GAME_SONIC2ABSOLUTE;
+    }
+
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE
