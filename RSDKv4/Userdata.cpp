@@ -1,7 +1,4 @@
 #include "RetroEngine.hpp"
-#include <windows.h>
-#include <wininet.h>
-#pragma comment(lib, "wininet.lib")
 
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
@@ -33,6 +30,12 @@ int sendCounter = 0;
 #if RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX
 #include <sys/stat.h>
 #include <sys/types.h>
+#endif
+
+#if RETRO_PLATFORM == RETRO_WIN
+#include <windows.h>
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
