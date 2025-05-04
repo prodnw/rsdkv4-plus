@@ -32,11 +32,9 @@ int sendCounter = 0;
 #include <sys/types.h>
 #endif
 
-#if RETRO_PLATFORM == RETRO_WIN
 #include <windows.h>
 #include <wininet.h>
 #pragma comment(lib, "wininet.lib")
-#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
 bool forceUseScripts         = false;
