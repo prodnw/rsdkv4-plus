@@ -27,6 +27,7 @@ int ProcessVideo();
 int QuitVideo();
 void StopVideoPlayback();
 
+void InitVideoBuffer(int width, int height);
 void SetupVideoBuffer(int width, int height);
 void CloseVideoBuffer();
 

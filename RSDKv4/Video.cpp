@@ -280,7 +280,7 @@ int ProcessVideo()
                 videoVidData = NULL;
             }
             else if (!videoVidData) {
-                // something is wrong with THEORAPLAY_isDecoding, so 
+                // something is wrong with THEORAPLAY_isDecoding, so
                 // here's some tape & glue
                 return QuitVideo();
             }
@@ -354,6 +354,20 @@ void SetupVideoBuffer(int width, int height)
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
+#endif
+
+    InitVideoBuffer(width, height);
+}
+
+void InitVideoBuffer(int width, int height)
+{
+#if RETRO_USING_SDL2
+    int size  = width * height;
+    int sizeh = (width / 2) * (height / 2);
+    std::vector<Uint8> frame(size + 2 * sizeh);
+    memset(frame.data(), 0, size);
+    memset(frame.data() + size, 128, 2 * sizeh);
+    SDL_UpdateYUVTexture(Engine.videoBuffer, nullptr, frame.data(), width, frame.data() + size, width / 2, frame.data() + size + sizeh, width / 2);
 #endif
 }
 
