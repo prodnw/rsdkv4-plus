@@ -398,13 +398,13 @@ void InitNativeObjectSystem()
         saveGame->vDPadY_Move     = 184;
         saveGame->vDPadX_Jump     = -56;
         saveGame->vDPadY_Jump     = 188;
-        saveGame->tailsUnlocked   = Engine.gameType != GAME_SONIC1;
-        saveGame->knuxUnlocked    = Engine.gameType != GAME_SONIC1;
+        saveGame->tailsUnlocked   = Engine.gameType != GAME_SONIC1 || Engine.gameType != GAME_SONIC1FOREVER;
+        saveGame->knuxUnlocked    = Engine.gameType != GAME_SONIC1 || Engine.gameType != GAME_SONIC1FOREVER ;
         saveGame->unlockedActs    = 0;
         WriteSaveRAMData();
     }
 #if !RETRO_USE_ORIGINAL_CODE
-    else if (Engine.gameType == GAME_SONIC2) {
+    else if (Engine.gameType == GAME_SONIC2 || Engine.gameType == GAME_SONIC2ABSOLUTE) {
         // ensure tails and knuckles are unlocked in sonic 2
         // they weren't automatically unlocked in older versions of the decomp
         saveGame->tailsUnlocked = true;
