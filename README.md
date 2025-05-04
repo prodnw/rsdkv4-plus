@@ -24,7 +24,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * EggBanana - Functions for update checking
  * SDG & Geared - Other misc. stuff
 
-# Want To Add / Planned Features
+# To-Dos:
+ * Fix Extended Camera
  * Discord RPC
 
 
