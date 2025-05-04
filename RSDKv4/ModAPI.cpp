@@ -425,7 +425,7 @@ void RefreshEngine()
             Engine.forceSonic1 = true;
     }
 
-    gameType = GAME_UNKNOWN;
+    Engine.gameType = GAME_UNKNOWN;
     if (strstr(Engine.gameWindowText, "Sonic 1") || Engine.forceSonic1) {
         Engine.gameType = GAME_SONIC1;
     }
