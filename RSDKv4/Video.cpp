@@ -354,14 +354,14 @@ void SetupVideoBuffer(int width, int height)
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
+#endif
 
     InitVideoBuffer(width, height);
-#endif
 }
 
 void InitVideoBuffer(int width, int height)
 {
-#if RETRO_USING_SDL2
+#if !RETRO_USING_OPENGL && RETRO_USING_SDL2 && RETRO_SOFTWARE_RENDER
     int size  = width * height;
     int sizeh = (width / 2) * (height / 2);
     std::vector<Uint8> frame(size + 2 * sizeh);
