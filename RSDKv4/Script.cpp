@@ -569,6 +569,11 @@ const FunctionInfo functions[] = {
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
 #endif
+    
+    FunctionInfo("CheckUpdates", 0),
+    FunctionInfo("SetUpdateChecker", 1),
+    FunctionInfo("GetUpdateChecker", 0),
+    FunctionInfo("LoadWebsite", 1),
 };
 
 #if RETRO_USE_COMPILER
@@ -1082,6 +1087,10 @@ enum ScrFunc {
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
 #endif
+    FUNC_CHECKUPDATES
+    FUNC_SETUPDATECHECKER,
+    FUNC_GETUPDATECHECKER,
+    FUNC_LOADWEBSITE,
     FUNC_MAX_CNT
 };
 
@@ -5689,6 +5698,32 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                 break;
 #endif
+
+            case FUNC_CHECKUPDATES:
+                opcodeSize = 0;
+                CheckUpdates();
+                break;
+
+            case FUNC_SETUPDATECHECKER:
+                opcodeSize = 0;
+                SetUpdateChecker(scriptEng.operands[0]);
+                break;
+
+            case FUNC_GETUPDATECHECKER:
+                opcodeSize = 0;
+                GetUpdateChecker();
+                break;
+
+            case FUNC_LOADWEBSITE: 
+            	opcodeSize = 0;
+				char temporar[100];
+				strcpy(temporar, "Loading website: https://");
+				strcat(temporar, scriptText);
+				PrintLog(temporar);
+				strcpy(temporar, "https://");
+				strcat(temporar, scriptText);
+				SDL_OpenURL(temporar);
+                break;
         }
 
         // Set Values

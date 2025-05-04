@@ -1294,7 +1294,6 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetNetworkGameName", SetNetworkGameName);
 #endif
 
-#if RETRO_USE_MOD_LOADER
     AddNativeFunction("ExitGame", ExitGame);
     AddNativeFunction("FileExists", FileExists);
     AddNativeFunction("OpenModMenu", OpenModMenu); // Opens the dev menu-based mod menu incase you cant be bothered or smth
@@ -1327,7 +1326,6 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetModActive", SetModActive);
     AddNativeFunction("MoveMod", MoveMod);
     AddNativeFunction("RefreshEngine", RefreshEngine); // Reload engine after changing mod status
-#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
     if (strlen(Engine.startSceneFolder) && strlen(Engine.startSceneID)) {

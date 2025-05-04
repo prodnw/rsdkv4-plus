@@ -1,4 +1,7 @@
 #include "RetroEngine.hpp"
+#include <windows.h>
+#include <wininet.h>
+#pragma comment(lib, "wininet.lib")
 
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
@@ -39,6 +42,7 @@ bool skipStartMenu           = false;
 bool skipStartMenu_Config    = false;
 int disableFocusPause        = 0;
 int disableFocusPause_Config = 0;
+int CheckForthemUpdates      = true;
 
 bool useSGame = false;
 
@@ -269,6 +273,7 @@ void InitUserdata()
         skipStartMenu_Config = skipStartMenu;
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 0);
         disableFocusPause_Config = disableFocusPause;
+        ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -420,6 +425,8 @@ void InitUserdata()
         if (!ini.GetInteger("Game", "DisableFocusPause", &disableFocusPause))
             disableFocusPause = false;
         disableFocusPause_Config = disableFocusPause;
+        if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
+            CheckForthemUpdates = true;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -700,6 +707,8 @@ void WriteSettings()
                    "Handles pausing behaviour when focus is lost\n; 0 = Game focus enabled, engine focus enabled\n; 1 = Game focus disabled, "
                    "engine focus enabled\n; 2 = Game focus enabled, engine focus disabled\n; 3 = Game focus disabled, engine focus disabled");
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
+    ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
+    ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
@@ -1309,7 +1318,6 @@ void FileExists(int *unused, const char *filePath)
     }
 }
 
-#if RETRO_USE_MOD_LOADER
 void GetScreenWidth() { scriptEng.checkResult = SCREEN_XSIZE_CONFIG; }
 void GetWindowScale() { scriptEng.checkResult = Engine.windowScale; }
 void GetWindowScaleMode() { scriptEng.checkResult = Engine.scalingMode; }
@@ -1367,6 +1375,7 @@ void SetWindowVSync(int *enabled, int *unused)
 
     Engine.vsync = *enabled;
 }
+
 void ApplyWindowChanges()
 {
 #if RETRO_USING_OPENGL
@@ -1418,4 +1427,56 @@ void ApplyWindowChanges()
         }
     }
 }
-#endif
+
+void CheckUpdates()
+{
+    scriptEng.checkResult = 0;
+
+    DWORD flags;
+    if (!InternetGetConnectedState(&flags, 0)) {
+        return;
+    }
+
+    HINTERNET hInternet = InternetOpenA("RetroEngine", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+    if (!hInternet) return;
+
+    DWORD timeout = 2000;
+    InternetSetOptionA(hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout));
+    InternetSetOptionA(hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout));
+    InternetSetOptionA(hInternet, INTERNET_OPTION_SEND_TIMEOUT, &timeout, sizeof(timeout));
+
+    HINTERNET hUrl = InternetOpenUrlA(
+        hInternet,
+        "https://megadeglitcher.github.io/EternalVersion/",
+        NULL,
+        0,
+        INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_AUTO_REDIRECT,
+        0
+    );
+
+    if (!hUrl) {
+        InternetCloseHandle(hInternet);
+        return;
+    }
+
+    char buffer[32] = {0};
+    DWORD bytesRead = 0;
+
+    if (InternetReadFile(hUrl, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
+        buffer[bytesRead] = '\0';
+        scriptEng.checkResult = atoi(buffer);
+    }
+
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hInternet);
+}
+
+void SetUpdateChecker(int value)
+{
+    CheckForthemUpdates = value;
+}
+
+void GetUpdateChecker()
+{
+    scriptEng.checkResult = CheckForthemUpdates;
+}

@@ -2,12 +2,31 @@
 
 A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (2013).
 
-# **FORK CREDITS**
+This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a variety of new ones. The engine was formerly called "Vengeance Engine" since I was using it for my fangame, and while I still am I have decided that I wanted to rename it in case anyone else needs to use the engine for their own purposes.
+
+# **LIST OF THE NEW FEATURES & CHANGES**
+ * Video Player has been ported over from CD, allowing any video to be played (also using the same code and formats as CD)
+ * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
+ * Objects that use animation files (e.g. players) now support ink effects
+ * New fading - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
+ * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
+ * New temp values - temp8, temp9, temp10
+ * New native functions
+    * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making)
+    * "SetUpdateChecker" - Links with "CheckUpdates"
+    * "GetUpdateChecker" - Links with "CheckUpdates"
+    * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
+
+# Fork Credits
  * ProdNW - Code porting + minor edits
  * JD - Video Player
  * Elsie The Pict - Code from Forever's engine fork
- * SDG - Chunk and Tile limit increase
- * Geared - Other misc. stuff
+ * EggBanana - Functions for update checking
+ * SDG & Geared - Other misc. stuff
+  
+# Want To Add / Planned Features
+ * Discord RPC
+ 
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
@@ -57,7 +76,7 @@ This project uses [CMake](https://cmake.org/), a versatile building system that 
 In order to clone the repository, you need to install Git, which you can get [here](https://git-scm.com/downloads).
 
 Clone the repo **recursively**, using:
-`git clone --recursive https://github.com/prodnw/vengeance-engine`
+`git clone --recursive https://github.com/prodnw/rsdkv4-plus.git`
 
 If you've already cloned the repo, run this command inside of the repository:
 ```git submodule update --init --recursive```

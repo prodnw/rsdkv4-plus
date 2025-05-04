@@ -102,14 +102,13 @@ extern bool vsPlaying;
 
 extern int sendCounter;
 
-#if !RETRO_USE_ORIGINAL_CODE
 extern bool forceUseScripts;
 extern bool forceUseScripts_Config;
 extern bool skipStartMenu;
 extern bool skipStartMenu_Config;
 extern int disableFocusPause;
 extern int disableFocusPause_Config;
-#endif
+extern int CheckForthemUpdates;
 
 inline int GetGlobalVariableByName(const char *name)
 {
@@ -220,7 +219,6 @@ void NotifyCallback(int *callback, int *param1, int *param2, int *param3);
 void ExitGame();
 void FileExists(int *unused, const char *filePath);
 
-#if RETRO_USE_MOD_LOADER
 void GetScreenWidth();
 void SetScreenWidth(int *width, int *unused);
 void GetWindowScale();
@@ -234,7 +232,8 @@ void SetWindowBorderless(int *borderless, int *unused);
 void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void ApplyWindowChanges();
-
-#endif
+void CheckUpdates();
+void SetUpdateChecker(int value);
+void GetUpdateChecker();
 
 #endif //! USERDATA_H
