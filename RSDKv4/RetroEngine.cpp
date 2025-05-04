@@ -417,14 +417,6 @@ void RetroEngine::Init()
         }
     }
 
-#if !RETRO_USE_ORIGINAL_CODE
-    gameType = GAME_UNKNOWN;
-    if (strstr(gameWindowText, "Sonic Vengeance") || forceSonic1) {
-        gameType = GAME_SONICVENGEANCE;
-    }
-#endif
-
-#if RETRO_USE_MOD_LOADER
     if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
         gameType = GAME_SONIC1;
     }
@@ -448,7 +440,17 @@ void RetroEngine::Init()
     if (strstr(gameWindowText, "Sonic CD")) {
         gameType = GAME_SONICCD;
     }
-#endif
+
+    if (strstr(gameWindowText, "Sonic Nexus")) {
+        gameType = GAME_SONICNEXUS;
+    }
+
+    gameType = GAME_UNKNOWN;
+    if (strstr(gameWindowText, "Sonic Vengeance")) {
+        gameType = GAME_SONICVENGEANCE;
+    }
+
+    // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;
@@ -1294,6 +1296,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetNetworkGameName", SetNetworkGameName);
 #endif
 
+#if RETRO_USE_MOD_LOADER
     AddNativeFunction("ExitGame", ExitGame);
     AddNativeFunction("FileExists", FileExists);
     AddNativeFunction("OpenModMenu", OpenModMenu); // Opens the dev menu-based mod menu incase you cant be bothered or smth
@@ -1326,6 +1329,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetModActive", SetModActive);
     AddNativeFunction("MoveMod", MoveMod);
     AddNativeFunction("RefreshEngine", RefreshEngine); // Reload engine after changing mod status
+#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
     if (strlen(Engine.startSceneFolder) && strlen(Engine.startSceneID)) {

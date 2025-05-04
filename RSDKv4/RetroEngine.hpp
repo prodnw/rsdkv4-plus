@@ -289,7 +289,9 @@ enum RetroGameType {
     GAME_SONIC2  = 2,
     GAME_SONIC3  = 3,
     GAME_SONICCD = 4,
-    GAME_SONICVENGEANCE = 5,
+    GAME_SONICNEXUS = 5,
+    GAME_SONICVENGEANCE = 6,
+    // Feel free to insert your own games!
 };
 
 // General Defines
