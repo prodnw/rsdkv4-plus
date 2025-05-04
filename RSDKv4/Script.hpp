@@ -10,7 +10,6 @@
 #define FORSTACK_COUNT  (0x400)
 
 #define RETRO_USE_COMPILER (1)
-
 struct ScriptPtr {
     int scriptCodePtr;
     int jumpTablePtr;

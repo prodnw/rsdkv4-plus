@@ -5578,6 +5578,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+#if RETRO_PLATFORM == RETRO_WIN
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
                 CheckUpdates();
@@ -5607,6 +5608,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				SDL_OpenURL(temporar);
                 break;
             }
+#endif
 
 #if RETRO_REV03
                 // Extras for origins 2PVS,
