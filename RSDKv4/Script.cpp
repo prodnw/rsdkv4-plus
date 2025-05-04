@@ -1087,11 +1087,11 @@ enum ScrFunc {
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
 #endif
-    FUNC_CHECKUPDATES
+    FUNC_CHECKUPDATES,
     FUNC_SETUPDATECHECKER,
     FUNC_GETUPDATECHECKER,
     FUNC_LOADWEBSITE,
-    FUNC_MAX_CNT
+    FUNC_MAX_CNT,
 };
 
 ObjectScript objectScriptList[OBJECT_COUNT];
@@ -5578,6 +5578,36 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            case FUNC_CHECKUPDATES: {
+                opcodeSize = 0;
+                CheckUpdates();
+                break;
+            }
+
+            case FUNC_SETUPDATECHECKER: {
+                opcodeSize = 0;
+                SetUpdateChecker(scriptEng.operands[0]);
+                break;
+            }
+
+            case FUNC_GETUPDATECHECKER: {
+                opcodeSize = 0;
+                GetUpdateChecker();
+                break;
+            }
+
+            case FUNC_LOADWEBSITE: {
+            	opcodeSize = 0;
+				char temporar[100];
+				strcpy(temporar, "Loading website: https://");
+				strcat(temporar, scriptText);
+				PrintLog(temporar);
+				strcpy(temporar, "https://");
+				strcat(temporar, scriptText);
+				SDL_OpenURL(temporar);
+                break;
+            }
+
 #if RETRO_REV03
                 // Extras for origins 2PVS,
                 // most of these aren't (and won't be) implemented here because they rely on v5 tech that isn't part of the scope of this project
@@ -5698,32 +5728,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                 break;
 #endif
-
-            case FUNC_CHECKUPDATES:
-                opcodeSize = 0;
-                CheckUpdates();
-                break;
-
-            case FUNC_SETUPDATECHECKER:
-                opcodeSize = 0;
-                SetUpdateChecker(scriptEng.operands[0]);
-                break;
-
-            case FUNC_GETUPDATECHECKER:
-                opcodeSize = 0;
-                GetUpdateChecker();
-                break;
-
-            case FUNC_LOADWEBSITE: 
-            	opcodeSize = 0;
-				char temporar[100];
-				strcpy(temporar, "Loading website: https://");
-				strcat(temporar, scriptText);
-				PrintLog(temporar);
-				strcpy(temporar, "https://");
-				strcat(temporar, scriptText);
-				SDL_OpenURL(temporar);
-                break;
         }
 
         // Set Values
