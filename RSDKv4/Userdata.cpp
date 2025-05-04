@@ -1451,7 +1451,7 @@ void CheckUpdates()
 
     HINTERNET hUrl = InternetOpenUrlA(
         hInternet,
-        "https://megadeglitcher.github.io/EternalVersion/",
+        "https://prodnw.github.io/vengeance-version-number/",
         NULL,
         0,
         INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_AUTO_REDIRECT,
