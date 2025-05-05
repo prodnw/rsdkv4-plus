@@ -1,6 +1,19 @@
 #ifndef READER_H
 #define READER_H
 
+#if RETRO_PLATFORM == RETRO_LINUX   // Force case insensitivity for Linux
+
+#include "fcaseopen.h"
+#define FileIO                                          FILE
+#define fOpen(path, mode)                               fcaseopen(path, mode)
+#define fRead(buffer, elementSize, elementCount, file)  fread(buffer, elementSize, elementCount, file)
+#define fSeek(file, offset, whence)                     fseek(file, offset, whence)
+#define fTell(file)                                     ftell(file)
+#define fClose(file)                                    fclose(file)
+#define fWrite(buffer, elementSize, elementCount, file) fwrite(buffer, elementSize, elementCount, file)
+
+#else                               // Force case insensitivity for Linux
+
 #ifdef FORCE_CASE_INSENSITIVE
 
 #include "fcaseopen.h"
@@ -32,13 +45,15 @@
 #define fWrite(buffer, elementSize, elementCount, file) fwrite(buffer, elementSize, elementCount, file)
 #endif
 
+#endif                              // Force case insensitivity for Linux
+
 #endif
 
 #define RETRO_PACKFILE_COUNT (0x1000)
 #define RETRO_PACK_COUNT     (0x4)
 
 struct FileInfo {
-    char fileName[0x500];
+    char fileName[0x100];
     int fileSize;
     int vfileSize;
     int readPos;
@@ -75,7 +90,7 @@ struct RSDKContainer {
 
 extern RSDKContainer rsdkContainer;
 
-extern char fileName[0x500];
+extern char fileName[0x100];
 extern byte fileBuffer[0x2000];
 extern int fileSize;
 extern int vFileSize;

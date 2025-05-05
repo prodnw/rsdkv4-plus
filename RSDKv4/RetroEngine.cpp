@@ -417,8 +417,15 @@ void RetroEngine::Init()
         }
     }
 
+#if !RETRO_USE_ORIGINAL_CODE
     gameType = GAME_UNKNOWN;
+#endif
+
+#if RETRO_USE_MOD_LOADER
     if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
+#else
+    if (strstr(gameWindowText, "Sonic 1")) {
+#endif
         gameType = GAME_SONIC1;
     }
 
@@ -1269,6 +1276,9 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 
         SetGlobalVariableByName("options.devMenuFlag", devMenu ? 1 : 0);
         SetGlobalVariableByName("engine.standalone", 1);
+#endif
+#if !RETRO_USE_ORIGINAL_CODE
+        SetGlobalVariableByName("isRemovedAds", true); // we're disabling ads for setups with no scripts (bytecode) to make it more in-line with script-enabled setups.
 #endif
     }
 

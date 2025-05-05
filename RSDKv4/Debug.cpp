@@ -360,6 +360,11 @@ void ProcessStageSelect()
                 SetGlobalVariableByName("options.gameMode", 0);
                 SetGlobalVariableByName("lampPostID", 0); // For S1
                 SetGlobalVariableByName("starPostID", 0); // For S2
+#if !RETRO_USE_ORIGINAL_CODE				
+                SetGlobalVariableByName("player.lives", 3); // they edited the player.lives global variable to 1 in the gameconfig 
+                                                            // for Sonic 1 and 2 on the March 27th 2023 update, 
+                                                            // so this forces it back to 3 when using the dev menu to load a stage.
+#endif
             }
             else if (keyPress.B) {
                 SetTextMenu(DEVMENU_STAGELISTSEL);

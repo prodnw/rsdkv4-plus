@@ -80,7 +80,7 @@ void MatrixScaleXYZ(Matrix *matrix, int scaleX, int scaleY, int scaleZ);
 void MatrixRotateX(Matrix *matrix, int rotationX);
 void MatrixRotateY(Matrix *matrix, int rotationY);
 void MatrixRotateZ(Matrix *matrix, int rotationZ);
-void MatrixRotateXYZ(Matrix *matrix, short rotationX, short rotationY, short rotationZ);
+void MatrixRotateXYZ(Matrix *matrix, int rotationX, int rotationY, int rotationZ);
 #if !RETRO_REV00
 void MatrixInverse(Matrix *matrix);
 #endif
