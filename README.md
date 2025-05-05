@@ -28,6 +28,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * Fix Extended Camera
  * Discord RPC
 
+# Currently Known Issues
+ * "FX_ALL" doesn't apply scaling
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
