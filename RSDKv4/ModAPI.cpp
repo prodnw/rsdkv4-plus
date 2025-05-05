@@ -466,6 +466,10 @@ void RefreshEngine()
         Engine.gameType = GAME_SONIC2ABSOLUTE;
     }
 
+    if (strstr(Engine.gameWindowText, "Sonic CD Timeless" )) {
+        Engine.gameType = GAME_SONICCDTIMELESS;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;

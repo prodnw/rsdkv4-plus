@@ -465,6 +465,10 @@ void RetroEngine::Init()
         gameType = GAME_SONIC2ABSOLUTE;
     }
 
+    if (strstr(gameWindowText, "Sonic CD Timeless" )) {
+        gameType = GAME_SONICCDTIMELESS;
+    }
+
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE
