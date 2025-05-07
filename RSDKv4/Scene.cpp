@@ -128,7 +128,6 @@ void ProcessStage(void)
 #if !RETRO_USE_ORIGINAL_CODE
     debugHitboxCount = 0;
 #endif
-
     switch (stageMode) {
         case STAGEMODE_LOAD: // Startup
             SetActivePalette(0, 0, 256);
@@ -157,13 +156,12 @@ void ProcessStage(void)
             stageSeconds                 = 0;
             stageMinutes                 = 0;
             stageMode                    = STAGEMODE_NORMAL;
-
-#if RSDK_AUTOBUILD
-            // Prevent playing as Amy if on autobuilds
-            if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
-                playerListPos = 0;
-            else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
-                playerListPos = 0;
+			
+#if RETRO_REV03 && RETRO_USE_STEAMWORKS
+            if (SteamAPI_Init()) {
+                bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
+                SetGlobalVariableByName("game.hasPlusDLC", installed);
+            }
 #endif
 
 #if RETRO_USE_MOD_LOADER

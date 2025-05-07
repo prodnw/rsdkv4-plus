@@ -523,6 +523,32 @@ void RetroEngine::Init()
     else
         Engine.gameMode = ENGINE_WAIT;
 
+    char rootDir[0x80];
+    char pathBuffer[0x80];
+#if RETRO_PLATFORM == RETRO_UWP
+    if (!usingCWD)
+        sprintf(rootDir, "%s/", getResourcesPath());
+    else
+        sprintf(rootDir, "%s", "");
+#elif RETRO_PLATFORM == RETRO_OSX
+    sprintf(rootDir, "%s/", gamePath);
+#else
+    sprintf(rootDir, "%s", "");
+#endif
+    sprintf(pathBuffer, "%s%s", rootDir, "steam_appid.txt");
+
+    FileIO *f;
+    if ((f = fOpen(pathBuffer, "w")) == NULL) {
+        PrintLog("ERROR: Couldn't open file '%s' for writing!", "steam_appid.txt");
+        return;
+    }
+
+    char textBuf[0x100];
+    sprintf(textBuf, "1794960\n");
+    fWrite(textBuf, 1, strlen(textBuf), f);
+
+    fClose(f);
+
     // "error message"
     if (!running) {
         char rootDir[0x80];
@@ -565,36 +591,29 @@ void RetroEngine::Init()
 #endif
 
 #if RETRO_USE_STEAMWORKS
+
+    SteamErrMsg errMsg;
     PrintLog("Initializing steam...");
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
-        // TODO: quit/message?
+        //running = false;
     }
+
+    if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK )
+        PrintLog( "Failed to init Steam.  %s", errMsg );
 
     if (!SteamAPI_Init()) {
-        PrintLog("Failed to initialize steam");
+        PrintLog( "Failed to init Steam. See previous error.");
     }
     else {
-        // this is just testing code for now - probably will rewrite the else check
-        // above with a bool, or return
-
-        // also, make defines for the dlc ids lol
-
-        PrintLog("do we have origins plus?");
+        PrintLog("Do we have Sonic Origins Plus?");
 
         bool installed = SteamApps()->BIsDlcInstalled(2343200);
         if (installed)
-            PrintLog("yup");
+            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
         else
-            PrintLog("nop");
+            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
 
-        PrintLog("do we have... aperture desk job?");
-
-        installed = SteamApps()->BIsDlcInstalled(1902490);
-        if (installed)
-            PrintLog("yup");
-        else
-            PrintLog("nop");
     }
 #endif
 }
@@ -1321,8 +1340,11 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
     }
 
-#if RETRO_REV03
-    SetGlobalVariableByName("game.hasPlusDLC", !RSDK_AUTOBUILD);
+#if RETRO_REV03 && RETRO_USE_STEAMWORKS
+    if (SteamAPI_Init()) {
+        bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
+        SetGlobalVariableByName("game.hasPlusDLC", installed);
+    }
 #endif
 
     // These need to be set every time its reloaded
