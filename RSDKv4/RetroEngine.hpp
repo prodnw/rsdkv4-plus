@@ -353,6 +353,10 @@ extern bool engineDebugMode;
 // Native Entities
 #include "NativeObjects.hpp"
 
+#if RETRO_USE_STEAMWORKS
+#include "steam/steam_api.h"
+#endif
+
 class RetroEngine
 {
 public:

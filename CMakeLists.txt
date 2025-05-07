@@ -11,8 +11,11 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
+option(RETRO_USE_STEAM "steam" ON)
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
+
+set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
 
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
@@ -211,6 +214,7 @@ target_include_directories(RetroEngine PRIVATE
     dependencies/all/theoraplay/
     dependencies/all/stb-image/
     dependencies/all/tinyxml2/
+    dependencies/all/steamworks_sdk/public
 )
 
 if(RETRO_NETWORKING)
@@ -225,6 +229,19 @@ if(DEFINED DEP_PATH)
     )
 endif()
 
+# da steams
+# TODO: this is a terrible way of doing this
+# this should be set in platforms/[platform].cmake
+
+set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/win64")
+find_library(STEAM_API_LIB
+    NAMES steam_api64
+    PATHS "${STEAMWORKS_REDIST_BIN}"
+    NO_DEFAULT_PATH
+)
+
+# there should be an error for the above if this isnt found - but for now,
+target_link_libraries(RetroEngine ${STEAM_API_LIB})
 
 target_compile_definitions(RetroEngine PRIVATE
     RSDK_REVISION=${RETRO_REVISION}
@@ -234,9 +251,9 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_USE_SDL${RETRO_SDL_VERSION}=1
     FORCE_CASE_INSENSITIVE=$<BOOL:${RETRO_FORCE_CASE_INSENSITIVE}>
     RETRO_USE_ORIGINAL_CODE=$<BOOL:${RETRO_ORIGINAL_CODE}>
-    
+
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
-    
+
     RETRO_DEV_EXTRA="${PLATFORM} - ${CMAKE_CXX_COMPILER_ID}"
     DECOMP_VERSION="${DECOMP_VERSION}"
 )

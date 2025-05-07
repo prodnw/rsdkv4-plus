@@ -544,6 +544,40 @@ void RetroEngine::Init()
     }
 
 #endif
+
+#if RETRO_USE_STEAMWORKS
+    PrintLog("Initializing steam...");
+
+    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
+        // TODO: quit/message?
+    }
+
+    if (!SteamAPI_Init()) {
+        PrintLog("Failed to initialize steam");
+    }
+    else {
+        // this is just testing code for now - probably will rewrite the else check
+        // above with a bool, or return
+
+        // also, make defines for the dlc ids lol
+
+        PrintLog("do we have origins plus?");
+
+        bool installed = SteamApps()->BIsDlcInstalled(2343200);
+        if (installed)
+            PrintLog("yup");
+        else
+            PrintLog("nop");
+
+        PrintLog("do we have... aperture desk job?");
+
+        installed = SteamApps()->BIsDlcInstalled(1902490);
+        if (installed)
+            PrintLog("yup");
+        else
+            PrintLog("nop");
+    }
+#endif
 }
 
 void RetroEngine::Run()
