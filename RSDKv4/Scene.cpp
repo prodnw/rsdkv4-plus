@@ -162,6 +162,9 @@ void ProcessStage(void)
                 bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
                 SetGlobalVariableByName("game.hasPlusDLC", installed);
             }
+            else {
+                SetGlobalVariableByName("game.hasPlusDLC", false);
+            }
 #endif
 
 #if RETRO_USE_MOD_LOADER
