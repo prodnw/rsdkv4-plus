@@ -157,7 +157,7 @@ void ProcessStage(void)
             stageMinutes                 = 0;
             stageMode                    = STAGEMODE_NORMAL;
 			
-#if RETRO_REV03 && RETRO_USE_STEAMWORKS
+#if !RSDK_AUTOBUILD && RETRO_USE_STEAMWORKS // this is assuming we're CD Timeless. TODO: alter this depending on the game later.
             if (SteamAPI_Init()) {
                 bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
                 SetGlobalVariableByName("game.hasPlusDLC", installed);
@@ -165,6 +165,19 @@ void ProcessStage(void)
             else {
                 SetGlobalVariableByName("game.hasPlusDLC", false);
             }
+            
+            if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles or Amy without DLC
+                if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
+                    playerListPos = 0;
+                else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                    playerListPos = 0;
+            }
+#elif RSDK_AUTOBUILD
+            // Prevent playing as Knuckles if on autobuilds without SteamWorks.
+            if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
+                playerListPos = 0;
+            else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                playerListPos = 0;
 #endif
 
 #if RETRO_USE_MOD_LOADER
