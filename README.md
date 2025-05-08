@@ -5,6 +5,7 @@ A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (20
 This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a variety of new ones. The engine was formerly called "Vengeance Engine" since I was using it for my fangame, and while I still am I have decided that I wanted to rename it in case anyone else needs to use the engine for their own purposes.
 
 # **LIST OF THE NEW FEATURES & CHANGES**
+ * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy!
  * Video Player has been ported over from CD, allowing any video to be played (also using the same code and formats as CD)
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects
