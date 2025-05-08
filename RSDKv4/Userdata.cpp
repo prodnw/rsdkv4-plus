@@ -272,7 +272,7 @@ void InitUserdata()
 
         ini.SetInteger("Game", "Language", Engine.language = RETRO_EN);
         ini.SetInteger("Game", "GameType", Engine.gameTypeID = 0);
-        ini.SetBool("Game", "SkipStartMenu", skipStartMenu = false);
+        ini.SetBool("Game", "SkipStartMenu", skipStartMenu = true);
         skipStartMenu_Config = skipStartMenu;
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 0);
         disableFocusPause_Config = disableFocusPause;
@@ -423,7 +423,7 @@ void InitUserdata()
         Engine.releaseType = Engine.gameTypeID ? "USE_ORIGINS" : "USE_STANDALONE";
 
         if (!ini.GetBool("Game", "SkipStartMenu", &skipStartMenu))
-            skipStartMenu = false;
+            skipStartMenu = true;
         skipStartMenu_Config = skipStartMenu;
         if (!ini.GetInteger("Game", "DisableFocusPause", &disableFocusPause))
             disableFocusPause = false;
