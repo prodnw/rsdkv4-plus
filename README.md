@@ -19,9 +19,9 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 
 # Fork Credits
  * ProdNW - Code porting + minor edits
- * Jd - Video Player
+ * Jd - Video Player, SteamAPI
  * Elsie The Pict - Code from Forever's engine fork
- * LittlePlanetCD - Bug fixes and code optimizations
+ * LittlePlanetCD - Bug fixes and alt code optimizations
  * EggBanana - Functions for update checking
  * SDG & Geared - Other misc. stuff
 
