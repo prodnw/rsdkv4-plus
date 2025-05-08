@@ -10,17 +10,21 @@
 #define DRAWLAYER_COUNT (7)
 #endif
 
-#define FX_SCALE (0)
-#define FX_ROTATE (1)
-#define FX_ROTOZOOM (2)
-#define FX_INK (3)
-#define FX_TINT (4)
-#define FX_FLIP (5)
-#define FX_ALL (6)
+//changing DrawFXFlags so they can be merged with binary
+#define FX_FLIP (1)
+#define FX_ROTATE (2)
+#define FX_SCALE (4)
+#define FX_ROTOZOOM (6)
+#define FX_INK (8)
+#define FX_ALL (15) //doesn't include tint (who uses tint?)
+#define FX_TINT (16)
 
 enum FlipFlags { FLIP_NONE, FLIP_X, FLIP_Y, FLIP_XY };
 enum InkFlags { INK_NONE, INK_BLEND, INK_ALPHA, INK_ADD, INK_SUB };
-//enum DrawFXFlags { FX_SCALE, FX_ROTATE, FX_ROTOZOOM, FX_INK, FX_TINT, FX_FLIP, FX_ALL};
+//3D drawing still uses these but I changed the names
+//apparently they can't have numbers in em though. so it says D instead of 3D
+//I've had a stressful day
+enum DrawFXFlags { D_SCALE, D_ROTATE, D_ROTOZOOM, D_INK, D_TINT, D_FLIP };
 
 struct DrawListEntry {
     int entityRefs[ENTITY_COUNT];
