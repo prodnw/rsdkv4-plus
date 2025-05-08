@@ -492,16 +492,16 @@ void Draw3DScene(int spriteSheetID)
                     SpriteFrame *frame       = &scriptFrames[scriptInfo->frameListOffset + vertexBuffer[face->b].u];
 
                     switch (vertexBuffer[face->a].v) {
-                        case FX_SCALE:
+                        case D_SCALE:
                             DrawSpriteScaled(vertexBuffer[face->b].v, xpos, ypos, -frame->pivotX, -frame->pivotY, vertexBuffer[face->c].u,
                                              vertexBuffer[face->c].u, frame->width, frame->height, frame->sprX, frame->sprY,
                                              scriptInfo->spriteSheetID);
                             break;
-                        case FX_ROTATE:
+                        case D_ROTATE:
                             DrawSpriteRotated(vertexBuffer[face->b].v, xpos, ypos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY,
                                               frame->width, frame->height, vertexBuffer[face->c].v, scriptInfo->spriteSheetID);
                             break;
-                        case FX_ROTOZOOM:
+                        case D_ROTOZOOM:
                             DrawSpriteRotozoom(vertexBuffer[face->b].v, xpos, ypos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY,
                                                frame->width, frame->height, vertexBuffer[face->c].v, vertexBuffer[face->c].u,
                                                scriptInfo->spriteSheetID);
