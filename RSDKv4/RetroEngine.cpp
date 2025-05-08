@@ -517,6 +517,8 @@ void RetroEngine::Init()
 #else
     sprintf(rootDir, "%s", "");
 #endif
+
+#if RETRO_USE_STEAMWORKS
     sprintf(pathBuffer, "%s%s", rootDir, "steam_appid.txt");
 
     FileIO *f;
@@ -530,6 +532,7 @@ void RetroEngine::Init()
     fWrite(textBuf, 1, strlen(textBuf), f);
 
     fClose(f);
+#endif
 
     // "error message"
     if (!running) {
