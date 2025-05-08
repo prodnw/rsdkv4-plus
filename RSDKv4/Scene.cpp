@@ -170,18 +170,11 @@ void ProcessStage(void)
             switch (Engine.gameType) {
                 case GAME_SONIC1:
                 case GAME_SONIC2:
+                case GAME_SONIC3:
                     if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Amy without DLC.
                         if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
-                            playerListPos = 0;
-                    }
-                break;
-                case GAME_SONICCDTIMELESS:
-                    if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles without the DLC, as Amy is a little special.
-                        if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
-                            playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
                             playerListPos = 0;
                     }
                 break;
@@ -201,19 +194,14 @@ void ProcessStage(void)
 #elif RSDK_AUTOBUILD
             switch (Engine.gameType) {
                 case GAME_SONIC1:
-                case GAME_SONIC2: // prevent players from using Amy without DLC.
+                case GAME_SONIC2:
+                case GAME_SONIC3: // prevent players from using Amy without DLC.
                     if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
                         playerListPos = 0;
                     else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                         playerListPos = 0;
                     break;
 
-                case GAME_SONICCDTIMELESS: // prevent players from using Knuckles without the DLC, as Amy is a little special.
-                    if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
-                        playerListPos = 0;
-                    break;
                 case GAME_SONICCD: // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
                     if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                         playerListPos = 0;
