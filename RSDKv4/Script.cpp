@@ -583,13 +583,13 @@ int scriptValueListCount = 0;
 ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "true", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "false", "0"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "0"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "1"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "2"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "3"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "4"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "5"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "8"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "15"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "16"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENTATION_STAGE", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "REGULAR_STAGE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "BONUS_STAGE", "2"),
@@ -4751,7 +4751,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
                 switch (scriptEng.operands[1]) {
-                    default: break;
                     case FX_SCALE:
                         DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
                                          (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entity->scale,
@@ -4843,8 +4842,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 break;
                         }
                         break;
-
-                        case FX_ALL:
+                    //case FX_ALL:
+					default: //use for stacked flags that don't use all
                             DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
                                            (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
@@ -4856,7 +4855,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
                 switch (scriptEng.operands[1]) {
-                    default: break;
                     case FX_SCALE:
                         DrawSpriteScaled(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX, -spriteFrame->pivotY,
                                          entity->scale, entity->scale, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
@@ -4937,7 +4935,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 break;
                         }
                         break;
-                    case FX_ALL:
+                    //case FX_ALL:
+					default: //use for stacked flags that don't use all
                         DrawSpriteAllFX(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
                                         -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
                                         entity->rotation, entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
