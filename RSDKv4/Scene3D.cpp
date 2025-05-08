@@ -179,7 +179,7 @@ void MatrixRotateZ(Matrix *matrix, int rotationZ)
     matrix->values[3][2] = 0;
     matrix->values[3][3] = 0x100;
 }
-void MatrixRotateXYZ(Matrix *matrix, short rotationX, short rotationY, short rotationZ)
+void MatrixRotateXYZ(Matrix *matrix, int rotationX, int rotationY, int rotationZ)
 {
     int sinX = sin512LookupTable[rotationX & 0x1FF] >> 1;
     int cosX = cos512LookupTable[rotationX & 0x1FF] >> 1;

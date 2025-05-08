@@ -523,6 +523,7 @@ void RetroEngine::Init()
     else
         Engine.gameMode = ENGINE_WAIT;
 
+#if RETRO_USE_STEAMWORKS
     char rootDir[0x80];
     char pathBuffer[0x80];
 #if RETRO_PLATFORM == RETRO_UWP
@@ -548,6 +549,7 @@ void RetroEngine::Init()
     fWrite(textBuf, 1, strlen(textBuf), f);
 
     fClose(f);
+#endif
 
     // "error message"
     if (!running) {
@@ -589,9 +591,7 @@ void RetroEngine::Init()
     }
 
 #endif
-
 #if RETRO_USE_STEAMWORKS
-
     SteamErrMsg errMsg;
     PrintLog("Initializing steam...");
 
