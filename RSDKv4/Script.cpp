@@ -334,9 +334,9 @@ const char variableNames[][0x20] = {
     "engine.onlineActive",
     "engine.sfxVolume",
     "engine.bgmVolume",
-#if RETRO_REV00
+//#if RETRO_REV00
     "engine.platformID",
-#endif
+//#endif
     "engine.trialMode",
 #if !RETRO_REV00
     "engine.deviceType",
@@ -894,9 +894,9 @@ enum ScrVar {
     VAR_ENGINEONLINEACTIVE,
     VAR_ENGINESFXVOLUME,
     VAR_ENGINEBGMVOLUME,
-#if RETRO_REV00
+//#if RETRO_REV00
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
-#endif
+//#endif
     VAR_ENGINETRIALMODE,
 #if !RETRO_REV00
     VAR_ENGINEDEVICETYPE, // v4-style device type aka Standard/Mobile/Etc
@@ -4132,9 +4132,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEONLINEACTIVE: scriptEng.operands[i] = Engine.onlineActive; break;
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
-#if RETRO_REV00
+//#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
-#endif
+//#endif
                     case VAR_ENGINETRIALMODE: scriptEng.operands[i] = Engine.trialMode; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = RETRO_DEVICETYPE; break;
@@ -6490,9 +6490,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         bgmVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume);
                         break;
-#if RETRO_REV00
+//#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: break;
-#endif
+//#endif
                     case VAR_ENGINETRIALMODE: Engine.trialMode = scriptEng.operands[i]; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: break;
