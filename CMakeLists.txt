@@ -16,6 +16,7 @@ if(WIN32)
 else()
 	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
 endif()
+option(RETRO_USE_DISCORDRPC "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
 
@@ -26,7 +27,7 @@ if(RETRO_ORIGINAL_CODE)
     set(RETRO_NETWORKING OFF)
 endif()
 
-set(RETRO_NAME "RSDKv4 Plus")
+set(RETRO_NAME "RSDKv4-Plus")
 
 set(RETRO_OUTPUT_NAME ${RETRO_NAME} CACHE STRING "The exported name of the executable.")
 
