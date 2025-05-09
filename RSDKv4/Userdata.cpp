@@ -328,7 +328,6 @@ void InitUserdata()
         ini.SetInteger("Controller 1", "R", inputDevice[INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
         ini.SetInteger("Controller 1", "Start", inputDevice[INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
         ini.SetInteger("Controller 1", "Select", inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
-        ini.SetInteger("Controller 1", "Touchpad", inputDevice[INPUT_TOUCHPAD].contMappings = SDL_CONTROLLER_TOUCHPAD);
 
         ini.SetFloat("Controller 1", "LStickDeadzone", LSTICK_DEADZONE = 0.3);
         ini.SetFloat("Controller 1", "RStickDeadzone", RSTICK_DEADZONE = 0.3);
@@ -536,8 +535,6 @@ void InitUserdata()
             inputDevice[INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
         if (!ini.GetInteger("Controller 1", "Select", &inputDevice[INPUT_SELECT].contMappings))
             inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
-        if (!ini.GetInteger("Controller 1", "Touchpad", &inputDevice[INPUT_TOUCHPAD].contMappings))
-            inputDevice[INPUT_TOUCHPAD].contMappings = SDL_CONTROLLER_TOUCHPAD;
 
         if (!ini.GetFloat("Controller 1", "LStickDeadzone", &LSTICK_DEADZONE))
             LSTICK_DEADZONE = 0.3;
@@ -795,7 +792,6 @@ void WriteSettings()
     ini.SetInteger("Controller 1", "R", inputDevice[INPUT_BUTTONR].contMappings);
     ini.SetInteger("Controller 1", "Start", inputDevice[INPUT_START].contMappings);
     ini.SetInteger("Controller 1", "Select", inputDevice[INPUT_SELECT].contMappings);
-    ini.SetInteger("Controller 1", "Touchpad", inputDevice[INPUT_TOUCHPAD].contMappings);
 
     ini.SetComment("Controller 1", "DeadZoneComment", "Deadzones, 0.0-1.0");
     ini.SetFloat("Controller 1", "LStickDeadzone", LSTICK_DEADZONE);
