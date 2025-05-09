@@ -16,6 +16,7 @@ enum InputButtons {
     INPUT_BUTTONR,
     INPUT_START,
     INPUT_SELECT,
+    INPUT_TOUCHPAD,
     INPUT_ANY,
     INPUT_BUTTONCOUNT,
 };
@@ -35,6 +36,7 @@ struct InputData {
     bool R;
     bool start;
     bool select;
+    bool touchpad;
 };
 
 struct InputButton {
