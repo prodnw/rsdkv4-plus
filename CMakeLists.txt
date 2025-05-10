@@ -27,7 +27,7 @@ if(RETRO_ORIGINAL_CODE)
     set(RETRO_NETWORKING OFF)
 endif()
 
-set(RETRO_NAME "RSDKv4-Plus")
+set(RETRO_NAME "RSDKv4")
 
 set(RETRO_OUTPUT_NAME ${RETRO_NAME} CACHE STRING "The exported name of the executable.")
 
