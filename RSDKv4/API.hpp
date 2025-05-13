@@ -3,12 +3,14 @@
 
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
-#define API_DISCORD_CLIENT_ID (0)
+#define API_DISCORD_CLIENT_ID (0) // store this as an int, load externally
 
 extern discord::Core *__discord;
 
 void API_Discord_Init();
+void API_Discord_Update();
 discord::Core *API_Discord_GetCore();
+void API_Discord_SetRPCStatus(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText);
 #endif
 
 #if RETRO_USE_STEAMWORKS

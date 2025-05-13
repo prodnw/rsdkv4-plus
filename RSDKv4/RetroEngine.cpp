@@ -575,6 +575,8 @@ void RetroEngine::Init()
 #endif
 
     API_Init();
+
+    // API_Discord_SetRPCStatus("Test1", "Test2", "Test3", "Test4", "Test5", "Test6");
 }
 
 void RetroEngine::Run()

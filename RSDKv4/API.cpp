@@ -11,12 +11,40 @@ void API_Discord_Init()
     discord::Core::Create(API_DISCORD_CLIENT_ID, DiscordCreateFlags_NoRequireDiscord, &__discord);
 }
 
+void API_Discord_Update() // used in RetroGameLoop_Main
+{
+    if (__discord)
+        API_Discord_GetCore()->RunCallbacks();
+}
+
 discord::Core *API_Discord_GetCore()
 {
     if (__discord)
         return __discord;
 
     return nullptr;
+}
+
+void API_Discord_SetRPCStatus(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText)
+{
+    if (__discord) {
+        discord::Activity activity = {};
+        activity.SetDetails(details);
+        activity.SetState(state);
+
+        discord::ActivityTimestamps activityTimestamps = {}
+        activityTimestamps.SetStart(time(nullptr));
+        activity.GetTimestamps() = activityTimestamps;
+        activity.GetAssets()     = activityAssets;
+
+        discord::ActivityAssets activityAssets = {};
+        activityAssets.SetLargeImage(largeImage);
+        activityAssets.SetLargeText(largeText);
+        activityAssets.SetSmallImage(smallImage);
+        activityAssets.SetSmallText(smallText);
+
+        __discord->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
+    }
 }
 #endif
 
