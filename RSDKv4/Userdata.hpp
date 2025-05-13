@@ -8,6 +8,10 @@
 
 #define SAVEDATA_SIZE (0x2000)
 
+#ifndef RETRO_CHECKUPDATE
+#define RETRO_CHECKUPDATE (1)
+#endif
+
 #if RETRO_USE_MOD_LOADER
 #define NATIIVEFUNCTION_COUNT (0x30)
 #else
@@ -232,7 +236,7 @@ void SetWindowBorderless(int *borderless, int *unused);
 void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void ApplyWindowChanges();
-void CheckUpdates();
+int CheckUpdates(char website[]);
 void SetUpdateChecker(int value);
 void GetUpdateChecker();
 

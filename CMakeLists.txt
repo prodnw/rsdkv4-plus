@@ -11,10 +11,21 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
+
 if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
 	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
+	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
 else()
 	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
+	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." ON)
+endif()
+
+option(RETRO_USE_CURL "Compiles with cURL." OFF)
+
+if(WIN32)
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
+else()
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
 endif()
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
@@ -24,6 +35,10 @@ set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
     set(RETRO_NETWORKING OFF)
+endif()
+
+if(RETRO_UPDATE_CHECKER)
+	set(RETRO_USE_CURL ON)
 endif()
 
 set(RETRO_NAME "RSDKv4")
@@ -212,6 +227,11 @@ if(COMPILE_THEORA)
     target_link_libraries(RetroEngine libtheora)
 endif()
 
+if(RETRO_USE_CURL)
+	find_package(CURL REQUIRED)
+	target_link_libraries(RetroEngine CURL::libcurl)
+endif()
+
 target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
@@ -271,6 +291,8 @@ target_compile_definitions(RetroEngine PRIVATE
     FORCE_CASE_INSENSITIVE=$<BOOL:${RETRO_FORCE_CASE_INSENSITIVE}>
     RETRO_USE_ORIGINAL_CODE=$<BOOL:${RETRO_ORIGINAL_CODE}>
     RETRO_USE_STEAMWORKS=$<BOOL:${RETRO_USE_STEAM}>
+    RETRO_USE_DISCORD_SDK=$<BOOL:${RETRO_USE_DISCORD}>
+    RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 
