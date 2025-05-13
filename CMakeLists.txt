@@ -254,14 +254,17 @@ if(RETRO_USE_STEAM)
 	target_link_libraries(RetroEngine ${STEAM_API_LIB})
 endif()
 
-if(RETRO_USE_DISCORD)
-	find_library(DISCORD_GAME_SDK_LIB
-		NAMES discord_game_sdk
-		PATHS "${DISCORD_SDK_DIR}/lib/x86_64"
-		NO_DEFAULT_PATH
-	)
+# TODO: borrowing this from S2M
 
-	target_link_libraries(RetroEngine ${DISCORD_GAME_SDK_LIB})
+if(RETRO_USE_DISCORD AND WIN32)
+    file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/src/*.cpp)
+    target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
+
+    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86_64/discord_game_sdk.dll.lib )
+    elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "X86")
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86/discord_game_sdk.dll.lib )
+    endif()
 endif()
 
 target_compile_definitions(RetroEngine PRIVATE

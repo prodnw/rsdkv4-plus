@@ -3,6 +3,8 @@
 
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
+#define API_DISCORD_CLIENT_ID (0)
+
 extern discord::Core *__discord;
 
 void API_Discord_Init();

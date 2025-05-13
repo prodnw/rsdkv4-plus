@@ -7,7 +7,8 @@ discord::Core *__discord = {};
 void API_Discord_Init()
 {
     PrintLog("Initializing Discord API");
-    //
+
+    discord::Core::Create(API_DISCORD_CLIENT_ID, DiscordCreateFlags_NoRequireDiscord, &__discord);
 }
 
 discord::Core *API_Discord_GetCore()
