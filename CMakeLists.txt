@@ -11,12 +11,14 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
+
 if(WIN32)
 	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 else()
 	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
 endif()
-option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
 
