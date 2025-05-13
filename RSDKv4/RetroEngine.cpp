@@ -504,7 +504,6 @@ void RetroEngine::Init()
     else
         Engine.gameMode = ENGINE_WAIT;
 
-
     char rootDir[0x80];
     char pathBuffer[0x80];
 #if RETRO_PLATFORM == RETRO_UWP
@@ -575,43 +574,7 @@ void RetroEngine::Init()
 
 #endif
 
-#if RETRO_USE_STEAMWORKS
-    SteamErrMsg errMsg;
-    PrintLog("Initializing steam...");
-
-    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
-        //running = false;
-    }
-
-    if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK )
-        PrintLog( "Failed to init Steam.  %s", errMsg );
-
-    if (!SteamAPI_Init()) {
-        PrintLog( "Failed to init Steam. See previous error.");
-    }
-    else {
-        // this is just testing code for now - probably will rewrite the else check
-        // above with a bool, or return
-
-        // also, make defines for the dlc ids lol
-
-        PrintLog("Do we have Sonic Origins Plus?");
-
-        bool installed = SteamApps()->BIsDlcInstalled(2343200);
-        if (installed)
-            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
-        else
-            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
-
-        PrintLog("do we have... aperture desk job?");
-
-        installed = SteamApps()->BIsDlcInstalled(1902490);
-        if (installed)
-            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
-        else
-            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
-    }
-#endif
+    API_Init();
 }
 
 void RetroEngine::Run()
@@ -848,29 +811,29 @@ void RetroEngine::LoadXMLPalettes()
                 const tinyxml2::XMLElement *paletteElement = FirstXMLChildElement(doc, gameElement, "palette");
                 if (paletteElement) {
                     for (const tinyxml2::XMLElement *clrElement = paletteElement->FirstChildElement("color"); clrElement;
-                         clrElement = clrElement->NextSiblingElement("color")) {
+                         clrElement                             = clrElement->NextSiblingElement("color")) {
                         const tinyxml2::XMLAttribute *bankAttr = clrElement->FindAttribute("bank");
-                        int clrBank = 0;
+                        int clrBank                            = 0;
                         if (bankAttr)
                             clrBank = bankAttr->IntValue();
 
                         const tinyxml2::XMLAttribute *indAttr = clrElement->FindAttribute("index");
-                        int clrInd = 0;
+                        int clrInd                            = 0;
                         if (indAttr)
                             clrInd = indAttr->IntValue();
 
                         const tinyxml2::XMLAttribute *rAttr = clrElement->FindAttribute("r");
-                        int clrR = 0;
+                        int clrR                            = 0;
                         if (rAttr)
                             clrR = rAttr->IntValue();
 
                         const tinyxml2::XMLAttribute *gAttr = clrElement->FindAttribute("g");
-                        int clrG = 0;
+                        int clrG                            = 0;
                         if (gAttr)
                             clrG = gAttr->IntValue();
 
                         const tinyxml2::XMLAttribute *bAttr = clrElement->FindAttribute("b");
-                        int clrB = 0;
+                        int clrB                            = 0;
                         if (bAttr)
                             clrB = bAttr->IntValue();
 
@@ -878,14 +841,14 @@ void RetroEngine::LoadXMLPalettes()
                     }
 
                     for (const tinyxml2::XMLElement *clrsElement = paletteElement->FirstChildElement("colors"); clrsElement;
-                         clrsElement = clrsElement->NextSiblingElement("colors")) {
+                         clrsElement                             = clrsElement->NextSiblingElement("colors")) {
                         const tinyxml2::XMLAttribute *bankAttr = clrsElement->FindAttribute("bank");
-                        int bank = 0;
+                        int bank                               = 0;
                         if (bankAttr)
                             bank = bankAttr->IntValue();
 
                         const tinyxml2::XMLAttribute *indAttr = clrsElement->FindAttribute("start");
-                        int index = 0;
+                        int index                             = 0;
                         if (indAttr)
                             index = indAttr->IntValue();
 

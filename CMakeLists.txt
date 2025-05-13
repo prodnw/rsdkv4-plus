@@ -21,6 +21,7 @@ option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on,
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
 
 set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
+set(DISCORD_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/discord_game_sdk")
 
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
@@ -35,6 +36,7 @@ set(RETRO_FILES
     dependencies/all/tinyxml2/tinyxml2.cpp
     dependencies/all/theoraplay/theoraplay.c
     RSDKv4/Animation.cpp
+    RSDKv4/API.cpp
     RSDKv4/Audio.cpp
     RSDKv4/Collision.cpp
     RSDKv4/Debug.cpp
@@ -220,6 +222,7 @@ target_include_directories(RetroEngine PRIVATE
     dependencies/all/stb-image/
     dependencies/all/tinyxml2/
     dependencies/all/steamworks_sdk/public
+    dependencies/all/discord_game_sdk/src
 )
 
 if(RETRO_NETWORKING)
@@ -246,8 +249,17 @@ if(RETRO_USE_STEAM)
 		NO_DEFAULT_PATH
 	)
 
-	# there should be an error for the above if this isnt found - but for now,
 	target_link_libraries(RetroEngine ${STEAM_API_LIB})
+endif()
+
+if(RETRO_USE_DISCORD)
+	find_library(DISCORD_GAME_SDK_LIB
+		NAMES discord_game_sdk
+		PATHS "${DISCORD_SDK_DIR}/lib/x86_64"
+		NO_DEFAULT_PATH
+	)
+
+	target_link_libraries(RetroEngine ${DISCORD_GAME_SDK_LIB})
 endif()
 
 target_compile_definitions(RetroEngine PRIVATE

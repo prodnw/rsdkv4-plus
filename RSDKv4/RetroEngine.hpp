@@ -331,6 +331,7 @@ extern bool engineDebugMode;
 #include "Math.hpp"
 #include "Reader.hpp"
 #include "String.hpp"
+#include "API.hpp"
 #include "Animation.hpp"
 #include "Audio.hpp"
 #include "Input.hpp"
@@ -352,10 +353,6 @@ extern bool engineDebugMode;
 
 // Native Entities
 #include "NativeObjects.hpp"
-
-#if RETRO_USE_STEAMWORKS
-#include "steam/steam_api.h"
-#endif
 
 class RetroEngine
 {
