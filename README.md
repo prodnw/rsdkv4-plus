@@ -93,6 +93,7 @@ To handle dependencies, you'll need to install [Visual Studio Community](https:/
 
 After installing those, run the following in Command Prompt (make sure to replace `[vcpkg root]` with the path to the vcpkg installation!):
 - `[vcpkg root]\vcpkg.exe install glew sdl2 libogg libtheora libvorbis --triplet=x64-windows-static` (If you're compiling a 32-bit build, replace `x64-windows-static` with `x86-windows-static`.)
+Add `curl` before ` --triplet=` to use cURL/the update checker.
 
 Finally, follow the [compilation steps below](#compiling) using `-DCMAKE_TOOLCHAIN_FILE=[vcpkg root]/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_PREFIX_PATH=[vcpkg root]/installed/x64-windows-static/` as arguments for `cmake -B build`.
   - Make sure to replace each instance of `[vcpkg root]` with the path to the vcpkg installation!
@@ -105,6 +106,12 @@ Install the following dependencies: then follow the [compilation steps below](#c
 - **rpm (Fedora):** `sudo dnf install make gcc cmake glew-devel glfw-devel SDL2-devel libogg-devel libtheora-devel  libvorbis-devel zlib-devel`
 - **apk (Alpine/PostmarketOS)** `sudo apk add build-base cmake glew-dev glfw-dev sdl2-dev libogg-dev libtheora-dev libvorbis-dev`
 - Your favorite package manager here, [make a pull request](https://github.com/RSDKModding/RSDKv4-Decompilation/fork)
+- To use cURL/the update checker, you may have to run one of the following commands depending on your system;
+  - **pacman (Arch):** `sudo pacman -S curl`
+  - **apt (Debian/Ubuntu):** `sudo apt install libcurl4-openssl-dev`
+  - **rpm (Fedora):** `sudo dnf install libcurl-devel`
+#### TODO - apk
+  - **apk (Alpine/PostmarketOS)** `sudo apk add `
 
 ### Android
 Follow the android build instructions [here.](./dependencies/android/README.md)

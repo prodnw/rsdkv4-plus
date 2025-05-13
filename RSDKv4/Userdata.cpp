@@ -1,5 +1,16 @@
 #include "RetroEngine.hpp"
 
+#if RETRO_CHECKUPDATE
+#include <curl/curl.h>
+#include <cstring>
+
+struct MemoryStruct {
+    char *memory;
+    size_t size;
+};
+#endif
+
+
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
 char globalVariableNames[GLOBALVAR_COUNT][0x20];
@@ -1431,48 +1442,67 @@ void ApplyWindowChanges()
     }
 }
 
-#if RETRO_PLATFORM == RETRO_WIN
-void CheckUpdates()
-{
-    scriptEng.checkResult = 0;
-
-    DWORD flags;
-    if (!InternetGetConnectedState(&flags, 0)) {
-        return;
+#if RETRO_CHECKUPDATE
+static size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, MemoryStruct *userp) {
+    size_t realsize = size * nmemb;
+    userp->memory = (char *)realloc(userp->memory, userp->size + realsize + 1);
+    if (userp->memory == NULL) {
+        // Out of memory
+        PrintLog("CHECKUPDATE ERROR: Not enough memory (realloc returned NULL)");
+        scriptEng.checkResult = -3;
+        return 0;
     }
+    memcpy(&(userp->memory[userp->size]), contents, realsize);
+    userp->size += realsize;
+    userp->memory[userp->size] = 0; // Null-terminate the charray (char-array)
+    return realsize;
+}
+#endif
 
-    HINTERNET hInternet = InternetOpenA("RetroEngine", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
-    if (!hInternet) return;
+int CheckUpdates(char website[]) {
+#if !RETRO_CHECKUPDATE
+	scriptEng.checkResult = -1;
+	PrintLog("CHECKUPDATE ERROR: CheckUpdates is disabled");
+#else
+	CURL *curl;
+	CURLcode res;
 
-    DWORD timeout = 2000;
-    InternetSetOptionA(hInternet, INTERNET_OPTION_CONNECT_TIMEOUT, &timeout, sizeof(timeout));
-    InternetSetOptionA(hInternet, INTERNET_OPTION_RECEIVE_TIMEOUT, &timeout, sizeof(timeout));
-    InternetSetOptionA(hInternet, INTERNET_OPTION_SEND_TIMEOUT, &timeout, sizeof(timeout));
+	MemoryStruct chunk;
+	chunk.memory = (char *)malloc(1);  // Initial allocation
+	chunk.size = 0;
 
-    HINTERNET hUrl = InternetOpenUrlA(
-        hInternet,
-        "https://prodnw.github.io/vengeance-version-number/",
-        NULL,
-        0,
-        INTERNET_FLAG_SECURE | INTERNET_FLAG_RELOAD | INTERNET_FLAG_NO_CACHE_WRITE | INTERNET_FLAG_NO_AUTO_REDIRECT,
-        0
-    );
+	curl_global_init(CURL_GLOBAL_DEFAULT);
+	curl = curl_easy_init();
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, website);
 
-    if (!hUrl) {
-        InternetCloseHandle(hInternet);
-        return;
-    }
+		// Set the write callback function
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&chunk);
 
-    char buffer[32] = {0};
-    DWORD bytesRead = 0;
+		// Perform the request
+		res = curl_easy_perform(curl);
 
-    if (InternetReadFile(hUrl, buffer, sizeof(buffer) - 1, &bytesRead) && bytesRead > 0) {
-        buffer[bytesRead] = '\0';
-        scriptEng.checkResult = atoi(buffer);
-    }
+		// errorr check :P
+		if (res != CURLE_OK) {
+			PrintLog("curl_easy_perform() failed: %s", curl_easy_strerror(res));
+			scriptEng.checkResult = -4;
+		} else {
+			if (atoi(chunk.memory)) {
+				scriptEng.checkResult = atoi(chunk.memory);
+				PrintLog("Grabbed version from \"%s\": %s (%d)", website, chunk.memory, scriptEng.checkResult);
+			} else {PrintLog("CHECKUPDATE ERROR: Version was negative");} // make sure the version isnt negative (we using those for the errors)
+		}
 
-    InternetCloseHandle(hUrl);
-    InternetCloseHandle(hInternet);
+		// Cleanup
+		curl_easy_cleanup(curl);
+		free(chunk.memory);
+	} else { PrintLog("CHECKUPDATE ERROR: Failed to initialise cURL"); scriptEng.checkResult = -2;
+	}
+
+	curl_global_cleanup();
+#endif
+	return scriptEng.checkResult;
 }
 
 void SetUpdateChecker(int value)
@@ -1484,4 +1514,3 @@ void GetUpdateChecker()
 {
     scriptEng.checkResult = CheckForthemUpdates;
 }
-#endif

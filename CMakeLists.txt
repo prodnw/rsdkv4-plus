@@ -13,6 +13,14 @@ option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releas
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
 option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
 
+if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
+option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
+else()
+option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." ON)
+endif()
+
+option(RETRO_USE_CURL "Compiles with cURL." OFF)
+
 if(WIN32)
     option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 else()
@@ -27,6 +35,10 @@ set(DISCORD_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/discord_game_sdk")
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
     set(RETRO_NETWORKING OFF)
+endif()
+
+if(RETRO_UPDATE_CHECKER)
+	set(RETRO_USE_CURL ON)
 endif()
 
 set(RETRO_NAME "RSDKv4")
@@ -216,6 +228,11 @@ if(COMPILE_THEORA)
     target_link_libraries(RetroEngine libtheora)
 endif()
 
+if(RETRO_USE_CURL)
+	find_package(CURL REQUIRED)
+	target_link_libraries(RetroEngine CURL::libcurl)
+endif()
+
 target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
@@ -276,6 +293,7 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_USE_ORIGINAL_CODE=$<BOOL:${RETRO_ORIGINAL_CODE}>
     RETRO_USE_STEAMWORKS=$<BOOL:${RETRO_USE_STEAM}>
     RETRO_USE_DISCORD_SDK=$<BOOL:${RETRO_USE_DISCORD}>
+    RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 

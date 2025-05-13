@@ -5577,10 +5577,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-#if RETRO_PLATFORM == RETRO_WIN
+
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
-                CheckUpdates();
+				char temporarChar[0x4000];
+				sprintf(temporarChar, "https://%s", scriptText);
+				PrintLog("Checking version: %s", temporarChar);
+				if(CheckUpdates(temporarChar) >= 0) // fancy
+					PrintLog("Successfully loaded website!!: %s", temporarChar);
+				else
+					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
                 break;
             }
 
@@ -5598,16 +5604,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_LOADWEBSITE: {
             	opcodeSize = 0;
-				char temporar[100];
-				strcpy(temporar, "Loading website: https://");
-				strcat(temporar, scriptText);
-				PrintLog(temporar);
-				strcpy(temporar, "https://");
-				strcat(temporar, scriptText);
-				SDL_OpenURL(temporar);
+				char temporar[0x4000];
+				sprintf(temporar, "https://%s", scriptText);
+				PrintLog("Loading website: %s", temporar);
+				if(SDL_OpenURL(temporar)) // fancy
+					PrintLog("Successfully loaded website!!: %s", temporar);
+				else
+					PrintLog("Unsuccessfully loaded website: %s", temporar);
                 break;
             }
-#endif
+
 
 #if RETRO_REV03
                 // Extras for origins 2PVS,
