@@ -5577,44 +5577,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-
-            case FUNC_CHECKUPDATES: {
-                opcodeSize = 0;
-				char temporarChar[0x4000];
-				sprintf(temporarChar, "https://%s", scriptText);
-				PrintLog("Checking version: %s", temporarChar);
-				if(CheckUpdates(temporarChar) >= 0) // fancy
-					PrintLog("Successfully loaded website!!: %s", temporarChar);
-				else
-					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
-                break;
-            }
-
-            case FUNC_SETUPDATECHECKER: {
-                opcodeSize = 0;
-                SetUpdateChecker(scriptEng.operands[0]);
-                break;
-            }
-
-            case FUNC_GETUPDATECHECKER: {
-                opcodeSize = 0;
-                GetUpdateChecker();
-                break;
-            }
-
-            case FUNC_LOADWEBSITE: {
-            	opcodeSize = 0;
-				char temporar[0x4000];
-				sprintf(temporar, "https://%s", scriptText);
-				PrintLog("Loading website: %s", temporar);
-				if(SDL_OpenURL(temporar)) // fancy
-					PrintLog("Successfully loaded website!!: %s", temporar);
-				else
-					PrintLog("Unsuccessfully loaded website: %s", temporar);
-                break;
-            }
-
-
 #if RETRO_REV03
                 // Extras for origins 2PVS,
                 // most of these aren't (and won't be) implemented here because they rely on v5 tech that isn't part of the scope of this project
@@ -5735,6 +5697,42 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                 break;
 #endif
+
+            case FUNC_CHECKUPDATES: {
+                opcodeSize = 0;
+				char temporarChar[0x4000];
+				sprintf(temporarChar, "https://%s", scriptText);
+				PrintLog("Checking version: %s", temporarChar);
+				if(CheckUpdates(temporarChar) >= 0) // fancy
+					PrintLog("Successfully loaded website!!: %s", temporarChar);
+				else
+					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
+                break;
+            }
+
+            case FUNC_SETUPDATECHECKER: {
+                opcodeSize = 0;
+                SetUpdateChecker(scriptEng.operands[0]);
+                break;
+            }
+
+            case FUNC_GETUPDATECHECKER: {
+                opcodeSize = 0;
+                GetUpdateChecker();
+                break;
+            }
+
+            case FUNC_LOADWEBSITE: {
+            	opcodeSize = 0;
+				char temporar[0x4000];
+				sprintf(temporar, "https://%s", scriptText);
+				PrintLog("Loading website: %s", temporar);
+				if(SDL_OpenURL(temporar)) // fancy
+					PrintLog("Successfully loaded website!!: %s", temporar);
+				else
+					PrintLog("Unsuccessfully loaded website: %s", temporar);
+                break;
+            }
         }
 
         // Set Values
