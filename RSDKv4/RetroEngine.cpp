@@ -576,7 +576,7 @@ void RetroEngine::Init()
 
 #if RETRO_USE_DISCORD_SDK
     API_Init();
-    API_Discord_SetRPCStatus(stageList[activeStageList][stageListPosition].name);
+    API_Discord_SetRPCStatus(stageList[activeStageList][stageListPosition].name, playerNames[playerCount++]);
 #endif
 }
 
