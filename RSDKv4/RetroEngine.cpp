@@ -574,9 +574,10 @@ void RetroEngine::Init()
 
 #endif
 
+#if RETRO_USE_DISCORD_SDK
     API_Init();
-
     API_Discord_SetRPCStatus(stageList[activeStageList][stageListPosition].name);
+#endif
 }
 
 void RetroEngine::Run()
