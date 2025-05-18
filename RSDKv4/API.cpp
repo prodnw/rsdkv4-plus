@@ -32,16 +32,16 @@ void API_Discord_SetRPCStatus(const char *details, const char *state, const char
         activity.SetDetails(details);
         activity.SetState(state);
 
-        discord::ActivityTimestamps activityTimestamps = {}
-        activityTimestamps.SetStart(time(nullptr));
-        activity.GetTimestamps() = activityTimestamps;
-        activity.GetAssets()     = activityAssets;
-
         discord::ActivityAssets activityAssets = {};
         activityAssets.SetLargeImage(largeImage);
         activityAssets.SetLargeText(largeText);
         activityAssets.SetSmallImage(smallImage);
         activityAssets.SetSmallText(smallText);
+
+        discord::ActivityTimestamps activityTimestamps = {};
+        activityTimestamps.SetStart(time(nullptr));
+        activity.GetTimestamps() = activityTimestamps;
+        activity.GetAssets()     = activityAssets;
 
         __discord->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
     }
