@@ -17,6 +17,7 @@ LIBS_ALL = $(shell pkg-config --libs --static sdl2 vorbisfile vorbis glew) -pthr
 
 SOURCES = dependencies/all/tinyxml2/tinyxml2.cpp \
         RSDKv4/Animation.cpp     \
+        RSDKv4/API.cpp           \
         RSDKv4/Audio.cpp         \
         RSDKv4/Collision.cpp     \
         RSDKv4/Debug.cpp         \
@@ -39,6 +40,7 @@ SOURCES = dependencies/all/tinyxml2/tinyxml2.cpp \
         RSDKv4/String.cpp        \
         RSDKv4/Text.cpp          \
         RSDKv4/Userdata.cpp      \
+        RSDKv4/Video.cpp         \
         RSDKv4/NativeObjects/AboutScreen.cpp        \
         RSDKv4/NativeObjects/AchievementDisplay.cpp \
         RSDKv4/NativeObjects/AchievementsButton.cpp \

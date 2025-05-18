@@ -576,7 +576,7 @@ void RetroEngine::Init()
 
     API_Init();
 
-    // API_Discord_SetRPCStatus("Test1", "Test2", "Test3", "Test4", "Test5", "Test6");
+    API_Discord_SetRPCStatus(stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
 }
 
 void RetroEngine::Run()
