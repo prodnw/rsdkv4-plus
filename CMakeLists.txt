@@ -252,9 +252,6 @@ if(DEFINED DEP_PATH)
     )
 endif()
 
-# there should be an error for the above if this isnt found - but for now,
-target_link_libraries(RetroEngine ${STEAM_API_LIB})
-
 target_compile_definitions(RetroEngine PRIVATE
     RSDK_REVISION=${RETRO_REVISION}
     RETRO_USE_MOD_LOADER=$<BOOL:${RETRO_MOD_LOADER}>
