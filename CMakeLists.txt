@@ -13,10 +13,8 @@ option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releas
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
 
 if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
-	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
 	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
 else()
-	option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
 	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." ON)
 endif()
 
@@ -252,32 +250,6 @@ if(DEFINED DEP_PATH)
         dependencies/${DEP_PATH}/
     )
 endif()
-
-# da steams
-# TODO: this is a terrible way of doing this
-# this should be set in platforms/[platform].cmake
-
-if(RETRO_USE_STEAM)
-
-	set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/win64")
-
-	find_library(STEAM_API_LIB
-
-		NAMES steam_api64
-		PATHS "${STEAMWORKS_REDIST_BIN}"
-
-		NO_DEFAULT_PATH
-
-
-	)
-
-	# there should be an error for the above if this isnt found - but for now,
-
-	target_link_libraries(RetroEngine ${STEAM_API_LIB})
-
-endif()
-
-
 
 # there should be an error for the above if this isnt found - but for now,
 target_link_libraries(RetroEngine ${STEAM_API_LIB})

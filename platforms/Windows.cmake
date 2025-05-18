@@ -91,9 +91,26 @@ if(RETRO_MOD_LOADER)
     )
 endif()
 
+if(RETRO_USE_STEAM)
+
+	set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/win64")
+
+	find_library(STEAM_API_LIB
+		NAMES steam_api64
+		PATHS "${STEAMWORKS_REDIST_BIN}"
+
+		NO_DEFAULT_PATH
+	)
+
+	# there should be an error for the above if this isnt found - but for now,
+
+	target_link_libraries(RetroEngine ${STEAM_API_LIB})
+
+endif()
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(RetroEngine PRIVATE -Wno-microsoft-cast -Wno-microsoft-exception-spec)
 endif()
-    
+
 target_sources(RetroEngine PRIVATE ${RETRO_NAME}/${RETRO_NAME}.rc)
 target_link_options(RetroEngine PRIVATE /subsystem:windows)
