@@ -654,6 +654,7 @@ void LoadStageFiles(void)
     StopAllSfx();
     if (!CheckCurrentStageFolder(stageListPosition)) {
         PrintLog("Loading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
+        PrintLog("Playing as %s", playerNames[playerCount++]);
         ReleaseStageSfx();
         ClearScriptData();
         for (int i = SURFACE_COUNT; i > 0; i--) RemoveGraphicsFile((char *)"", i - 1);
@@ -868,6 +869,7 @@ void LoadStageFiles(void)
     }
     else {
         PrintLog("Reloading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
+        PrintLog("Playing as %s", playerNames[playerCount++]);
     }
     LoadStageChunks();
     for (int i = 0; i < TRACK_COUNT; ++i) SetMusicTrack("", i, false, 0);
