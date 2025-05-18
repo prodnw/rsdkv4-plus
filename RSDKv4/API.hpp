@@ -1,5 +1,8 @@
-#ifndef API_H
-#define API_H
+#pragma once
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
@@ -23,5 +26,3 @@ void API_Steam_Init();
 #endif
 
 void API_Init();
-
-#endif
