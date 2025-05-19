@@ -73,3 +73,27 @@ if(RETRO_MOD_LOADER)
         CXX_STANDARD_REQUIRED ON
     )
 endif()
+
+if(RETRO_USE_STEAM)
+
+	# TODO this if() kinda stinky,,, but i cant figure out any other way to do it
+	if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/linux64")
+		message("System is supected to be 64 bit")
+	else()
+		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/linux32")
+		message("System is supected to be 32 bit")
+	endif()
+
+	find_library(STEAM_API_LIB
+		NAMES libsteam_api.so
+		PATHS "${STEAMWORKS_REDIST_BIN}"
+
+		NO_DEFAULT_PATH
+	)
+
+	# there should be an error for the above if this isnt found - but for now,
+
+	target_link_libraries(RetroEngine ${STEAM_API_LIB})
+
+endif()
