@@ -575,8 +575,10 @@ void RetroEngine::Init()
 #endif
 
 #if RETRO_USE_DISCORD_SDK
-    API_Init();
-    API_Discord_SetRPCStatus("Test1", "Test2", "Test3", "Test4", "Test5", "Test6");
+    if (GetGlobalVariableByName("engine.useDiscordRPC") == true) {
+        API_Init();
+        API_Discord_SetRPCStatus("Test1", "Test2", "Test3", "Test4", "Test5", "Test6");
+    }
 #endif
 }
 
