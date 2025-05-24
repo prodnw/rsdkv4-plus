@@ -258,13 +258,13 @@ endif()
 # TODO: borrowing this from S2M
 
 if(RETRO_USE_DISCORD AND WIN32)
-    file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/src/*.cpp)
+    file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/cpp/*.cpp)
     target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
 
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/src/lib/x86_64/discord_game_sdk.dll.lib )
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86_64/discord_game_sdk.dll.lib )
     elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "X86")
-        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/src/lib/x86/discord_game_sdk.dll.lib )
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86/discord_game_sdk.dll.lib )
     endif()
 endif()
 
