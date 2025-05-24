@@ -240,7 +240,7 @@ target_include_directories(RetroEngine PRIVATE
     dependencies/all/stb-image/
     dependencies/all/tinyxml2/
     dependencies/all/steamworks_sdk/public
-    dependencies/all/discord_game_sdk/src
+    dependencies/all/discord_game_sdk/cpp
 )
 
 if(RETRO_NETWORKING)
