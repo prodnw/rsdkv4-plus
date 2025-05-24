@@ -20,18 +20,16 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 
 # Fork Credits
  * ProdNW - Code porting + minor edits
- * Jd - Video Player, SteamAPI
+ * Jd - Video Player, SteamAPI, Discord RPC
  * Elsie The Pict - Code from Forever's engine fork
  * LittlePlanetCD - Code optimizations
- * EggBanana - Functions for update checking
+ * EggBanana - Update checking, Website loading, "GetModID" function
  * SDG & Geared - Other misc. stuff
 
 # To-Dos:
  * Fix Extended Camera
- * Discord RPC
+ * Backport local 2PVS functions
 
-# Currently Known Issues
- * "FX_ALL" doesn't apply scaling
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
