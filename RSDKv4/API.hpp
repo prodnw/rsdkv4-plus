@@ -5,7 +5,7 @@
 #endif
 
 #if RETRO_USE_DISCORD_SDK
-#include "cpp/discord.h"
+#include "discord.h"
 #define API_DISCORD_CLIENT_ID (0) // store this as an int, load externally
 
 extern discord::Core *__discord;

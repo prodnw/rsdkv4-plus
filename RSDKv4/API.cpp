@@ -1,7 +1,7 @@
 #include "RetroEngine.hpp"
 
 #if RETRO_USE_DISCORD_SDK
-#include "cpp/discord.h"
+#include "discord.h"
 discord::Core *__discord = {};
 
 void API_Discord_Init()
