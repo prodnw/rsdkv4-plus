@@ -167,9 +167,6 @@ void DrawFadedFace(void *v, uint color, uint fogColor, int alpha);
 void DrawTexturedFace(void *v, byte sheetID);
 void DrawTexturedFaceBlended(void *v, byte sheetID);
 
-void DrawLine(int XPos, int YPos, int width, int height, int R, int G, int B, int alpha, int ink);
-// void DrawLine(int XPos, int YPos, int width, int height, int R, int G, int B, int alpha, int ink, bool32 screenRelative);
-
 #if !RETRO_REV02
 void DrawBitmapText(void *menu, int XPos, int YPos, int scale, int spacing, int rowStart, int rowCount);
 #endif

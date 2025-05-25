@@ -1,7 +1,7 @@
 #ifndef USERDATA_H
 #define USERDATA_H
 
-#define GLOBALVAR_COUNT (0x100)
+#define GLOBALVAR_COUNT (0x800)
 
 #define ACHIEVEMENT_COUNT (0x40)
 #define LEADERBOARD_COUNT (0x80)
