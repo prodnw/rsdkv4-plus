@@ -11,10 +11,6 @@ void InitPauseMenu()
 void RetroGameLoop_Create(void *objPtr) { mixFiltersOnJekyll = Engine.useHighResAssets; }
 void RetroGameLoop_Main(void *objPtr)
 {
-#if RETRO_USE_DISCORD_SDK
-    API_Discord_Update();
-#endif
-
     switch (Engine.gameMode) {
         case ENGINE_DEVMENU:
 #if RETRO_HARDWARE_RENDER
