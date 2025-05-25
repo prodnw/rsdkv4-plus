@@ -6,7 +6,7 @@
 
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
-#define API_DISCORD_CLIENT_ID (0) // store this as an int, load externally
+#define API_DISCORD_CLIENT_ID (1375887146057076747)
 
 extern discord::Core *__discord;
 
