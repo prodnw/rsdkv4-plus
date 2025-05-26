@@ -9,10 +9,6 @@
 #endif
 #endif
 
-#if RETRO_USE_DISCORD_SDK
-// #include "discord.h"
-#endif
-
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
 
