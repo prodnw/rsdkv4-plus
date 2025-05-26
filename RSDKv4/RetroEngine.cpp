@@ -573,10 +573,6 @@ void RetroEngine::Init()
     }
 
 #endif
-
-#if RETRO_USE_DISCORD_SDK
-    API_Init();
-#endif
 }
 
 void RetroEngine::Run()

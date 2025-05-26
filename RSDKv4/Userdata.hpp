@@ -13,7 +13,7 @@
 #endif
 
 #if RETRO_USE_MOD_LOADER
-#define NATIIVEFUNCTION_COUNT (0x31)
+#define NATIIVEFUNCTION_COUNT (0x64)
 #else
 #define NATIIVEFUNCTION_COUNT (0x10)
 #endif
@@ -84,9 +84,9 @@ extern int nativeFunctionCount;
 
 extern int globalVariablesCount;
 extern int globalVariables[GLOBALVAR_COUNT];
-extern char globalVariableNames[GLOBALVAR_COUNT][0x20];
+extern char globalVariableNames[GLOBALVAR_COUNT][0x200];
 
-extern char gamePath[0x100];
+extern char gamePath[0x200];
 extern int saveRAM[SAVEDATA_SIZE];
 extern Achievement achievements[ACHIEVEMENT_COUNT];
 extern int achievementCount;
@@ -95,7 +95,7 @@ extern LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 extern MultiplayerData multiplayerDataIN;
 extern MultiplayerData multiplayerDataOUT;
 
-extern int matchValueData[0x100];
+extern int matchValueData[0x200];
 extern byte matchValueReadPos;
 extern byte matchValueWritePos;
 

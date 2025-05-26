@@ -13,12 +13,12 @@ struct MemoryStruct {
 
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
-char globalVariableNames[GLOBALVAR_COUNT][0x20];
+char globalVariableNames[GLOBALVAR_COUNT][0x200];
 
 void *nativeFunction[NATIIVEFUNCTION_COUNT];
 int nativeFunctionCount = 0;
 
-char gamePath[0x100];
+char gamePath[0x200];
 int saveRAM[SAVEDATA_SIZE];
 Achievement achievements[ACHIEVEMENT_COUNT];
 int achievementCount = 0;
@@ -27,7 +27,7 @@ LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 
 MultiplayerData multiplayerDataIN  = MultiplayerData();
 MultiplayerData multiplayerDataOUT = MultiplayerData();
-int matchValueData[0x100];
+int matchValueData[0x200];
 byte matchValueReadPos  = 0;
 byte matchValueWritePos = 0;
 
