@@ -9,11 +9,23 @@
 #define API_DISCORD_CLIENT_ID (1375887146057076747)
 
 extern discord::Core *__discord;
+extern discord::Activity __activity;
+extern discord::ActivityAssets __assets;
+
+enum API_Discord_PresenceTypes {
+    PRESENCE_ACTIVITY_DETAILS,
+    PRESENCE_ACTIVITY_STATE,
+    PRESENCE_ASSET_LARGEIMAGE,
+    PRESENCE_ASSET_LARGETEXT,
+    PRESENCE_ASSET_SMALLIMAGE,
+    PRESENCE_ASSET_SMALLTEXT,
+};
 
 void API_Discord_Init();
 void API_Discord_Update();
-discord::Core *API_Discord_GetCore();
-void SetPresence(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText);
+
+void API_Discord_SetPresence(const char *text, int type);
+void API_Discord_UpdatePresence();
 #endif
 
 #if RETRO_USE_STEAMWORKS

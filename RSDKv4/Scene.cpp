@@ -669,12 +669,6 @@ void LoadStageFiles(void)
         bool loadGlobalScripts = false;
 #endif
 
-#if RETRO_USE_DISCORD_SDK
-    if (GetGlobalVariableByName("engine.useDiscordRPC") == true) {
-        API_Init();
-    }
-#endif
-
         if (LoadStageFile("StageConfig.bin", stageListPosition, &info)) {
             byte buf = 0;
             FileRead(&buf, 1);

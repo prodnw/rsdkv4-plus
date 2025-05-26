@@ -3,6 +3,8 @@
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
 discord::Core *__discord = {};
+discord::Activity __activity = {};
+discord::ActivityAssets __assets = {};
 
 void API_Discord_Init()
 {
@@ -11,39 +13,40 @@ void API_Discord_Init()
     discord::Core::Create(API_DISCORD_CLIENT_ID, DiscordCreateFlags_NoRequireDiscord, &__discord);
 }
 
-void API_Discord_Update() // used in RetroGameLoop_Main
+void API_Discord_Update() // used in ProcessStage
 {
     if (__discord)
-        API_Discord_GetCore()->RunCallbacks();
+        __discord->RunCallbacks();
 }
 
-discord::Core *API_Discord_GetCore()
+void API_Discord_SetPresence(const char *text, int type)
 {
-    if (__discord)
-        return __discord;
+    if (!__discord)
+        return;
 
-    return nullptr;
+    switch (type) {
+        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
+        case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);   break;
+
+        case PRESENCE_ASSET_LARGEIMAGE: __assets.SetSmallImage(text); break;
+        case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText(text);  break;
+        case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(text); break;
+        case PRESENCE_ASSET_SMALLTEXT:  __assets.SetSmallText(text);  break;
+
+        default: break;
+    }
 }
 
-void SetPresence(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText)
+void API_Discord_UpdatePresence()
 {
     if (__discord) {
-        discord::Activity activity = {};
-        activity.SetDetails(details);
-        activity.SetState(state);
-
-        discord::ActivityAssets activityAssets = {};
-        activityAssets.SetLargeImage(largeImage);
-        activityAssets.SetLargeText(largeText);
-        activityAssets.SetSmallImage(smallImage);
-        activityAssets.SetSmallText(smallText);
-
         discord::ActivityTimestamps activityTimestamps = {};
         activityTimestamps.SetStart(time(nullptr));
-        activity.GetTimestamps() = activityTimestamps;
-        activity.GetAssets()     = activityAssets;
 
-        __discord->ActivityManager().UpdateActivity(activity, [](discord::Result result) {});
+        __activity.GetTimestamps() = activityTimestamps;
+        __activity.GetAssets()     = __assets;
+
+        __discord->ActivityManager().UpdateActivity(__activity, [](discord::Result result) {});
     }
 }
 #endif

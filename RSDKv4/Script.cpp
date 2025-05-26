@@ -10,7 +10,7 @@
 #endif
 
 #if RETRO_USE_DISCORD_SDK
-#include "discord.h"
+// #include "discord.h"
 #endif
 
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
@@ -573,12 +573,23 @@ const FunctionInfo functions[] = {
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
 #endif
-    
+
     FunctionInfo("CheckUpdates", 0),
     FunctionInfo("SetUpdateChecker", 1),
     FunctionInfo("GetUpdateChecker", 0),
     FunctionInfo("LoadWebsite", 1),
-    FunctionInfo("SetPresence", 6)
+
+    // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
+    // This ensures that these functions remain "callable" via script, instead of
+    // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
+    // ProcessScript instead
+    FunctionInfo("SetPresenceDetails", 1),
+    FunctionInfo("SetPresenceState", 1),
+    FunctionInfo("SetPresenceLargeImage", 1),
+    FunctionInfo("SetPresenceLargeText", 1),
+    FunctionInfo("SetPresenceSmallImage", 1),
+    FunctionInfo("SetPresenceSmallText", 1),
+    FunctionInfo("UpdatePresence", 0),
 };
 
 #if RETRO_USE_COMPILER
@@ -1096,7 +1107,16 @@ enum ScrFunc {
     FUNC_SETUPDATECHECKER,
     FUNC_GETUPDATECHECKER,
     FUNC_LOADWEBSITE,
-    FUNC_SETPRESENCE,
+
+    // Discord presence
+    FUNC_SET_PRESENCE_DETAILS,
+    FUNC_SET_PRESENCE_STATE,
+    FUNC_SET_PRESENCE_LARGEIMAGE,
+    FUNC_SET_PRESENCE_LARGETEXT,
+    FUNC_SET_PRESENCE_SMALLIMAGE,
+    FUNC_SET_PRESENCE_SMALLTEXT,
+    FUNC_UPDATE_PRESENCE,
+
     FUNC_MAX_CNT,
 };
 
@@ -5741,9 +5761,59 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_SETPRESENCE: {
+            case FUNC_SET_PRESENCE_DETAILS: {
                 opcodeSize = 0;
-                SetPresence(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4], scriptEng.operands[5], scriptEng.operands[6]);
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ACTIVITY_DETAILS);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_STATE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ACTIVITY_STATE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_LARGEIMAGE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_LARGEIMAGE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_LARGETEXT: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_LARGETEXT);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_SMALLIMAGE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_SMALLIMAGE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_SMALLTEXT: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_SMALLTEXT);
+#endif
+                break;
+            }
+
+            case FUNC_UPDATE_PRESENCE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_UpdatePresence();
+#endif
                 break;
             }
         }
