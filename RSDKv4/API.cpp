@@ -28,7 +28,7 @@ void API_Discord_SetPresence(const char *text, int type)
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
         case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);   break;
 
-        case PRESENCE_ASSET_LARGEIMAGE: __assets.SetSmallImage(text); break;
+        case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(text); break;
         case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText(text);  break;
         case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(text); break;
         case PRESENCE_ASSET_SMALLTEXT:  __assets.SetSmallText(text);  break;
