@@ -15,7 +15,6 @@ void API_Discord_Update() // used in RetroGameLoop_Main
 {
     if (__discord)
         API_Discord_GetCore()->RunCallbacks();
-        API_Discord_SetRPCStatus("Insert Playing As Character Here", stageList[activeStageList][stageListPosition].name, "Test3", "Test4", "Test5", "Test6");
 }
 
 discord::Core *API_Discord_GetCore()
@@ -26,7 +25,7 @@ discord::Core *API_Discord_GetCore()
     return nullptr;
 }
 
-void API_Discord_SetRPCStatus(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText)
+void SetPresence(const char *details, const char *state, const char *largeImage, const char *largeText, const char *smallImage, const char *smallText)
 {
     if (__discord) {
         discord::Activity activity = {};

@@ -9,6 +9,10 @@
 #endif
 #endif
 
+#if RETRO_USE_DISCORD_SDK
+#include "discord.h"
+#endif
+
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
 
@@ -574,6 +578,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetUpdateChecker", 1),
     FunctionInfo("GetUpdateChecker", 0),
     FunctionInfo("LoadWebsite", 1),
+    FunctionInfo("SetPresence", 6)
 };
 
 #if RETRO_USE_COMPILER
@@ -1091,6 +1096,7 @@ enum ScrFunc {
     FUNC_SETUPDATECHECKER,
     FUNC_GETUPDATECHECKER,
     FUNC_LOADWEBSITE,
+    FUNC_SETPRESENCE,
     FUNC_MAX_CNT,
 };
 
@@ -5732,6 +5738,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Successfully loaded website!!: %s", temporar);
 				else
 					PrintLog("Unsuccessfully loaded website: %s", temporar);
+                break;
+            }
+
+            case FUNC_SETPRESENCE: {
+                opcodeSize = 0;
+                SetPresence(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4], scriptEng.operands[5], scriptEng.operands[6]);
                 break;
             }
         }
