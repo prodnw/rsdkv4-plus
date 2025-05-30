@@ -9,21 +9,23 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * Video Player has been ported over from CD, allowing any video to be played (also using the same code and formats as CD)
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects
- * New fading - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
+ * New fade function - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
  * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
  * New temp values - temp8, temp9, temp10
  * New functions (be sure to add these as values in GameConfig.bin!)
-    * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making)
+    * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making with your own fork)
     * "SetUpdateChecker" - Links with "CheckUpdates"
     * "GetUpdateChecker" - Links with "CheckUpdates"
     * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
+    * "GetModID" - Gets the ID of any mod in in the mod list and stores it in the checkResult (this could be used for having better mod compatibility with other mods)
+    * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw
 
 # Fork Credits
  * ProdNW - Code porting + minor edits
  * Jd - Video Player, SteamAPI, Discord RPC
  * Elsie The Pict - Code from Forever's engine fork
  * LittlePlanetCD - Code optimizations
- * EggBanana - Update checking, Website loading, "GetModID" function
+ * EggBanana - New functions listed above
  * SDG & Geared - Other misc. stuff
 
 # To-Dos:

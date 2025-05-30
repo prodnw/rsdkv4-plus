@@ -446,8 +446,8 @@ void RetroEngine::Init()
     }
 
     gameType = GAME_UNKNOWN;
-    if (strstr(gameWindowText, "Sonic Vengeance")) {
-        gameType = GAME_SONICVENGEANCE;
+    if (strstr(Engine.gameWindowText, "Sonic and the Duel of Fates")) {
+        Engine.gameType = GAME_SONICDUELOFFATES;
     }
 
     // Feel free to insert your own games!
