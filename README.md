@@ -6,7 +6,15 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 
 # **LIST OF THE NEW FEATURES & CHANGES**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](https://github.com/prodnw/rsdkv4-plus/tree/main#:~:text=to%20the%20command.-,RSDKv4%20flags,-RETRO_REVISION%3A%20What%20revision) )
- * Video Player has been ported over from CD, allowing any video to be played (also using the same code and formats as CD)
+ * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own Discord Application and add your own art. The new functions include:
+    * SetPresenceState("yourtexthere")
+    * SetPresenceDetails("yourtexthere")
+    * SetPresenceLargeImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
+    * SetPresenceLargeText("yourtexthere")
+    * SetPresenceSmallImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
+    * SetPresenceSmallText("yourtexthere")
+    * UpdatePresence()
+ * The Video Player has been ported over from the CD Decompilation, allowing any video to be played (also using the same code and formats as CD)
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects
  * New fade function - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
@@ -30,7 +38,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 
 # To-Dos:
  * Fix Extended Camera
- * Backport local 2PVS functions
+ * Backport a huge variety of features from v5/v5u (e.g. DrawLine, Local 2PVS, PNG Images, and more)
 
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
