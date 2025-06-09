@@ -597,11 +597,13 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "false", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "2"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "4"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "6"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "8"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "15"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "16"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_HSCALE", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_VSCALE", "8"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "13"), //scale applies hscale, vscale AND flip (but only horizontally? TODO perhaps?
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "15"), //rotozoom applies all of scale and rotate
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "16"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "31"), //not tint, it's unused
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "32"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENTATION_STAGE", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "REGULAR_STAGE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "BONUS_STAGE", "2"),
