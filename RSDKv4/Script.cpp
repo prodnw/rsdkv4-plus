@@ -3,9 +3,9 @@
 
 #if RETRO_USE_COMPILER
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (34)
+#define COMMON_SCRIPT_VAR_COUNT (41)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (33)
+#define COMMON_SCRIPT_VAR_COUNT (40)
 #endif
 #endif
 
@@ -593,6 +593,7 @@ const FunctionInfo functions[] = {
 int scriptValueListCount = 0;
 // clang-format off
 ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
+	//IMPORTANT: If you add aliases to this list, remember to increment COMMON_SCRIPT_VAR_COUNT at the top of the file
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "true", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "false", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "1"),

@@ -292,3 +292,4 @@ android/local.properties
 .flatpak-builder
 flatpak/*.apk
 build-dir
+cmake-build.bat
