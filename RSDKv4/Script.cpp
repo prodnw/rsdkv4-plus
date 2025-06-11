@@ -569,8 +569,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
 #endif
-
-    FunctionInfo("CheckUpdates", 0),
+    
+    FunctionInfo("CheckUpdates", 1),
     FunctionInfo("SetUpdateChecker", 1),
     FunctionInfo("GetUpdateChecker", 0),
     FunctionInfo("LoadWebsite", 1),
