@@ -1485,7 +1485,7 @@ int CheckUpdates(char website[]) {
 
 		// errorr check :P
 		if (res != CURLE_OK) {
-			PrintLog("curl_easy_perform() failed: %s", curl_easy_strerror(res));
+			PrintLog("CHECKUPDATE ERROR: curl_easy_perform() failed: %s", curl_easy_strerror(res));
 			scriptEng.checkResult = -4;
 		} else {
 			if (atoi(chunk.memory)) {
