@@ -1496,13 +1496,3 @@ int CheckUpdates(char website[]) {
 #endif
 	return scriptEng.checkResult;
 }
-
-void SetUpdateChecker(int value)
-{
-    CheckForthemUpdates = value;
-}
-
-void GetUpdateChecker()
-{
-    scriptEng.checkResult = CheckForthemUpdates;
-}

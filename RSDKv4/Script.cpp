@@ -357,6 +357,7 @@ const char variableNames[][0x20] = {
 #if RETRO_USE_HAPTICS
     "engine.hapticsEnabled",
 #endif
+    "game.checkForUpdates",
 };
 #endif
 
@@ -931,6 +932,7 @@ enum ScrVar {
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
 #endif
+    VAR_GAMECHECKFORUPDATES,
     VAR_MAX_CNT
 };
 
@@ -4210,6 +4212,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
+                    case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6797,6 +6800,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
+                    case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
