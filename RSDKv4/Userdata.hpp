@@ -237,7 +237,5 @@ void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void ApplyWindowChanges();
 int CheckUpdates(char website[]);
-void SetUpdateChecker(int value);
-void GetUpdateChecker();
 
 #endif //! USERDATA_H
