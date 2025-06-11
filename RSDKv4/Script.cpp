@@ -572,8 +572,6 @@ const FunctionInfo functions[] = {
 #endif
     
     FunctionInfo("CheckUpdates", 1),
-    FunctionInfo("SetUpdateChecker", 1),
-    FunctionInfo("GetUpdateChecker", 0),
     FunctionInfo("LoadWebsite", 1),
 
     // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
@@ -1105,8 +1103,6 @@ enum ScrFunc {
     FUNC_RESETINPUTSLOTASSIGNMENTS,
 #endif
     FUNC_CHECKUPDATES,
-    FUNC_SETUPDATECHECKER,
-    FUNC_GETUPDATECHECKER,
     FUNC_LOADWEBSITE,
 
     // Discord presence
@@ -5916,18 +5912,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Successfully loaded website!!: %s", temporarChar);
 				else
 					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
-                break;
-            }
-
-            case FUNC_SETUPDATECHECKER: {
-                opcodeSize = 0;
-                SetUpdateChecker(scriptEng.operands[0]);
-                break;
-            }
-
-            case FUNC_GETUPDATECHECKER: {
-                opcodeSize = 0;
-                GetUpdateChecker();
                 break;
             }
 
