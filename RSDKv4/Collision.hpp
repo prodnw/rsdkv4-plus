@@ -34,6 +34,12 @@ enum ObjectCollisionTypes {
     C_PLATFORM = 3,
 };
 
+#if RETRO_ACCEPT_OLD_SYNTAX
+enum ObjectOldCollisionTypes {
+	//C_BOX is already used below, so we're gonna need to do some trickery
+    C_BOX2     = 2,
+};
+#endif
 enum ObjectCollisionFlags {
     C_BOX = 0x10000,
 };
