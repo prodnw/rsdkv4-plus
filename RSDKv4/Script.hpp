@@ -19,7 +19,7 @@ struct ScriptFunction {
 
     byte access;
 #if RETRO_USE_COMPILER
-    char name[0x20];
+    char name[0x40];
 #endif
     ScriptPtr ptr;
 };
