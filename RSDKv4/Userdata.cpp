@@ -1330,6 +1330,7 @@ void GetWindowScaleMode() { scriptEng.checkResult = Engine.scalingMode; }
 void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
+void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1380,6 +1381,17 @@ void SetWindowVSync(int *enabled, int *unused)
         return;
 
     Engine.vsync = *enabled;
+}
+
+void SetFrameRate(int *enabled, int *unused)
+{
+    if (!enabled)
+        return;
+
+    Engine.refreshRate = *enabled;
+    if (Engine.refreshRate > 60)
+        Engine.refreshRate = 60;
+	//ApplyWindowChanges();
 }
 
 void ApplyWindowChanges()
