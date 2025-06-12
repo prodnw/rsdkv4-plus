@@ -20,6 +20,7 @@ else()
 endif()
 
 option(RETRO_USE_CURL "Compiles with cURL." OFF)
+option(RETRO_ACCEPT_OLD_SYNTAX "Allows compatibility with the old syntax." OFF)
 
 if(WIN32)
     option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
@@ -279,6 +280,7 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_USE_STEAMWORKS=$<BOOL:${RETRO_USE_STEAM}>
     RETRO_USE_DISCORD_SDK=$<BOOL:${RETRO_USE_DISCORD}>
     RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
+    RETRO_ACCEPT_OLD_SYNTAX=$<BOOL:${RETRO_ACCEPT_OLD_SYNTAX}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 
