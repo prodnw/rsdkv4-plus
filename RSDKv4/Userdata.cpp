@@ -54,8 +54,8 @@ bool forceUseScripts         = false;
 bool forceUseScripts_Config  = false;
 bool skipStartMenu           = false;
 bool skipStartMenu_Config    = false;
-int disableFocusPause        = 0;
-int disableFocusPause_Config = 0;
+int disableFocusPause        = 3;
+int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
 
 bool useSGame = false;
@@ -285,7 +285,7 @@ void InitUserdata()
         ini.SetInteger("Game", "GameType", Engine.gameTypeID = 0);
         ini.SetBool("Game", "SkipStartMenu", skipStartMenu = true);
         skipStartMenu_Config = skipStartMenu;
-        ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 0);
+        ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
 
@@ -437,7 +437,7 @@ void InitUserdata()
             skipStartMenu = true;
         skipStartMenu_Config = skipStartMenu;
         if (!ini.GetInteger("Game", "DisableFocusPause", &disableFocusPause))
-            disableFocusPause = false;
+            disableFocusPause = 3;
         disableFocusPause_Config = disableFocusPause;
         if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
             CheckForthemUpdates = true;
