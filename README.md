@@ -6,7 +6,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 
 # **LIST OF THE NEW FEATURES & CHANGES**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](https://github.com/prodnw/rsdkv4-plus/tree/main#:~:text=to%20the%20command.-,RSDKv4%20flags,-RETRO_REVISION%3A%20What%20revision) )
- * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own Discord Application and add your own art. The new functions include:
+  * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own Discord Application and add your own art. The new functions include:
     * SetPresenceState("yourtexthere")
     * SetPresenceDetails("yourtexthere")
     * SetPresenceLargeImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
@@ -14,7 +14,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * SetPresenceSmallImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
     * SetPresenceSmallText("yourtexthere")
     * UpdatePresence()
- * The Video Player has been ported over from the CD Decompilation, allowing any video to be played (also using the same code and formats as CD)
+ * Video Player has been ported over from CD, allowing any video to be played. (Videos must be in .ogv, and placed in "Data/Videos")
+ * Compatibility with mods / projects that run on the older syntax.
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects
  * New fade function - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
@@ -146,7 +147,10 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_HW_RENDER`: Enables the Hardware Renderer used by the main menu and touch controls UI. Takes a boolean, defaults to `on`.
 - `RETRO_ORIGINAL_CODE`: Removes any custom code. *A playable game will not be built with this enabled.* Takes a boolean, defaults to `off`.
 - `RETRO_SDL_VERSION`: *Only change this if you know what you're doing.* Switches between using SDL1 or SDL2. Takes an integer of either `1` or `2`, defaults to `2`.
-- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well.
+- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well, defaults to `off`.
+- `RETRO_USE_DISCORD` : Toggles whether or not Discord RPC is enabled, defaults to `off`.
+- `RETRO_USE_CURL` : Adds support for cURL, which is used for loading websites, defaults to `off`.
+- `RETRO_ACCEPT_OLD_SYNTAX` : Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
 
 ## Unofficial Branches
 Follow the installation instructions in the readme of each branch.

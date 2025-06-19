@@ -11,7 +11,7 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
-option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
+option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
 
 if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
 	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
