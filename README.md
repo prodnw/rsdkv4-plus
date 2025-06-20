@@ -13,8 +13,6 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * New temp values - temp8, temp9, temp10
  * New functions (be sure to add these as values in GameConfig.bin!)
     * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making)
-    * "SetUpdateChecker" - Links with "CheckUpdates"
-    * "GetUpdateChecker" - Links with "CheckUpdates"
     * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
 
 # Fork Credits

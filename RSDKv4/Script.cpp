@@ -2,10 +2,18 @@
 #include <cmath>
 
 #if RETRO_USE_COMPILER
+#if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (39)
+#define COMMON_SCRIPT_VAR_COUNT (123)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (33)
+#define COMMON_SCRIPT_VAR_COUNT (122)
+#endif
+#else
+#if !RETRO_REV00
+#define COMMON_SCRIPT_VAR_COUNT (41)
+#else
+#define COMMON_SCRIPT_VAR_COUNT (40)
+#endif
 #endif
 #endif
 
@@ -277,6 +285,37 @@ const char variableNames[][0x20] = {
     "keyPress.buttonR",
     "keyPress.start",
     "keyPress.select",
+
+#if RETRO_ACCEPT_OLD_SYNTAX
+    "inputDown.up",
+    "inputDown.down",
+    "inputDown.left",
+    "inputDown.right",
+    "inputDown.buttonA",
+    "inputDown.buttonB",
+    "inputDown.buttonC",
+    "inputDown.buttonX",
+    "inputDown.buttonY",
+    "inputDown.buttonZ",
+    "inputDown.buttonL",
+    "inputDown.buttonR",
+    "inputDown.start",
+    "inputDown.select",
+    "inputPress.up",
+    "inputPress.down",
+    "inputPress.left",
+    "inputPress.right",
+    "inputPress.buttonA",
+    "inputPress.buttonB",
+    "inputPress.buttonC",
+    "inputPress.buttonX",
+    "inputPress.buttonY",
+    "inputPress.buttonZ",
+    "inputPress.buttonL",
+    "inputPress.buttonR",
+    "inputPress.start",
+    "inputPress.select",
+#endif
 
     // Menu Properties
     "menu1.selection",
@@ -572,8 +611,6 @@ const FunctionInfo functions[] = {
 #endif
     
     FunctionInfo("CheckUpdates", 1),
-    FunctionInfo("SetUpdateChecker", 1),
-    FunctionInfo("GetUpdateChecker", 0),
     FunctionInfo("LoadWebsite", 1),
 };
 
@@ -607,9 +644,6 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MAT_TEMP", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_LEFT", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_RIGHT", "0"),
-#if !RETRO_REV00
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
-#endif
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_CHAOSCONTROL", "4"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
@@ -623,6 +657,96 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_ANDROID", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_NINTENDO", "6"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_STEAM", "7"),
+
+#if !RETRO_REV00
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
+#endif
+
+	//missing aliases for old syntax
+#if RETRO_ACCEPT_OLD_SYNTAX
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_X", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_Y", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_XY", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_BOX2", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_DEVMENU", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_MAINGAME", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_INITDEVMENU", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_WAIT", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_SCRIPTERROR", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_INITPAUSE", "5"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_EXITPAUSE", "6"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_ENDGAME", "7"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "ENGINE_RESETGAME", "8"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_STANDARD", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_MOBILE", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INK_NONE", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INK_BLEND", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INK_ALPHA", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INK_ADD", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INK_SUB", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CSIDE_FLOOR", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CSIDE_LWALL", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CSIDE_RWALL", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CSIDE_ROOF", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CMODE_FLOOR", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CMODE_LWALL", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CMODE_ROOF", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CMODE_RWALL", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "COL_NONE", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "COL_TOP", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "COL_LEFT", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "COL_RIGHT", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "COL_BOTTOM", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PATH_A", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PATH_B", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "GRAVITY_GROUND", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "GRAVITY_AIR", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_TEXTURED_3D", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_TEXTURED_2D", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_COLOURED_3D", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_COLOURED_2D", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_FADED", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_TEXTURED_C", "5"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_TEXTURED_C_BLEND", "6"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_TEXTURED_D", "6"), // identical to "FACE_TEXTURED_C_BLEND", but kept here for backwards compat purposes
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACE_SPRITE_3D", "7"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_ACTIVE_BOUNDS", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_ACTIVE", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_ACTIVE_PAUSED", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_XBOUNDS", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_XBOUNDS_DESTROY", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_INACTIVE", "5"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_BOUNDS_SMALL", "6"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_ACTIVE_SMALL", "7"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_UNKNOWN", "7"), // identical to "PRIORITY_ACTIVE_SMALL", but kept here for backwards compat purposes
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_NONE", "-1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_NORMAL", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_FOLLOW", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_EXTENDED", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_EXTENDED_OFFSET_L", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_EXTENDED_OFFSET_R", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_HLOCKED", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_INDEX", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_DIRECTION", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_VISUALPLANE", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_SOLIDITYA", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_SOLIDITYB", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_FLAGSA", "5"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_ANGLEA", "6"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_FLAGSB", "7"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILEINFO_ANGLEB", "8"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TEXTINFO_TEXTDATA", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TEXTINFO_TEXTSIZE", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TEXTINFO_ROWCOUNT", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_NOSCROLL", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_HSCROLL", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_VSCROLL", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_3DFLOOR", "3"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_3DSKY", "4"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "GROUP_ALL", "0"),
+#endif
 };
 // clang-format on
 
@@ -847,6 +971,36 @@ enum ScrVar {
     VAR_KEYPRESSBUTTONR,
     VAR_KEYPRESSSTART,
     VAR_KEYPRESSSELECT,
+#if RETRO_ACCEPT_OLD_SYNTAX
+    VAR_INPUTDOWNUP,
+    VAR_INPUTDOWNDOWN,
+    VAR_INPUTDOWNLEFT,
+    VAR_INPUTDOWNRIGHT,
+    VAR_INPUTDOWNBUTTONA,
+    VAR_INPUTDOWNBUTTONB,
+    VAR_INPUTDOWNBUTTONC,
+    VAR_INPUTDOWNBUTTONX,
+    VAR_INPUTDOWNBUTTONY,
+    VAR_INPUTDOWNBUTTONZ,
+    VAR_INPUTDOWNBUTTONL,
+    VAR_INPUTDOWNBUTTONR,
+    VAR_INPUTDOWNSTART,
+    VAR_INPUTDOWNSELECT,
+    VAR_INPUTPRESSUP,
+    VAR_INPUTPRESSDOWN,
+    VAR_INPUTPRESSLEFT,
+    VAR_INPUTPRESSRIGHT,
+    VAR_INPUTPRESSBUTTONA,
+    VAR_INPUTPRESSBUTTONB,
+    VAR_INPUTPRESSBUTTONC,
+    VAR_INPUTPRESSBUTTONX,
+    VAR_INPUTPRESSBUTTONY,
+    VAR_INPUTPRESSBUTTONZ,
+    VAR_INPUTPRESSBUTTONL,
+    VAR_INPUTPRESSBUTTONR,
+    VAR_INPUTPRESSSTART,
+    VAR_INPUTPRESSSELECT,
+#endif
     VAR_MENU1SELECTION,
     VAR_MENU2SELECTION,
     VAR_TILELAYERXSIZE,
@@ -1090,8 +1244,6 @@ enum ScrFunc {
     FUNC_RESETINPUTSLOTASSIGNMENTS,
 #endif
     FUNC_CHECKUPDATES,
-    FUNC_SETUPDATECHECKER,
-    FUNC_GETUPDATECHECKER,
     FUNC_LOADWEBSITE,
     FUNC_MAX_CNT,
 };
@@ -2882,6 +3034,16 @@ void ParseScriptFile(char *scriptName, int scriptID)
                         jumpTableOffset                                      = jumpTablePos;
                     }
 
+#if RETRO_ACCEPT_OLD_SYNTAX
+                    if (StrComp(scriptText, "eventObjectMain")) {
+                        parseMode                                            = PARSEMODE_FUNCTION;
+                        objectScriptList[scriptID].eventUpdate.scriptCodePtr = scriptCodePos;
+                        objectScriptList[scriptID].eventUpdate.jumpTablePtr  = jumpTablePos;
+                        scriptCodeOffset                                     = scriptCodePos;
+                        jumpTableOffset                                      = jumpTablePos;
+                    }
+#endif
+
                     if (StrComp(scriptText, "eventObjectDraw")) {
                         parseMode                                          = PARSEMODE_FUNCTION;
                         objectScriptList[scriptID].eventDraw.scriptCodePtr = scriptCodePos;
@@ -2993,6 +3155,46 @@ void ParseScriptFile(char *scriptName, int scriptID)
                             parseMode        = PARSEMODE_FUNCTION;
                         }
                     }
+#if RETRO_ACCEPT_OLD_SYNTAX
+                    else if (FindStringToken(scriptText, "function", 1) == 0) { // old style function decl, make it public
+                        char funcName[0x40];
+                        for (textPos = 8; scriptText[textPos]; ++textPos) funcName[textPos - 8] = scriptText[textPos];
+
+                        funcName[textPos - 8] = 0;
+                        int funcID             = -1;
+                        for (int f = 0; f < scriptFunctionCount; ++f) {
+                            if (StrComp(funcName, scriptFunctionList[f].name))
+                                funcID = f;
+                        }
+
+                        if (funcID <= -1) {
+                            if (scriptFunctionCount >= FUNCTION_COUNT) {
+                                parseMode = PARSEMODE_SCOPELESS;
+                            }
+                            else {
+                                StrCopy(scriptFunctionList[scriptFunctionCount].name, funcName);
+                                scriptFunctionList[scriptFunctionCount].access            = ACCESS_PUBLIC;
+                                scriptFunctionList[scriptFunctionCount].ptr.scriptCodePtr = scriptCodePos;
+                                scriptFunctionList[scriptFunctionCount].ptr.jumpTablePtr  = jumpTablePos;
+
+                                scriptCodeOffset = scriptCodePos;
+                                jumpTableOffset  = jumpTablePos;
+                                parseMode        = PARSEMODE_FUNCTION;
+                                ++scriptFunctionCount;
+                            }
+                        }
+                        else {
+                            StrCopy(scriptFunctionList[funcID].name, funcName);
+                            scriptFunctionList[funcID].access            = ACCESS_PUBLIC;
+                            scriptFunctionList[funcID].ptr.scriptCodePtr = scriptCodePos;
+                            scriptFunctionList[funcID].ptr.jumpTablePtr  = jumpTablePos;
+
+                            scriptCodeOffset = scriptCodePos;
+                            jumpTableOffset  = jumpTablePos;
+                            parseMode        = PARSEMODE_FUNCTION;
+                        }
+                    }
+#endif
                     break;
 
                 case PARSEMODE_PLATFORMSKIP:
@@ -4086,6 +4288,36 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_KEYPRESSSTART: scriptEng.operands[i] = keyPress.start; break;
                     case VAR_KEYPRESSSELECT: scriptEng.operands[i] = keyPress.select; break;
 #endif
+#if RETRO_ACCEPT_OLD_SYNTAX
+                    case VAR_INPUTDOWNUP: scriptEng.operands[i] = keyDown.up; break;
+                    case VAR_INPUTDOWNDOWN: scriptEng.operands[i] = keyDown.down; break;
+                    case VAR_INPUTDOWNLEFT: scriptEng.operands[i] = keyDown.left; break;
+                    case VAR_INPUTDOWNRIGHT: scriptEng.operands[i] = keyDown.right; break;
+                    case VAR_INPUTDOWNBUTTONA: scriptEng.operands[i] = keyDown.A; break;
+                    case VAR_INPUTDOWNBUTTONB: scriptEng.operands[i] = keyDown.B; break;
+                    case VAR_INPUTDOWNBUTTONC: scriptEng.operands[i] = keyDown.C; break;
+                    case VAR_INPUTDOWNBUTTONX: scriptEng.operands[i] = keyDown.X; break;
+                    case VAR_INPUTDOWNBUTTONY: scriptEng.operands[i] = keyDown.Y; break;
+                    case VAR_INPUTDOWNBUTTONZ: scriptEng.operands[i] = keyDown.Z; break;
+                    case VAR_INPUTDOWNBUTTONL: scriptEng.operands[i] = keyDown.L; break;
+                    case VAR_INPUTDOWNBUTTONR: scriptEng.operands[i] = keyDown.R; break;
+                    case VAR_INPUTDOWNSTART: scriptEng.operands[i] = keyDown.start; break;
+                    case VAR_INPUTDOWNSELECT: scriptEng.operands[i] = keyDown.select; break;
+                    case VAR_INPUTPRESSUP: scriptEng.operands[i] = keyPress.up; break;
+                    case VAR_INPUTPRESSDOWN: scriptEng.operands[i] = keyPress.down; break;
+                    case VAR_INPUTPRESSLEFT: scriptEng.operands[i] = keyPress.left; break;
+                    case VAR_INPUTPRESSRIGHT: scriptEng.operands[i] = keyPress.right; break;
+                    case VAR_INPUTPRESSBUTTONA: scriptEng.operands[i] = keyPress.A; break;
+                    case VAR_INPUTPRESSBUTTONB: scriptEng.operands[i] = keyPress.B; break;
+                    case VAR_INPUTPRESSBUTTONC: scriptEng.operands[i] = keyPress.C; break;
+                    case VAR_INPUTPRESSBUTTONX: scriptEng.operands[i] = keyPress.X; break;
+                    case VAR_INPUTPRESSBUTTONY: scriptEng.operands[i] = keyPress.Y; break;
+                    case VAR_INPUTPRESSBUTTONZ: scriptEng.operands[i] = keyPress.Z; break;
+                    case VAR_INPUTPRESSBUTTONL: scriptEng.operands[i] = keyPress.L; break;
+                    case VAR_INPUTPRESSBUTTONR: scriptEng.operands[i] = keyPress.R; break;
+					case VAR_INPUTPRESSSTART: scriptEng.operands[i] = keyPress.start; break;
+                    case VAR_INPUTPRESSSELECT: scriptEng.operands[i] = keyPress.select; break;
+#endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
                     case VAR_TILELAYERXSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].xsize; break;
@@ -5013,6 +5245,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                        scriptEng.operands[5], &objectEntityList[scriptEng.operands[6]], scriptEng.operands[7], scriptEng.operands[8],
                                        scriptEng.operands[9], scriptEng.operands[10]);
                         break;
+#if RETRO_ACCEPT_OLD_SYNTAX
+					case C_BOX: //old syntax
+#endif
                     case C_SOLID:
                         BoxCollision(&objectEntityList[scriptEng.operands[1]], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                                      scriptEng.operands[5], &objectEntityList[scriptEng.operands[6]], scriptEng.operands[7], scriptEng.operands[8],
@@ -5710,18 +5945,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Successfully loaded website!!: %s", temporarChar);
 				else
 					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
-                break;
-            }
-
-            case FUNC_SETUPDATECHECKER: {
-                opcodeSize = 0;
-                SetUpdateChecker(scriptEng.operands[0]);
-                break;
-            }
-
-            case FUNC_GETUPDATECHECKER: {
-                opcodeSize = 0;
-                GetUpdateChecker();
                 break;
             }
 
@@ -6436,6 +6659,36 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_KEYPRESSBUTTONR: keyPress.R = scriptEng.operands[i]; break;
                     case VAR_KEYPRESSSTART: keyPress.start = scriptEng.operands[i]; break;
                     case VAR_KEYPRESSSELECT: keyPress.select = scriptEng.operands[i]; break;
+#endif
+#if RETRO_ACCEPT_OLD_SYNTAX
+                    case VAR_INPUTDOWNUP: keyDown.up = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNDOWN: keyDown.down = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNLEFT: keyDown.left = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNRIGHT: keyDown.right = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONA: keyDown.A = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONB: keyDown.B = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONC: keyDown.C = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONX: keyDown.X = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONY: keyDown.Y = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONZ: keyDown.Z = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONL: keyDown.L = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONR: keyDown.R = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNSTART: keyDown.start = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNSELECT: keyDown.select = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSUP: keyPress.up = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSDOWN: keyPress.down = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSLEFT: keyPress.left = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSRIGHT: keyPress.right = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONA: keyPress.A = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONB: keyPress.B = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONC: keyPress.C = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONX: keyPress.X = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONY: keyPress.Y = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONZ: keyPress.Z = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONL: keyPress.L = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONR: keyPress.R = scriptEng.operands[i]; break;
+					case VAR_INPUTPRESSSTART: keyPress.start = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSSELECT: keyPress.select = scriptEng.operands[i]; break;
 #endif
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;

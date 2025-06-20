@@ -27,6 +27,8 @@ else()
     option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
 endif()
 
+option(RETRO_ACCEPT_OLD_SYNTAX "Allows compatibility with the old syntax." OFF)
+
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
 
 set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
@@ -263,6 +265,7 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_USE_STEAMWORKS=$<BOOL:${RETRO_USE_STEAM}>
     RETRO_USE_DISCORD_SDK=$<BOOL:${RETRO_USE_DISCORD}>
     RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
+    RETRO_ACCEPT_OLD_SYNTAX=$<BOOL:${RETRO_ACCEPT_OLD_SYNTAX}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 

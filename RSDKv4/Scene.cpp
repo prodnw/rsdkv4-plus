@@ -290,8 +290,7 @@ void ProcessStage(void)
                     frameCounter = 0;
                     if (++stageSeconds > 59) {
                         stageSeconds = 0;
-                        if (++stageMinutes > 60)
-                            stageMinutes = 0;
+                        ++stageMinutes;
                     }
                 }
                 stageMilliseconds = 100 * frameCounter / 60;
@@ -411,8 +410,7 @@ void ProcessStage(void)
                     frameCounter = 0;
                     if (++stageSeconds > 59) {
                         stageSeconds = 0;
-                        if (++stageMinutes > 60)
-                            stageMinutes = 0;
+                        ++stageMinutes;
                     }
                 }
                 stageMilliseconds = 100 * frameCounter / 60;
@@ -463,8 +461,7 @@ void ProcessStage(void)
                         frameCounter = 0;
                         if (++stageSeconds > 59) {
                             stageSeconds = 0;
-                            if (++stageMinutes > 60)
-                                stageMinutes = 0;
+                            ++stageMinutes;
                         }
                     }
                     stageMilliseconds = 100 * frameCounter / 60;
@@ -604,8 +601,7 @@ void ProcessStage(void)
                         frameCounter = 0;
                         if (++stageSeconds > 59) {
                             stageSeconds = 0;
-                            if (++stageMinutes > 60)
-                                stageMinutes = 0;
+                            ++stageMinutes;
                         }
                     }
                     stageMilliseconds = 100 * frameCounter / 60;

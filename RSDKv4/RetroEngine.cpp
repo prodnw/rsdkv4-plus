@@ -310,7 +310,7 @@ void RetroEngine::Init()
 #elif RETRO_PLATFORM == RETRO_ANDROID
     StrCopy(dest, gamePath);
     StrAdd(dest, Engine.dataFile[0]);
-    disableFocusPause = 0; // focus pause is ALWAYS enabled.
+    disableFocusPause = 3; // focus pause is ALWAYS enabled.
 #else
 
     StrCopy(dest, BASE_PATH);
@@ -1403,6 +1403,8 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowBorderless", SetWindowBorderless);
     AddNativeFunction("GetWindowVSync", GetWindowVSync);
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
+    AddNativeFunction("GetFrameRate", GetFrameRate);
+    AddNativeFunction("SetFrameRate", SetFrameRate);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);
