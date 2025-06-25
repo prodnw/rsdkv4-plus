@@ -22,17 +22,15 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
  * New temp values - temp8, temp9, temp10
  * New functions (be sure to add these as values in GameConfig.bin!)
-    * "CheckUpdates" - Checks whether your game needs an update (you'll have to edit the code and make a website to get the version number of whatever you're making with your own fork)
-    * "SetUpdateChecker" - Links with "CheckUpdates"
-    * "GetUpdateChecker" - Links with "CheckUpdates"
+    * "CheckUpdates" - Checks whether your game needs an update
     * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
     * "GetModID" - Gets the ID of any mod in in the mod list and stores it in the checkResult (this could be used for having better mod compatibility with other mods)
     * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw
 
 # Fork Credits
- * ProdNW - Code porting + minor edits
+ * ProdNW - Code porting, other minor edits
  * Jd - Video Player, SteamAPI, Discord RPC
- * Elsie The Pict - Code from Forever's engine fork
+ * Elspeth  - Graphical FX additions, script parsing additions
  * LittlePlanetCD - Code optimizations
  * EggBanana - New functions listed above
  * SDG & Geared - Other misc. stuff

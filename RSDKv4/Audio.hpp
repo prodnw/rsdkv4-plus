@@ -2,7 +2,7 @@
 #define AUDIO_H
 
 #define TRACK_COUNT (0x10)
-#define SFX_COUNT   (0x100)
+#define SFX_COUNT   (0x400)
 #if !RETRO_USE_ORIGINAL_CODE
 #define CHANNEL_COUNT (0x10) // 4 in the original, 16 for convenience
 #else
@@ -76,14 +76,24 @@ enum MusicStatuses {
     MUSIC_READY   = 4,
 };
 
+enum VoiceStatuses {
+    VOICE_STOPPED = 0,
+    VOICE_PLAYING = 1,
+    VOICE_PAUSED  = 2,
+    VOICE_LOADING = 3,
+    VOICE_READY   = 4,
+};
+
 extern int globalSFXCount;
 extern int stageSFXCount;
 
 extern int masterVolume;
 extern int trackID;
 extern int sfxVolume;
+extern int voiceVolume;
 extern int bgmVolume;
 extern bool audioEnabled;
+extern int voiceStatus;
 
 extern bool musicEnabled;
 extern int musicStatus;
@@ -232,10 +242,11 @@ inline void SetMusicVolume(int volume)
     masterVolume = volume;
 }
 
-inline void SetGameVolumes(int bgmVol, int sfxVol)
+inline void SetGameVolumes(int bgmVol, int sfxVol, int voiceVolume)
 {
     bgmVolume = bgmVol;
     sfxVolume = sfxVol;
+    voiceVolume = voiceVol;
 
     if (bgmVolume < 0)
         bgmVolume = 0;
@@ -246,6 +257,11 @@ inline void SetGameVolumes(int bgmVol, int sfxVol)
         sfxVolume = 0;
     if (sfxVolume > MAX_VOLUME)
         sfxVolume = MAX_VOLUME;
+
+    if (voiceVolume < 0)
+        voiceVolume = 0;
+    if (voiceVolume > MAX_VOLUME)
+        voiceVolume = MAX_VOLUME;
 }
 
 inline bool PauseSound()
