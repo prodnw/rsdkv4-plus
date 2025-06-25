@@ -242,7 +242,7 @@ inline void SetMusicVolume(int volume)
     masterVolume = volume;
 }
 
-inline void SetGameVolumes(int bgmVol, int sfxVol, int voiceVolume)
+inline void SetGameVolumes(int bgmVol, int sfxVol, int voiceVol)
 {
     bgmVolume = bgmVol;
     sfxVolume = sfxVol;

@@ -6,6 +6,7 @@ int stageSFXCount  = 0;
 
 int masterVolume  = MAX_VOLUME;
 int trackID       = -1;
+int voiceVolume   = MAX_VOLUME;
 int sfxVolume     = MAX_VOLUME;
 int bgmVolume     = MAX_VOLUME;
 bool audioEnabled = false;
