@@ -30,7 +30,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
 # Fork Credits
  * ProdNW - Code porting, other minor edits
  * Jd - Video Player, SteamAPI, Discord RPC
- * Elspeth  - Graphical FX additions, script parsing additions
+ * Elspeth - Graphical FX additions, script parsing additions
  * LittlePlanetCD - Code optimizations
  * EggBanana - New functions listed above
  * SDG & Geared - Other misc. stuff
