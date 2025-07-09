@@ -39,7 +39,6 @@ jobs:
       - name: Install dependencies
         run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x86-windows-static
       - name: Build RSDKv4
-        if: ${{ github.event.inputs.cmake-options == 'Steam' }} 
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}} 
           cmake --build build --parallel --config Release
