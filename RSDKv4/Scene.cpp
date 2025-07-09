@@ -1798,43 +1798,65 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
         }
     }
 
-     if (!player->gravity) {
-        if (player->boundEntity->direction) {
-            if (cameraStyle == CAMERASTYLE_EXTENDED_OFFSET_R || player->speed < -0x5F5C2)
-                cameraLagStyle = 2;
-            else
-                cameraLagStyle = 0;
+    if (!target->gravity) {
+        if (target->direction) {
+            if (cameraStyle == CAMERASTYLE_EXTENDED_OFFSET_R || target->speed < -0x5F5C2) {
+                cameraShift = 2;
+                if (target->lookPosX <= 63) {
+                    target->lookPosX += 2;
+                }
+            }
+            else {
+                cameraShift = 0;
+                if (target->lookPosX < 0) {
+                    target->lookPosX += 2;
+                }
+
+                if (target->lookPosX > 0) {
+                    target->lookPosX -= 2;
+                }
+            }
         }
         else {
-            cameraLagStyle = (cameraStyle == CAMERASTYLE_EXTENDED_OFFSET_L || player->speed > 0x5F5C2) != 0;
-        }
-    }
-    if (cameraLagStyle) {
-        if (cameraLagStyle == 1) {
-            if (cameraLag > -64)
-                cameraLag -= 2;
-        }
-        else if (cameraLagStyle == 2 && cameraLag < 64) {
-            cameraLag += 2;
+            if (cameraStyle == CAMERASTYLE_EXTENDED_OFFSET_L || target->speed > 0x5F5C2) {
+                cameraShift = 1;
+                if (target->lookPosX >= -63) {
+                    target->lookPosX -= 2;
+                }
+            }
+            else {
+                cameraShift = 0;
+                if (target->lookPosX < 0) {
+                    target->lookPosX += 2;
+                }
+
+                if (target->lookPosX > 0) {
+                    target->lookPosX -= 2;
+                }
+            }
         }
     }
     else {
-        cameraLag += cameraLag < 0 ? 2 : 0;
-        if (cameraLag > 0)
-            cameraLag -= 2;
-    }
-    if (playerXPos <= cameraLag + SCREEN_CENTERX + xBoundary1) {
-        player->screenXPos = cameraShakeX + playerXPos - xBoundary1;
-        xScrollOffset      = xBoundary1 - cameraShakeX;
-    }
-    else {
-        xScrollOffset      = cameraShakeX + playerXPos - SCREEN_CENTERX - cameraLag;
-        player->screenXPos = cameraLag + SCREEN_CENTERX - cameraShakeX;
-        if (playerXPos - cameraLag > xBoundary2 - SCREEN_CENTERX) {
-            player->screenXPos = cameraShakeX + SCREEN_CENTERX + playerXPos - (xBoundary2 - SCREEN_CENTERX);
-            xScrollOffset      = xBoundary2 - SCREEN_XSIZE - cameraShakeX;
+        if (cameraShift == 1) {
+            if (target->lookPosX >= -63) {
+                target->lookPosX -= 2;
+            }
+        }
+        else if (cameraShift < 1) {
+            if (target->lookPosX < 0) {
+                target->lookPosX += 2;
+            }
+            if (target->lookPosX > 0) {
+                target->lookPosX -= 2;
+            }
+        }
+        else if (cameraShift == 2) {
+            if (target->lookPosX <= 63) {
+                target->lookPosX += 2;
+            }
         }
     }
+    cameraXPos = targetX - target->lookPosX;
 
     if (!target->scrollTracking) {
         if (cameraLockedY) {
