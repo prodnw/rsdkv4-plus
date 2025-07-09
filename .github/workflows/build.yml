@@ -29,7 +29,7 @@ env:
 
 jobs:
   v4-windows:
-    if: ${{ github.event.inputs.windows-x86 == 'true' }}  
+    if: ${{ github.event.inputs.windows-x86 == 'true' || github.event_name == 'push' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -52,7 +52,7 @@ jobs:
           name: v4-windows
           path: artifacts
   v4-windows-x64:
-    if: ${{ github.event.inputs.windows-x64 == 'true' }}  
+    if: ${{ github.event.inputs.windows-x64 == 'true' || github.event_name == 'push' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -76,7 +76,7 @@ jobs:
           path: artifacts
 
   v4-android:
-    if: ${{ github.event.inputs.android == 'true' }}  
+    if: ${{ github.event.inputs.android == 'true' || github.event_name == 'push' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout repository Android
@@ -129,7 +129,7 @@ jobs:
           name: v4-android
           path: ./android/app/build/outputs/apk
   v4-linux:
-    if: ${{ github.event.inputs.linux == 'true' }}  
+    if: ${{ github.event.inputs.linux == 'true' || github.event_name == 'push' }}  
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
