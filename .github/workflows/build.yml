@@ -3,6 +3,20 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs: 
+       windows-x64: 
+         type: boolean
+         description: 'Windows (x64)'
+       windows-x86:
+         type: boolean
+         description: 'Windows (x86)'
+       linux: 
+         type: boolean
+         description: 'Linux'
+       android: 
+         type: boolean
+         description: 'Android'
 
 env:
   GENERAL_FLAGS: "-DRETRO_DISABLE_PLUS=ON -DCMAKE_BUILD_TYPE=Release -DRETRO_SDL_VERSION=2 -DRETRO_USE_HW_RENDER=0 -DRETRO_USE_STEAM=0 -DRETRO_USE_DISCORD=0"
@@ -15,6 +29,7 @@ env:
 
 jobs:
   v4-windows:
+    if: ${{ github.event.inputs.windows-x86 == 'true' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -24,8 +39,9 @@ jobs:
       - name: Install dependencies
         run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x86-windows-static
       - name: Build RSDKv4
+        if: ${{ github.event.inputs.cmake-options == 'Steam' }} 
         run: |
-          cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}}
+          cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}} 
           cmake --build build --parallel --config Release
       - name: Move artifacts
         run: |
@@ -37,6 +53,7 @@ jobs:
           name: v4-windows
           path: artifacts
   v4-windows-x64:
+    if: ${{ github.event.inputs.windows-x64 == 'true' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -60,6 +77,7 @@ jobs:
           path: artifacts
 
   v4-android:
+    if: ${{ github.event.inputs.android == 'true' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout repository Android
@@ -112,6 +130,7 @@ jobs:
           name: v4-android
           path: ./android/app/build/outputs/apk
   v4-linux:
+    if: ${{ github.event.inputs.linux == 'true' }}  
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
