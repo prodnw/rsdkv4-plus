@@ -5,8 +5,8 @@ A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (20
 This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a variety of new ones. The engine was formerly called "Vengeance Engine" since I was using it for my fangame, and while I still am I have decided that I wanted to rename it in case anyone else needs to use the engine for their own purposes.
 
 # **LIST OF THE NEW FEATURES & CHANGES**
- * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](https://github.com/prodnw/rsdkv4-plus/tree/main#:~:text=to%20the%20command.-,RSDKv4%20flags,-RETRO_REVISION%3A%20What%20revision) )
-  * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own Discord Application and add your own art. The new functions include:
+ * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](#compiling))
+  * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own [Discord Application](https://discord.com/developers/applications) and add your own art. The new functions include:
     * SetPresenceState("yourtexthere")
     * SetPresenceDetails("yourtexthere")
     * SetPresenceLargeImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
@@ -36,8 +36,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * SDG & Geared - Other misc. stuff
 
 # To-Dos:
- * Fix Extended Camera
- * Backport a huge variety of features from v5/v5u (e.g. DrawLine, Local 2PVS, PNG Images, and more)
+- [ ] Fix Extended Camera
+- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, Local 2PVS, PNG Images, and more)
 
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
@@ -96,7 +96,7 @@ If you've already cloned the repo, run this command inside of the repository:
 ## Getting dependencies
 
 ### Windows
-To handle dependencies, you'll need to install [Visual Studio Community](https://visualstudio.microsoft.com/downloads/) (make sure to install the `Desktop development with C++` package during the installation) and [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd#1---set-up-vcpkg) (You only need to follow `1 - Set up vcpkg`).
+ To handle dependencies, you'll need to install [Visual Studio Community](https://visualstudio.microsoft.com/downloads/) (make sure to install the `Desktop development with C++` package during the installation) and [vcpkg](https://learn.microsoft.com/en-us/vcpkg/get_started/get-started?pivots=shell-cmd#1---set-up-vcpkg) (You only need to follow `1 - Set up vcpkg`).
 
 After installing those, run the following in Command Prompt (make sure to replace `[vcpkg root]` with the path to the vcpkg installation!):
 - `[vcpkg root]\vcpkg.exe install glew sdl2 libogg libtheora libvorbis --triplet=x64-windows-static` (If you're compiling a 32-bit build, replace `x64-windows-static` with `x86-windows-static`.)
