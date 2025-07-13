@@ -71,8 +71,8 @@ void OptionsMenu_Main(void *objPtr)
             if (self->timer > 1.0) {
                 self->timer      = 0.0;
                 self->state      = OPTIONSMENU_STATE_MAIN;
-                keyPress.start = false;
-                keyPress.A     = false;
+                keyPress[0].start = false;
+                keyPress[0].A     = false;
             }
             break;
         }
@@ -85,13 +85,13 @@ void OptionsMenu_Main(void *objPtr)
                     usePhysicalControls = false;
                 }
                 else {
-                    if (keyPress.up) {
+                    if (keyPress[0].up) {
                         PlaySfxByName("Menu Move", false);
                         self->selectedButton--;
                         if (self->selectedButton < 0)
                             self->selectedButton = OPTIONSMENU_BUTTON_COUNT - 1;
                     }
-                    else if (keyPress.down) {
+                    else if (keyPress[0].down) {
                         PlaySfxByName("Menu Move", false);
                         self->selectedButton++;
                         if (self->selectedButton >= OPTIONSMENU_BUTTON_COUNT)
@@ -100,13 +100,13 @@ void OptionsMenu_Main(void *objPtr)
                     for (int i = 0; i < OPTIONSMENU_BUTTON_COUNT; ++i) self->buttons[i]->b = 0xFF;
                     self->buttons[self->selectedButton]->b = 0x00;
 
-                    if (self->buttons[self->selectedButton]->g > 0x80 && (keyPress.start || keyPress.A)) {
+                    if (self->buttons[self->selectedButton]->g > 0x80 && (keyPress[0].start || keyPress[0].A)) {
                         PlaySfxByName("Menu Select", false);
                         self->buttons[self->selectedButton]->state = SUBMENUBUTTON_STATE_FLASHING2;
                         self->buttons[self->selectedButton]->b     = 0xFF;
                         self->state                                = OPTIONSMENU_STATE_ACTION;
 #if !RETRO_USE_ORIGINAL_CODE
-                        self->unused1 = Engine.devMenu && self->selectedButton == OPTIONSMENU_BUTTON_INSTRUCTIONS && !keyDown.X;
+                        self->unused1 = Engine.devMenu && self->selectedButton == OPTIONSMENU_BUTTON_INSTRUCTIONS && !keyDown[0].X;
                         if (self->unused1)
                             StopMusic(true);
 #endif
@@ -138,7 +138,7 @@ void OptionsMenu_Main(void *objPtr)
                     y -= 30.0;
                 }
 
-                if (self->state == OPTIONSMENU_STATE_MAIN && (keyDown.up || keyDown.down)) {
+                if (self->state == OPTIONSMENU_STATE_MAIN && (keyDown[0].up || keyDown[0].down)) {
                     self->selectedButton = 0;
                     usePhysicalControls  = true;
                 }

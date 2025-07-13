@@ -194,8 +194,8 @@ void RecordsScreen_Main(void *objPtr)
         }
 
         case RECORDSSCREEN_STATE_MAIN: {
-            CheckKeyDown(&keyDown);
-            CheckKeyPress(&keyPress);
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
             SetRenderMatrix(&self->matrixTemp);
             if (!usePhysicalControls) {
                 if (touches <= 0) {
@@ -285,16 +285,16 @@ void RecordsScreen_Main(void *objPtr)
                 }
 
                 if (self->state == RECORDSSCREEN_STATE_MAIN) {
-                    if (keyDown.left) {
+                    if (keyDown[0].left) {
                         self->selectedButton = RECORDSSCREEN_BUTTON_NEXTACT;
                         usePhysicalControls  = true;
                     }
                     else {
-                        if (keyDown.right) {
+                        if (keyDown[0].right) {
                             self->selectedButton = RECORDSSCREEN_BUTTON_PLAY;
                             usePhysicalControls  = true;
                         }
-                        else if (keyPress.B) {
+                        else if (keyPress[0].B) {
                             PlaySfxByName("Menu Back", false);
                             self->backPressed = false;
                             self->state       = RECORDSSCREEN_STATE_EXIT;
@@ -312,7 +312,7 @@ void RecordsScreen_Main(void *objPtr)
                     self->backPressed    = false;
 
                     if (self->actCount > 1) {
-                        if (keyPress.left) {
+                        if (keyPress[0].left) {
                             PlaySfxByName("Menu Move", false);
                             self->selectedButton--;
                             if (self->selectedButton < 0) {
@@ -324,7 +324,7 @@ void RecordsScreen_Main(void *objPtr)
                                 self->flipRight = true;
                             }
                         }
-                        else if (keyPress.right) {
+                        else if (keyPress[0].right) {
                             PlaySfxByName("Menu Move", false);
                             self->selectedButton++;
                             if (self->selectedButton >= 2) {
@@ -342,7 +342,7 @@ void RecordsScreen_Main(void *objPtr)
                         self->buttons[self->selectedButton]->state = PUSHBUTTON_STATE_SELECTED;
                     }
 
-                    if (keyPress.start || keyPress.A) {
+                    if (keyPress[0].start || keyPress[0].A) {
                         if (self->selectedButton) {
                             PlaySfxByName("Menu Move", false);
                             self->state     = RECORDSSCREEN_STATE_FLIP;
@@ -355,7 +355,7 @@ void RecordsScreen_Main(void *objPtr)
                             self->buttons[RECORDSSCREEN_BUTTON_PLAY]->state = PUSHBUTTON_STATE_FLASHING;
                         }
                     }
-                    else if (keyPress.B) {
+                    else if (keyPress[0].B) {
                         PlaySfxByName("Menu Back", false);
                         self->backPressed = false;
                         self->state       = RECORDSSCREEN_STATE_EXIT;

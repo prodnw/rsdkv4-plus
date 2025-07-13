@@ -70,8 +70,8 @@ void InstructionsScreen_Main(void *objPtr)
         }
 
         case INSTRUCTIONSCREEN_STATE_MAIN: {
-            CheckKeyDown(&keyDown);
-            CheckKeyPress(&keyPress);
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
             SetRenderMatrix(&self->matrixTemp);
 
             if (usePhysicalControls) {
@@ -84,13 +84,13 @@ void InstructionsScreen_Main(void *objPtr)
                     self->touchedBack = false;
 
                     if (self->textHeight > 68.0) {
-                        if (keyDown.up)
+                        if (keyDown[0].up)
                             self->textY = fmaxf(68.0, self->textY - 2.0);
-                        if (keyDown.down)
+                        if (keyDown[0].down)
                             self->textY = fminf(self->textHeight, self->textY + 2.0);
                     }
 
-                    if (keyDown.left) {
+                    if (keyDown[0].left) {
                         PlaySfxByName("Menu Move", false);
                         self->state       = INSTRUCTIONSCREEN_STATE_FLIP;
                         self->stateInput  = INSTRUCTIONSCREEN_STATEINPUT_CHECKPRESS;
@@ -99,7 +99,7 @@ void InstructionsScreen_Main(void *objPtr)
                         if (--self->pageID < 0)
                             self->pageID = 4;
                     }
-                    else if (keyDown.right) {
+                    else if (keyDown[0].right) {
                         PlaySfxByName("Menu Move", false);
                         self->state       = INSTRUCTIONSCREEN_STATE_FLIP;
                         self->stateInput  = INSTRUCTIONSCREEN_STATEINPUT_CHECKPRESS;
@@ -123,7 +123,7 @@ void InstructionsScreen_Main(void *objPtr)
                             self->selectionEnabled = false;
                         }
 
-                        if (keyDown.up || keyDown.down)
+                        if (keyDown[0].up || keyDown[0].down)
                             usePhysicalControls = true;
                         break;
 
@@ -246,10 +246,10 @@ void InstructionsScreen_Main(void *objPtr)
                 self->selectionEnabled = false;
             }
 
-            if (keyDown.up || keyDown.down || keyDown.left || keyDown.right)
+            if (keyDown[0].up || keyDown[0].down || keyDown[0].left || keyDown[0].right)
                 usePhysicalControls = true;
 
-            if (self->state == 1 && keyPress.B) {
+            if (self->state == 1 && keyPress[0].B) {
                 PlaySfxByName("Menu Back", false);
                 self->touchedBack = false;
                 self->state       = INSTRUCTIONSCREEN_STATE_EXIT;

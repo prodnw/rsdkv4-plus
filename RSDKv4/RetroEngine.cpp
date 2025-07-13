@@ -655,7 +655,7 @@ void RetroEngine::Run()
         if (!(Engine.focusState & 1) || vsPlaying) {
 #if !RETRO_USE_ORIGINAL_CODE
             for (int s = 0; s < gameSpeed; ++s) {
-                ProcessInput();
+				for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {ProcessInput(i);}
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
