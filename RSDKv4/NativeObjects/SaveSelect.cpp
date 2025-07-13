@@ -116,8 +116,8 @@ void SaveSelect_Main(void *objPtr)
             if (self->timer > 1.0) {
                 self->timer      = 0.0;
                 self->state      = SAVESELECT_STATE_MAIN;
-                keyPress.start = false;
-                keyPress.A     = false;
+                keyPress[0].start = false;
+                keyPress[0].A     = false;
             }
             break;
         }
@@ -135,7 +135,7 @@ void SaveSelect_Main(void *objPtr)
                     usePhysicalControls = false;
                 }
                 else {
-                    if (keyPress.up) {
+                    if (keyPress[0].up) {
                         PlaySfxByName("Menu Move", false);
                         self->selectedButton--;
                         if (self->deleteEnabled && self->selectedButton < SAVESELECT_BUTTON_NOSAVE) {
@@ -145,7 +145,7 @@ void SaveSelect_Main(void *objPtr)
                             self->selectedButton = SAVESELECT_BUTTON_COUNT - 1;
                         }
                     }
-                    else if (keyPress.down) {
+                    else if (keyPress[0].down) {
                         PlaySfxByName("Menu Move", false);
                         self->selectedButton++;
                         if (self->deleteEnabled && self->selectedButton > SAVESELECT_BUTTON_COUNT) {
@@ -158,7 +158,7 @@ void SaveSelect_Main(void *objPtr)
 
                     for (int i = 0; i < SAVESELECT_BUTTON_COUNT; ++i) self->saveButtons[i]->b = 0xFF;
 
-                    if (self->deleteEnabled && (keyPress.left || keyPress.right)) {
+                    if (self->deleteEnabled && (keyPress[0].left || keyPress[0].right)) {
                         if (self->selectedButton < SAVESELECT_BUTTON_COUNT) {
                             self->selectedButton   = SAVESELECT_BUTTON_COUNT;
                             self->delButton->state = PUSHBUTTON_STATE_SELECTED;
@@ -179,7 +179,7 @@ void SaveSelect_Main(void *objPtr)
                         }
                     }
 
-                    if (keyPress.start || keyPress.A) {
+                    if (keyPress[0].start || keyPress[0].A) {
                         if (self->selectedButton < SAVESELECT_BUTTON_COUNT) {
                             if (self->state == SAVESELECT_STATE_MAIN_DELETING) {
                                 if (self->selectedButton > SAVESELECT_BUTTON_NOSAVE && saveGame->files[self->selectedButton - 1].stageID > 0) {
@@ -258,7 +258,7 @@ void SaveSelect_Main(void *objPtr)
 
                 if (self->state == SAVESELECT_STATE_MAIN) {
                     if (!self->deleteEnabled) {
-                        if (keyDown.up || keyDown.down || keyDown.left || keyDown.right) {
+                        if (keyDown[0].up || keyDown[0].down || keyDown[0].left || keyDown[0].right) {
                             self->selectedButton = SAVESELECT_BUTTON_NOSAVE;
                             usePhysicalControls  = true;
                         }
@@ -275,7 +275,7 @@ void SaveSelect_Main(void *objPtr)
                                 self->state            = SAVESELECT_STATE_LOADSAVE;
                             }
                             else {
-                                if (keyDown.up || keyDown.down || keyDown.left || keyDown.right) {
+                                if (keyDown[0].up || keyDown[0].down || keyDown[0].left || keyDown[0].right) {
                                     self->selectedButton = SAVESELECT_BUTTON_NOSAVE;
                                     usePhysicalControls  = true;
                                 }
@@ -286,7 +286,7 @@ void SaveSelect_Main(void *objPtr)
                                                                     (64.0 * self->delButton->scale) + self->delButton->textWidth, 12.0)
                                                      >= 0;
                             if (self->state == SAVESELECT_STATE_MAIN) {
-                                if (keyDown.up || keyDown.down || keyDown.left || keyDown.right) {
+                                if (keyDown[0].up || keyDown[0].down || keyDown[0].left || keyDown[0].right) {
                                     self->selectedButton = SAVESELECT_BUTTON_NOSAVE;
                                     usePhysicalControls  = true;
                                 }

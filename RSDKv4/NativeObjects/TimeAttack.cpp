@@ -343,8 +343,8 @@ void TimeAttack_Main(void *objPtr)
             if (self->timer > 1.0) {
                 self->timer      = 0.0;
                 self->state      = TIMEATTACK_STATE_MAIN;
-                keyPress.start = false;
-                keyPress.A     = false;
+                keyPress[0].start = false;
+                keyPress[0].A     = false;
             }
             break;
         }
@@ -467,11 +467,11 @@ void TimeAttack_Main(void *objPtr)
                 }
 
                 if (self->state == TIMEATTACK_STATE_MAIN) {
-                    if (keyDown.left) {
+                    if (keyDown[0].left) {
                         usePhysicalControls = true;
                         self->zoneID        = (3 * self->pageID);
                     }
-                    if (keyDown.right) {
+                    if (keyDown[0].right) {
                         usePhysicalControls = true;
                         self->zoneID        = (3 * self->pageID) + 2;
                     }
@@ -482,7 +482,7 @@ void TimeAttack_Main(void *objPtr)
                     usePhysicalControls = false;
                 }
                 else {
-                    if (keyPress.left && self->zoneID > 0) {
+                    if (keyPress[0].left && self->zoneID > 0) {
                         PlaySfxByName("Menu Move", false);
                         self->zoneID--;
                         if (self->zoneID < (self->pageID * 3) && self->zoneID > 0) {
@@ -493,7 +493,7 @@ void TimeAttack_Main(void *objPtr)
                             self->zoneID        = (3 * self->pageID) + 2;
                         }
                     }
-                    else if (keyPress.right && self->zoneID < (timeAttack_ZoneCount + timeAttack_ExZoneCount) - 1) {
+                    else if (keyPress[0].right && self->zoneID < (timeAttack_ZoneCount + timeAttack_ExZoneCount) - 1) {
                         PlaySfxByName("Menu Move", false);
                         ++self->zoneID;
                         if (self->zoneID >= ((self->pageID + 1) * 3)) {
@@ -509,7 +509,7 @@ void TimeAttack_Main(void *objPtr)
                         self->zoneButtons[i]->state = ZONEBUTTON_STATE_UNSELECTED;
                     if (self->state == TIMEATTACK_STATE_MAIN) {
                         self->zoneButtons[self->zoneID]->state = ZONEBUTTON_STATE_SELECTED;
-                        if (self->zoneButtons[self->zoneID]->unlocked && (keyPress.start || keyPress.A)) {
+                        if (self->zoneButtons[self->zoneID]->unlocked && (keyPress[0].start || keyPress[0].A)) {
                             PlaySfxByName("Menu Select", false);
                             self->zoneButtons[self->zoneID]->state = ZONEBUTTON_STATE_FLASHING;
                             self->state                            = TIMEATTACK_STATE_ACTION;

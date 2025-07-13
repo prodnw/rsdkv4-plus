@@ -1,6 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#define DEFAULT_INPUT_COUNT 4
+
 enum InputButtons {
     INPUT_UP,
     INPUT_DOWN,
@@ -62,8 +64,8 @@ enum DefaultHapticIDs {
     HAPTIC_STOP = -1,
 };
 
-extern InputData keyPress;
-extern InputData keyDown;
+extern InputData keyPress[DEFAULT_INPUT_COUNT];
+extern InputData keyDown[DEFAULT_INPUT_COUNT];
 
 extern int touchDown[8];
 extern int touchX[8];
@@ -76,13 +78,13 @@ extern int touches;
 extern int hapticEffectNum;
 
 #if !RETRO_USE_ORIGINAL_CODE
-extern InputButton inputDevice[INPUT_BUTTONCOUNT];
-extern int inputType;
+extern InputButton inputDevice[DEFAULT_INPUT_COUNT][INPUT_BUTTONCOUNT];
+extern int inputType[DEFAULT_INPUT_COUNT];
 
-extern float LSTICK_DEADZONE;
-extern float RSTICK_DEADZONE;
-extern float LTRIGGER_DEADZONE;
-extern float RTRIGGER_DEADZONE;
+extern float LSTICK_DEADZONE[DEFAULT_INPUT_COUNT];
+extern float RSTICK_DEADZONE[DEFAULT_INPUT_COUNT];
+extern float LTRIGGER_DEADZONE[DEFAULT_INPUT_COUNT];
+extern float RTRIGGER_DEADZONE[DEFAULT_INPUT_COUNT];
 
 extern int mouseHideTimer;
 extern int lastMouseX;
@@ -119,11 +121,11 @@ extern SDL_Joystick *controller;
 void InitInputDevices();
 void ReleaseInputDevices();
 
-void ProcessInput();
+void ProcessInput(int deviceID);
 #endif
 
-void CheckKeyPress(InputData *input);
-void CheckKeyDown(InputData *input);
+void CheckKeyPress(InputData input[]);
+void CheckKeyDown(InputData input[]);
 
 int CheckTouchRect(float x1, float y1, float x2, float y2);
 int CheckTouchRectMatrix(void *m, float x1, float y1, float x2, float y2);
