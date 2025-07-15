@@ -350,7 +350,7 @@ void SetObjectTypeName(const char *objectName, int objectID)
 
 void ProcessObjectControl(Entity *entity)
 {
-	if (entity->controlMode < DEFAULT_INPUT_COUNT) {
+	if (entity->controlMode < DEFAULT_INPUT_COUNT && entity->controlMode >= 0) {
 		int deviceID = entity->controlMode;
 		entity->up   = keyDown[deviceID].up;
 		entity->down = keyDown[deviceID].down;
@@ -362,7 +362,7 @@ void ProcessObjectControl(Entity *entity)
 			entity->left  = false;
 			entity->right = false;
 		}
-		entity->jumpHold  =  keyDown[deviceID].C  || keyDown[deviceID].B  || keyDown[deviceID].A;
+		entity->jumpHold  =  keyDown[deviceID].C ||  keyDown[deviceID].B ||  keyDown[deviceID].A;
 		entity->jumpPress = keyPress[deviceID].C || keyPress[deviceID].B || keyPress[deviceID].A;
 	}
 }
