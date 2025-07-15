@@ -12,7 +12,7 @@
 #include <asio.hpp>
 
 char networkHost[64];
-char networkGame[7] = "SONIC2";
+char gameTitle[0x40]
 int networkPort     = 50;
 int dcError         = 0;
 float lastPing      = 0;
@@ -90,7 +90,7 @@ public:
         // do we write anything
         while (!write_msgs_.empty()) {
             ServerPacket *send = &write_msgs_.front();
-            StrCopy(send->game, networkGame);
+            StrCopy(send->game, gameTitle);
             socket.send_to(asio::buffer(send, sizeof(ServerPacket)), endpoint);
             write_msgs_.pop_front();
             if (send->header == 0xFF)
@@ -104,7 +104,7 @@ public:
             timer.async_wait([&](const asio::error_code &) {
                 retried     = true;
                 repeat.room = room;
-                StrCopy(repeat.game, networkGame);
+                StrCopy(repeat.game, gameTitle);
                 if (retries++ == 10)
                     socket.send_to(asio::buffer(&repeat, sizeof(ServerPacket)), endpoint);
             });
@@ -298,5 +298,5 @@ void SendServerPacket(ServerPacket &send, bool repeat) { session->write(send, re
 int GetRoomCode() { return session->room; }
 void SetRoomCode(int code) { session->room = code; }
 
-void SetNetworkGameName(int *a1, const char *name) { StrCopy(networkGame, name); }
+void SetNetworkGameName(int *a1, const char *name) { StrCopy(gameTitle, name); }
 #endif
