@@ -1,7 +1,7 @@
 #include "RetroEngine.hpp"
 
-InputData keyPress[DEFAULT_INPUT_COUNT];
-InputData keyDown[DEFAULT_INPUT_COUNT];
+InputData keyPress[DEFAULT_INPUT_COUNT + 1];
+InputData keyDown[DEFAULT_INPUT_COUNT + 1];
 
 int touchDown[8];
 int touchX[8];
@@ -486,9 +486,24 @@ void ProcessInput(int deviceID)
 // Pretty much is this code in the original, just formatted differently
 void CheckKeyPress(InputData input[])
 {
+	input[DEFAULT_INPUT_COUNT].up		= false;
+	input[DEFAULT_INPUT_COUNT].down		= false;
+	input[DEFAULT_INPUT_COUNT].left		= false;
+	input[DEFAULT_INPUT_COUNT].right	= false;
+	input[DEFAULT_INPUT_COUNT].A		= false;
+	input[DEFAULT_INPUT_COUNT].B		= false;
+	input[DEFAULT_INPUT_COUNT].C		= false;
+	input[DEFAULT_INPUT_COUNT].X		= false;
+	input[DEFAULT_INPUT_COUNT].Y		= false;
+	input[DEFAULT_INPUT_COUNT].Z		= false;
+	input[DEFAULT_INPUT_COUNT].L		= false;
+	input[DEFAULT_INPUT_COUNT].R		= false;
+	input[DEFAULT_INPUT_COUNT].start	= false;
+	input[DEFAULT_INPUT_COUNT].select	= false;
+	
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 #if !RETRO_USE_ORIGINAL_CODE
-		input[i].up	= inputDevice[i][INPUT_UP].press;
+		input[i].up		= inputDevice[i][INPUT_UP].press;
 		input[i].down	= inputDevice[i][INPUT_DOWN].press;
 		input[i].left	= inputDevice[i][INPUT_LEFT].press;
 		input[i].right	= inputDevice[i][INPUT_RIGHT].press;
@@ -501,7 +516,22 @@ void CheckKeyPress(InputData input[])
 		input[i].L		= inputDevice[i][INPUT_BUTTONL].press;
 		input[i].R		= inputDevice[i][INPUT_BUTTONR].press;
 		input[i].start	= inputDevice[i][INPUT_START].press;
-		input[i].select= inputDevice[i][INPUT_SELECT].press;
+		input[i].select	= inputDevice[i][INPUT_SELECT].press;
+		
+		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].press;
+		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].press;
+		input[DEFAULT_INPUT_COUNT].left		|= inputDevice[i][INPUT_LEFT].press;
+		input[DEFAULT_INPUT_COUNT].right	|= inputDevice[i][INPUT_RIGHT].press;
+		input[DEFAULT_INPUT_COUNT].A		|= inputDevice[i][INPUT_BUTTONA].press;
+		input[DEFAULT_INPUT_COUNT].B		|= inputDevice[i][INPUT_BUTTONB].press;
+		input[DEFAULT_INPUT_COUNT].C		|= inputDevice[i][INPUT_BUTTONC].press;
+		input[DEFAULT_INPUT_COUNT].X		|= inputDevice[i][INPUT_BUTTONX].press;
+		input[DEFAULT_INPUT_COUNT].Y		|= inputDevice[i][INPUT_BUTTONY].press;
+		input[DEFAULT_INPUT_COUNT].Z		|= inputDevice[i][INPUT_BUTTONZ].press;
+		input[DEFAULT_INPUT_COUNT].L		|= inputDevice[i][INPUT_BUTTONL].press;
+		input[DEFAULT_INPUT_COUNT].R		|= inputDevice[i][INPUT_BUTTONR].press;
+		input[DEFAULT_INPUT_COUNT].start	|= inputDevice[i][INPUT_START].press;
+		input[DEFAULT_INPUT_COUNT].select	|= inputDevice[i][INPUT_SELECT].press;
 #endif
 	}
 
@@ -513,9 +543,24 @@ void CheckKeyPress(InputData input[])
 
 void CheckKeyDown(InputData input[])
 {
+	input[DEFAULT_INPUT_COUNT].up		= false;
+	input[DEFAULT_INPUT_COUNT].down		= false;
+	input[DEFAULT_INPUT_COUNT].left		= false;
+	input[DEFAULT_INPUT_COUNT].right	= false;
+	input[DEFAULT_INPUT_COUNT].A		= false;
+	input[DEFAULT_INPUT_COUNT].B		= false;
+	input[DEFAULT_INPUT_COUNT].C		= false;
+	input[DEFAULT_INPUT_COUNT].X		= false;
+	input[DEFAULT_INPUT_COUNT].Y		= false;
+	input[DEFAULT_INPUT_COUNT].Z		= false;
+	input[DEFAULT_INPUT_COUNT].L		= false;
+	input[DEFAULT_INPUT_COUNT].R		= false;
+	input[DEFAULT_INPUT_COUNT].start	= false;
+	input[DEFAULT_INPUT_COUNT].select	= false;
+	
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 #if !RETRO_USE_ORIGINAL_CODE
-		input[i].up	= inputDevice[i][INPUT_UP].hold;
+		input[i].up		= inputDevice[i][INPUT_UP].hold;
 		input[i].down	= inputDevice[i][INPUT_DOWN].hold;
 		input[i].left	= inputDevice[i][INPUT_LEFT].hold;
 		input[i].right	= inputDevice[i][INPUT_RIGHT].hold;
@@ -528,7 +573,22 @@ void CheckKeyDown(InputData input[])
 		input[i].L		= inputDevice[i][INPUT_BUTTONL].hold;
 		input[i].R		= inputDevice[i][INPUT_BUTTONR].hold;
 		input[i].start	= inputDevice[i][INPUT_START].hold;
-		input[i].select= inputDevice[i][INPUT_SELECT].hold;
+		input[i].select	= inputDevice[i][INPUT_SELECT].hold;
+		
+		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].hold;
+		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].hold;
+		input[DEFAULT_INPUT_COUNT].left		|= inputDevice[i][INPUT_LEFT].hold;
+		input[DEFAULT_INPUT_COUNT].right	|= inputDevice[i][INPUT_RIGHT].hold;
+		input[DEFAULT_INPUT_COUNT].A		|= inputDevice[i][INPUT_BUTTONA].hold;
+		input[DEFAULT_INPUT_COUNT].B		|= inputDevice[i][INPUT_BUTTONB].hold;
+		input[DEFAULT_INPUT_COUNT].C		|= inputDevice[i][INPUT_BUTTONC].hold;
+		input[DEFAULT_INPUT_COUNT].X		|= inputDevice[i][INPUT_BUTTONX].hold;
+		input[DEFAULT_INPUT_COUNT].Y		|= inputDevice[i][INPUT_BUTTONY].hold;
+		input[DEFAULT_INPUT_COUNT].Z		|= inputDevice[i][INPUT_BUTTONZ].hold;
+		input[DEFAULT_INPUT_COUNT].L		|= inputDevice[i][INPUT_BUTTONL].hold;
+		input[DEFAULT_INPUT_COUNT].R		|= inputDevice[i][INPUT_BUTTONR].hold;
+		input[DEFAULT_INPUT_COUNT].start	|= inputDevice[i][INPUT_START].hold;
+		input[DEFAULT_INPUT_COUNT].select	|= inputDevice[i][INPUT_SELECT].hold;
 #endif
 	}
 }

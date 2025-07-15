@@ -62,8 +62,8 @@ enum DefaultHapticIDs {
     HAPTIC_STOP = -1,
 };
 
-extern InputData keyPress[DEFAULT_INPUT_COUNT];
-extern InputData keyDown[DEFAULT_INPUT_COUNT];
+extern InputData keyPress[DEFAULT_INPUT_COUNT + 1];
+extern InputData keyDown[DEFAULT_INPUT_COUNT + 1];
 
 extern int touchDown[8];
 extern int touchX[8];
