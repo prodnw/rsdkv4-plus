@@ -213,11 +213,20 @@ int ProcessVideo()
             fadeMode += 8;
         }
 
-        if (inputDevice[INPUT_ANY].press || touches > 0) {
+        if (inputDevice[INPUT_BUTTONA].press || inputDevice[INPUT_START].press > 0) {
             if (!videoSkipped)
                 fadeMode = 0;
 
             videoSkipped = true;
+        }
+
+        if (Engine.gameDeviceType == RETRO_MOBILE) {
+            if (touches > 0) {
+                if (!videoSkipped)
+                    fadeMode = 0;
+
+                videoSkipped = true;
+            }
         }
 
         if (fadeMode <= 0) {
