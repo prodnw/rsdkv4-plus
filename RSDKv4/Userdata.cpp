@@ -303,6 +303,8 @@ void InitUserdata()
         ini.SetInteger("Window", "ScreenWidth", SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE);
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         ini.SetInteger("Window", "RefreshRate", Engine.refreshRate = 60);
+	    if (Engine.refreshRate > 60)
+	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
 
@@ -464,6 +466,8 @@ void InitUserdata()
             SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE;
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         if (!ini.GetInteger("Window", "RefreshRate", &Engine.refreshRate))
+            Engine.refreshRate = 60;		
+        if (Engine.refreshRate > 60)
             Engine.refreshRate = 60;
         if (!ini.GetInteger("Window", "DimLimit", &Engine.dimLimit))
             Engine.dimLimit = 300; // 5 mins
