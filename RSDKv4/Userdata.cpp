@@ -308,6 +308,7 @@ void InitUserdata()
 
         ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
         ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
+        ini.SetFloat("Audio", "VoiceVolume", voiceVolume / (float)MAX_VOLUME);
 
 #if RETRO_USING_SDL2
         ini.SetInteger("Keyboard 1", "Up", inputDevice[INPUT_UP].keyMappings = SDL_SCANCODE_UP);
@@ -474,6 +475,8 @@ void InitUserdata()
             bv = 1.0f;
         if (!ini.GetFloat("Audio", "SFXVolume", &sv))
             sv = 1.0f;
+        if (!ini.GetFloat("Audio", "VoiceVolume", &sv))
+            sv = 1.0f;
 
         bgmVolume = bv * MAX_VOLUME;
         sfxVolume = sv * MAX_VOLUME;
@@ -487,6 +490,11 @@ void InitUserdata()
             sfxVolume = MAX_VOLUME;
         if (sfxVolume < 0)
             sfxVolume = 0;
+
+        if (voiceVolume > MAX_VOLUME)
+            voiceVolume = MAX_VOLUME;
+        if (voiceVolume < 0)
+            voiceVolume = 0;
 
 #if RETRO_USING_SDL2
         if (!ini.GetInteger("Keyboard 1", "Up", &inputDevice[INPUT_UP].keyMappings))
@@ -751,6 +759,7 @@ void WriteSettings()
 
     ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
     ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
+    ini.SetFloat("Audio", "VoiceVolume", voiceVolume / (float)MAX_VOLUME);
 
 #if RETRO_USING_SDL2
     ini.SetComment("Keyboard 1", "IK1Comment",

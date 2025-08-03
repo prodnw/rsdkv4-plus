@@ -4,15 +4,15 @@
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (123)
+#define COMMON_SCRIPT_VAR_COUNT (124)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (122)
+#define COMMON_SCRIPT_VAR_COUNT (123)
 #endif
 #else
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (41)
+#define COMMON_SCRIPT_VAR_COUNT (42)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (40)
+#define COMMON_SCRIPT_VAR_COUNT (41)
 #endif
 #endif
 #endif
@@ -371,6 +371,7 @@ const char variableNames[][0x20] = {
     "engine.language",
     "engine.onlineActive",
     "engine.sfxVolume",
+    "engine.voiceVolume",
     "engine.bgmVolume",
 #if RETRO_REV00
     "engine.platformID",
@@ -518,6 +519,8 @@ const FunctionInfo functions[] = {
     // Sound FX
     FunctionInfo("PlaySfx", 2),
     FunctionInfo("StopSfx", 1),
+    FunctionInfo("PlayVoice", 2),
+    FunctionInfo("StopVoice", 1),
     FunctionInfo("SetSfxAttributes", 3),
 
     // More Collision Stuff
@@ -1060,6 +1063,7 @@ enum ScrVar {
     VAR_ENGINELANGUAGE,
     VAR_ENGINEONLINEACTIVE,
     VAR_ENGINESFXVOLUME,
+    VAR_ENGINEVOICEVOLUME,
     VAR_ENGINEBGMVOLUME,
 #if RETRO_REV00
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
@@ -1183,6 +1187,8 @@ enum ScrFunc {
     FUNC_NEXTVIDEOFRAME,
     FUNC_PLAYSFX,
     FUNC_STOPSFX,
+    FUNC_PLAYVOICE,
+    FUNC_STOPVOICE,
     FUNC_SETSFXATTRIBUTES,
     FUNC_OBJECTTILECOLLISION,
     FUNC_OBJECTTILEGRIP,
@@ -4386,6 +4392,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINELANGUAGE: scriptEng.operands[i] = Engine.language; break;
                     case VAR_ENGINEONLINEACTIVE: scriptEng.operands[i] = Engine.onlineActive; break;
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
+                    case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
 #if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
@@ -5559,6 +5566,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_STOPSFX:
                 opcodeSize = 0;
                 StopSfx(scriptEng.operands[0]);
+                break;
+            case FUNC_PLAYVOICE:
+                opcodeSize = 0;
+                PlayVoice(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+            case FUNC_STOPVOICE:
+                opcodeSize = 0;
+                StopVoice(scriptEng.operands[0]);
                 break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
@@ -7002,11 +7017,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEONLINEACTIVE: Engine.onlineActive = scriptEng.operands[i]; break;
                     case VAR_ENGINESFXVOLUME:
                         sfxVolume = scriptEng.operands[i];
-                        SetGameVolumes(bgmVolume, sfxVolume);
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
+                        break;
+                    case VAR_ENGINEVOICEVOLUME:
+                        voiceVolume = scriptEng.operands[i];
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
                     case VAR_ENGINEBGMVOLUME:
                         bgmVolume = scriptEng.operands[i];
-                        SetGameVolumes(bgmVolume, sfxVolume);
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
 #if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: break;

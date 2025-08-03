@@ -177,7 +177,18 @@ inline void StopMusic(bool setStatus)
 
 void LoadSfx(char *filePath, byte sfxID);
 void PlaySfx(int sfx, bool loop);
+void PlayVoice(int sfx, bool loop);
 inline void StopSfx(int sfx)
+{
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        if (sfxChannels[i].sfxID == sfx) {
+            MEM_ZERO(sfxChannels[i]);
+            sfxChannels[i].sfxID = -1;
+        }
+    }
+}
+
+inline void StopVoice(int sfx)
 {
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
         if (sfxChannels[i].sfxID == sfx) {
@@ -242,11 +253,11 @@ inline void SetMusicVolume(int volume)
     masterVolume = volume;
 }
 
-inline void SetGameVolumes(int bgmVol, int sfxVol)
+inline void SetGameVolumes(int bgmVol, int sfxVol, int voiceVol)
 {
     bgmVolume = bgmVol;
     sfxVolume = sfxVol;
-    //voiceVolume = voiceVol;
+    voiceVolume = voiceVol;
 
     if (bgmVolume < 0)
         bgmVolume = 0;
