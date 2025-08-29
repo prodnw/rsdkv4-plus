@@ -197,7 +197,7 @@ void SettingsScreen_Main(void *objPtr)
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->musVolume > 0)
                                     saveGame->musVolume -= (MAX_VOLUME / 5);
-                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                                 if (!saveGame->musVolume)
                                     musicEnabled = false;
                             }
@@ -210,7 +210,7 @@ void SettingsScreen_Main(void *objPtr)
                                     if (!self->isPauseMenu)
                                         PlayMusic(0, 0);
                                 }
-                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume,saveGame->voiceVolume);
                             }
                             break;
                         case SETTINGSSCREEN_SEL_SFXVOL:
@@ -220,13 +220,13 @@ void SettingsScreen_Main(void *objPtr)
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->sfxVolume > 0)
                                     saveGame->sfxVolume -= (MAX_VOLUME / 5);
-                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                             }
                             else if (keyPress.right) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->sfxVolume < MAX_VOLUME)
                                     saveGame->sfxVolume += (MAX_VOLUME / 5);
-                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                                SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                             }
                             break;
                         case SETTINGSSCREEN_SEL_SPINDASH:
@@ -309,7 +309,7 @@ void SettingsScreen_Main(void *objPtr)
                         if (saveGame->musVolume > 0) {
                             saveGame->musVolume -= (MAX_VOLUME / 5);
                         }
-                        SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                        SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                         if (!saveGame->musVolume)
                             musicEnabled = false;
                     }
@@ -324,7 +324,7 @@ void SettingsScreen_Main(void *objPtr)
                             musicEnabled = true;
                             PlayMusic(0, 0);
                         }
-                        SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+                        SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                     }
 
                     if (self->buttons[SETTINGSSCREEN_BTN_SFXUP]->state == PUSHBUTTON_STATE_SELECTED) {
@@ -335,7 +335,7 @@ void SettingsScreen_Main(void *objPtr)
                             sfxVolume -= (MAX_VOLUME / 5);
                             saveGame->sfxVolume = sfxVolume;
                         }
-                        SetGameVolumes(saveGame->musVolume, sfxVolume);
+                        SetGameVolumes(saveGame->musVolume, sfxVolume, saveGame->voiceVolume);
                     }
 
                     if (self->buttons[SETTINGSSCREEN_BTN_SFXDOWN]->state == PUSHBUTTON_STATE_SELECTED) {
@@ -346,7 +346,7 @@ void SettingsScreen_Main(void *objPtr)
                             sfxVolume += (MAX_VOLUME / 5);
                             saveGame->sfxVolume = sfxVolume;
                         }
-                        SetGameVolumes(saveGame->musVolume, sfxVolume);
+                        SetGameVolumes(saveGame->musVolume, sfxVolume, saveGame->voiceVolume);
                     }
 
                     if (self->buttons[SETTINGSSCREEN_BTN_SDON]->state == PUSHBUTTON_STATE_SELECTED) {
