@@ -2,7 +2,7 @@
 
 A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (2013).
 
-This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a variety of new ones. The engine was formerly called "Vengeance Engine" since I was using it for my fangame, and while I still am I have decided that I wanted to rename it in case anyone else needs to use the engine for their own purposes.
+This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones
 
 # **LIST OF THE NEW FEATURES & CHANGES**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](#compiling))
@@ -33,7 +33,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * Elspeth - Graphical FX additions, script parsing additions
  * LittlePlanetCD - Code optimizations
  * EggBanana - New functions listed above
- * SDG & Geared - Other misc. stuff
+ * SDG - Controller Vibration
+ * Geared - Other misc. stuff
 
 # To-Dos:
 - [ ] Fix Extended Camera

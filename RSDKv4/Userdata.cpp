@@ -57,6 +57,7 @@ bool skipStartMenu_Config    = false;
 int disableFocusPause        = 3;
 int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
+int ControllerVibration      = false;
 
 bool useSGame = false;
 
@@ -288,6 +289,7 @@ void InitUserdata()
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
+        ini.SetInteger("Game", "ControllerVibration", ControllerVibration = false);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -444,6 +446,8 @@ void InitUserdata()
         disableFocusPause_Config = disableFocusPause;
         if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
             CheckForthemUpdates = true;
+        if (!ini.GetInteger("Game", "ControllerVibration", &ControllerVibration))
+            ControllerVibration = false;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -735,6 +739,8 @@ void WriteSettings()
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
     ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
+    ini.SetComment("Game", "ControllerComment", "When enabled, your controller will vibrate when applicable.");
+    ini.SetInteger("Game", "ControllerVibration", ControllerVibration);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");

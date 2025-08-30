@@ -114,6 +114,7 @@ extern bool skipStartMenu_Config;
 extern int disableFocusPause;
 extern int disableFocusPause_Config;
 extern int CheckForthemUpdates;
+extern int ControllerVibration;
 
 inline int GetGlobalVariableByName(const char *name)
 {

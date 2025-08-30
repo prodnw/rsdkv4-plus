@@ -4,9 +4,9 @@
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (124)
+#define COMMON_SCRIPT_VAR_COUNT (127)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (123)
+#define COMMON_SCRIPT_VAR_COUNT (126)
 #endif
 #else
 #if !RETRO_REV00
@@ -319,6 +319,8 @@ const char variableNames[][0x20] = {
     // Menu Properties
     "menu1.selection",
     "menu2.selection",
+    "menu3.selection",
+    "menu4.selection",
 
     // Tile Layer Properties
     "tileLayer.xsize",
@@ -397,6 +399,7 @@ const char variableNames[][0x20] = {
     "engine.hapticsEnabled",
 #endif
     "game.checkForUpdates",
+    "game.vibrateController",
 };
 #endif
 
@@ -651,6 +654,8 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "SPECIAL_STAGE", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_1", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_2", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_3", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_4", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_TOUCH", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID2", "2"),
@@ -1018,6 +1023,8 @@ enum ScrVar {
 #endif
     VAR_MENU1SELECTION,
     VAR_MENU2SELECTION,
+    VAR_MENU3SELECTION,
+    VAR_MENU4SELECTION,
     VAR_TILELAYERXSIZE,
     VAR_TILELAYERYSIZE,
     VAR_TILELAYERTYPE,
@@ -1088,6 +1095,7 @@ enum ScrVar {
     VAR_HAPTICSENABLED,
 #endif
     VAR_GAMECHECKFORUPDATES,
+    VAR_GAMECONTROLLERVIBRATION,
     VAR_MAX_CNT
 };
 
@@ -1263,6 +1271,7 @@ enum ScrFunc {
 #endif
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
+    FUNC_CONTROLLER_VIBRATION,
 
     // Discord presence
     FUNC_SET_PRESENCE_DETAILS,
@@ -4347,6 +4356,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
+                    case VAR_MENU3SELECTION: scriptEng.operands[i] = gameMenu[2].selection1; break;
+                    case VAR_MENU4SELECTION: scriptEng.operands[i] = gameMenu[3].selection1; break;
                     case VAR_TILELAYERXSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].xsize; break;
                     case VAR_TILELAYERYSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].ysize; break;
                     case VAR_TILELAYERTYPE: scriptEng.operands[i] = stageLayouts[arrayVal].type; break;
@@ -4448,6 +4459,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
+                    case VAR_GAMECONTROLLERVIBRATION: scriptEng.operands[i] = ControllerVibration; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6232,6 +6244,24 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
+
+            case FUNC_CONTROLLER_VIBRATION: {
+                opcodeSize = 0;
+				if (ControllerVibration == true) {
+					if (scriptEng.operands[0] != -1) {
+						SDL_GameController *controller = SDL_GameControllerOpen(0);
+						if (controller) {
+							SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+							if (SDL_JoystickHasRumble(joystick)) {
+								SDL_JoystickRumble(joystick, 0x1000, 0x1000, scriptEng.operands[0] * 10);
+							}
+							SDL_GameControllerClose(controller);
+						}
+
+					}
+				}
+                break;
+            }
         }
 
         // Set Values
@@ -6965,6 +6995,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU3SELECTION: gameMenu[2].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU4SELECTION: gameMenu[3].selection1 = scriptEng.operands[i]; break;
                     case VAR_TILELAYERXSIZE: stageLayouts[arrayVal].xsize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERYSIZE: stageLayouts[arrayVal].ysize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERTYPE: stageLayouts[arrayVal].type = scriptEng.operands[i]; break;
@@ -7069,6 +7101,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
+                    case VAR_GAMECONTROLLERVIBRATION: ControllerVibration = scriptEng.operands[i]; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
