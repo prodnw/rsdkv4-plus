@@ -4,9 +4,9 @@
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (127)
+#define COMMON_SCRIPT_VAR_COUNT (129)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (126)
+#define COMMON_SCRIPT_VAR_COUNT (128)
 #endif
 #else
 #if !RETRO_REV00
@@ -399,7 +399,6 @@ const char variableNames[][0x20] = {
     "engine.hapticsEnabled",
 #endif
     "game.checkForUpdates",
-    "game.vibrateController",
 };
 #endif
 
@@ -601,7 +600,6 @@ const FunctionInfo functions[] = {
 #endif
     FunctionInfo("Print", 3),
 
-#if RETRO_REV03
     // Extras
     FunctionInfo("CheckCameraProximity", 4),
     FunctionInfo("SetScreenCount", 1),
@@ -613,7 +611,6 @@ const FunctionInfo functions[] = {
     FunctionInfo("AssignInputSlotToDevice", 2),
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
-#endif
     
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
@@ -629,6 +626,14 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetPresenceSmallImage", 1),
     FunctionInfo("SetPresenceSmallText", 1),
     FunctionInfo("UpdatePresence", 0),
+
+    FunctionInfo("SetControllerVibration", 1),
+    FunctionInfo("GetControllerVibration", 0),
+    FunctionInfo("VibrateController", 0),
+    FunctionInfo("SetVibrationIntensity", 1),
+    FunctionInfo("GetVibrationIntensity", 0),
+
+    FunctionInfo("CheckButtonPress", 0),
 };
 
 #if RETRO_USE_COMPILER
@@ -1095,7 +1100,6 @@ enum ScrVar {
     VAR_HAPTICSENABLED,
 #endif
     VAR_GAMECHECKFORUPDATES,
-    VAR_GAMECONTROLLERVIBRATION,
     VAR_MAX_CNT
 };
 
@@ -1256,7 +1260,6 @@ enum ScrFunc {
 #endif
     FUNC_PRINT,
 
-#if RETRO_REV03
     // Extras
     FUNC_CHECKCAMERAPROXIMITY,
     FUNC_SETSCREENCOUNT,
@@ -1268,11 +1271,10 @@ enum ScrFunc {
     FUNC_ASSIGNINPUTSLOTTODEVICE,
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
-#endif
+    
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
-    FUNC_CONTROLLER_VIBRATION,
-
+    
     // Discord presence
     FUNC_SET_PRESENCE_DETAILS,
     FUNC_SET_PRESENCE_STATE,
@@ -1281,6 +1283,14 @@ enum ScrFunc {
     FUNC_SET_PRESENCE_SMALLIMAGE,
     FUNC_SET_PRESENCE_SMALLTEXT,
     FUNC_UPDATE_PRESENCE,
+
+    FUNC_SETCONTROLLERVIBRATION,
+    FUNC_GETCONTROLLERVIBRATION,
+    FUNC_CONTROLLER_VIBRATION,
+    FUNC_SETVIBRATIONINTENSITY,
+    FUNC_GETVIBRATIONINTENSITY,
+
+    FUNC_CHECKBUTTONPRESSED,
 
     FUNC_MAX_CNT,
 };
@@ -4459,7 +4469,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
-                    case VAR_GAMECONTROLLERVIBRATION: scriptEng.operands[i] = ControllerVibration; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6164,7 +6173,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
 #endif
 
-
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
 				char temporarChar[0x4000];
@@ -6245,6 +6253,18 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            case FUNC_SETCONTROLLERVIBRATION: {
+                opcodeSize = 0;
+                ControllerVibration = scriptEng.operands[0];
+                break;
+            }
+
+            case FUNC_GETCONTROLLERVIBRATION: {
+                opcodeSize = 0;
+                scriptEng.checkResult = ControllerVibration;
+                break;
+            }
+
             case FUNC_CONTROLLER_VIBRATION: {
                 opcodeSize = 0;
 				if (ControllerVibration == true) {
@@ -6253,13 +6273,31 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 						if (controller) {
 							SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
 							if (SDL_JoystickHasRumble(joystick)) {
-								SDL_JoystickRumble(joystick, 0x1000, 0x1000, scriptEng.operands[0] * 10);
+								SDL_JoystickRumble(joystick, VibrationIntensity, VibrationIntensity, scriptEng.operands[0] * 10);
 							}
 							SDL_GameControllerClose(controller);
 						}
 
 					}
 				}
+                break;
+            }
+
+            case FUNC_SETVIBRATIONINTENSITY: {
+                opcodeSize = 0;
+                VibrationIntensity = scriptEng.operands[0];
+                break;
+            }
+
+            case FUNC_GETVIBRATIONINTENSITY: {
+                opcodeSize = 0;
+                scriptEng.checkResult = VibrationIntensity;
+                break;
+            }
+
+            case FUNC_CHECKBUTTONPRESSED: {
+                opcodeSize = 0;
+                // idk yet
                 break;
             }
         }
@@ -7101,7 +7139,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
-                    case VAR_GAMECONTROLLERVIBRATION: ControllerVibration = scriptEng.operands[i]; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

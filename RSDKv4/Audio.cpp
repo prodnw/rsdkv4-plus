@@ -470,8 +470,8 @@ void ProcessAudioPlayback(void *userdata, Uint8 *stream, int len)
                 }
 
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
-                ProcessAudioMixing(mix_buffer, buffer, (int)samples_done, sfxVolume, sfx->pan);
-                ProcessAudioMixing(mix_buffer, buffer, (int)samples_done, voiceVolume, sfx->pan);
+            int volume = sfx->isVoice ? voiceVolume : sfxVolume;
+            ProcessAudioMixing(mix_buffer, buffer, (int)samples_done, volume, sfx->pan);
 #endif
             }
         }
@@ -893,6 +893,7 @@ void PlaySfx(int sfx, bool loop)
     sfxInfo->sampleLength = sfxList[sfx].length;
     sfxInfo->loopSFX      = loop;
     sfxInfo->pan          = 0;
+    sfxInfo->isVoice      = false;
     UnlockAudioDevice();
 }
 void PlayVoice(int sfx, bool loop)
@@ -912,6 +913,7 @@ void PlayVoice(int sfx, bool loop)
     sfxInfo->sampleLength = sfxList[sfx].length;
     sfxInfo->loopSFX      = loop;
     sfxInfo->pan          = 0;
+    sfxInfo->isVoice      = true;
     UnlockAudioDevice();
 }
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)

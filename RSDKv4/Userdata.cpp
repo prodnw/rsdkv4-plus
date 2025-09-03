@@ -58,6 +58,7 @@ int disableFocusPause        = 3;
 int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
 int ControllerVibration      = false;
+int VibrationIntensity       = 1; // 0 = Low, 1 = Medium, 2 = High
 
 bool useSGame = false;
 
@@ -290,6 +291,7 @@ void InitUserdata()
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
         ini.SetInteger("Game", "ControllerVibration", ControllerVibration = false);
+        ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity = 1);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -309,6 +311,7 @@ void InitUserdata()
 	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
+        ini.SetBool("Window", "Brightness", Engine.brightness = 1);
 
         ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
         ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
@@ -343,7 +346,7 @@ void InitUserdata()
         ini.SetInteger("Controller 1", "L", inputDevice[INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
         ini.SetInteger("Controller 1", "R", inputDevice[INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
         ini.SetInteger("Controller 1", "Start", inputDevice[INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
-        ini.SetInteger("Controller 1", "Select", inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
+        ini.SetInteger("Controller 1", "Select", inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK);
 
         ini.SetFloat("Controller 1", "LStickDeadzone", LSTICK_DEADZONE = 0.3);
         ini.SetFloat("Controller 1", "RStickDeadzone", RSTICK_DEADZONE = 0.3);
@@ -448,6 +451,8 @@ void InitUserdata()
             CheckForthemUpdates = true;
         if (!ini.GetInteger("Game", "ControllerVibration", &ControllerVibration))
             ControllerVibration = false;
+        if (!ini.GetInteger("Game", "VibrationIntensity", &VibrationIntensity))
+            VibrationIntensity = 1;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -477,17 +482,20 @@ void InitUserdata()
             Engine.dimLimit = 300; // 5 mins
         if (Engine.dimLimit >= 0)
             Engine.dimLimit *= Engine.refreshRate;
+        if (!ini.GetInteger("Window", "Brightness", &Engine.brightness))
+            Engine.brightness = 1;
 
-        float bv = 0, sv = 0;
+        float bv = 0, sv = 0, vv = 0;
         if (!ini.GetFloat("Audio", "BGMVolume", &bv))
             bv = 1.0f;
         if (!ini.GetFloat("Audio", "SFXVolume", &sv))
             sv = 1.0f;
-        if (!ini.GetFloat("Audio", "VoiceVolume", &sv))
-            sv = 1.0f;
+        if (!ini.GetFloat("Audio", "VoiceVolume", &vv))
+            vv = 1.0f;
 
         bgmVolume = bv * MAX_VOLUME;
         sfxVolume = sv * MAX_VOLUME;
+        voiceVolume = vv * MAX_VOLUME;
 
         if (bgmVolume > MAX_VOLUME)
             bgmVolume = MAX_VOLUME;
@@ -561,7 +569,7 @@ void InitUserdata()
         if (!ini.GetInteger("Controller 1", "Start", &inputDevice[INPUT_START].contMappings))
             inputDevice[INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
         if (!ini.GetInteger("Controller 1", "Select", &inputDevice[INPUT_SELECT].contMappings))
-            inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
+            inputDevice[INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK;
 
         if (!ini.GetFloat("Controller 1", "LStickDeadzone", &LSTICK_DEADZONE))
             LSTICK_DEADZONE = 0.3;
@@ -741,6 +749,8 @@ void WriteSettings()
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
     ini.SetComment("Game", "ControllerComment", "When enabled, your controller will vibrate when applicable.");
     ini.SetInteger("Game", "ControllerVibration", ControllerVibration);
+    ini.SetComment("Game", "VibrationComment", "Changes the intensity of controller vibration if the option is enabled.");
+    ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
@@ -766,6 +776,8 @@ void WriteSettings()
     ini.SetInteger("Window", "RefreshRate", Engine.refreshRate);
     ini.SetComment("Window", "DLComment", "Determines the dim timer in seconds, set to -1 to disable dimming");
     ini.SetInteger("Window", "DimLimit", Engine.dimLimit >= 0 ? Engine.dimLimit / Engine.refreshRate : -1);
+    ini.SetComment("Window", "BNComment", "Determines how bright the screen will be");
+    ini.SetInteger("Window", "Brightness", Engine.brightness);
 
     ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
     ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
@@ -1350,6 +1362,7 @@ void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
 void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
+void GetWindowBrightness() { scriptEng.checkResult = Engine.brightness; }
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1411,6 +1424,14 @@ void SetFrameRate(int *enabled, int *unused)
     if (Engine.refreshRate > 60)
         Engine.refreshRate = 60;
 	//ApplyWindowChanges();
+}
+
+void SetWindowBrightness(int *brightness, int *unused)
+{
+    if (!brightness)
+        return;
+
+    Engine.brightness = *brightness;
 }
 
 void ApplyWindowChanges()

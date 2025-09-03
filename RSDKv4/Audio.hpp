@@ -4,15 +4,15 @@
 #define TRACK_COUNT (0x10)
 #define SFX_COUNT   (0x400)
 #if !RETRO_USE_ORIGINAL_CODE
-#define CHANNEL_COUNT (0x10) // 4 in the original, 16 for convenience
+#define CHANNEL_COUNT (0x40) // 4 in the original, 16 for convenience, 64 for awesomeness
 #else
-#define CHANNEL_COUNT (0x4)
+#define CHANNEL_COUNT (0x6)
 #endif
 
 #define MAX_VOLUME (100)
 
 #define MUSBUFFER_SIZE   (0x2000000)
-#define STREAMFILE_COUNT (2)
+#define STREAMFILE_COUNT (3)
 
 #define MIX_BUFFER_SAMPLES (256)
 
@@ -60,6 +60,7 @@ struct ChannelInfo {
     int sfxID;
     byte loopSFX;
     sbyte pan;
+    bool isVoice;
 };
 
 struct StreamFile {
@@ -74,14 +75,6 @@ enum MusicStatuses {
     MUSIC_PAUSED  = 2,
     MUSIC_LOADING = 3,
     MUSIC_READY   = 4,
-};
-
-enum VoiceStatuses {
-    VOICE_STOPPED = 0,
-    VOICE_PLAYING = 1,
-    VOICE_PAUSED  = 2,
-    VOICE_LOADING = 3,
-    VOICE_READY   = 4,
 };
 
 extern int globalSFXCount;

@@ -112,6 +112,7 @@ void CopyFrameOverlay2x();
 
 void SetupViewport();
 void SetFullScreen(bool fs);
+void SetScreenBrightness(float brightness);
 
 // Layer Drawing
 void DrawObjectList(int layer);

@@ -284,6 +284,8 @@ int InitRenderDevice()
         SetFullScreen(true);
     }
 
+   SetScreenBrightness(Engine.brightness);
+
     OBJECT_BORDER_X2 = SCREEN_XSIZE + 0x80;
     // OBJECT_BORDER_Y2 = SCREEN_YSIZE + 0x100;
     OBJECT_BORDER_X4 = SCREEN_XSIZE + 0x20;
@@ -1118,6 +1120,18 @@ void SetFullScreen(bool fs)
 #endif
     }
     Engine.isFullScreen = fs;
+}
+
+void SetScreenBrightness(float brightness)
+{
+#if RETRO_USING_SDL2
+    if (Engine.window) {
+        // Clamp brightness between 0.0 and 2.0
+        if (brightness < 0.0f) brightness = 0.0f;
+        if (brightness > 2.0f) brightness = 2.0f;
+        SDL_SetWindowBrightness(Engine.window, brightness);
+    }
+#endif
 }
 
 void DrawObjectList(int Layer)

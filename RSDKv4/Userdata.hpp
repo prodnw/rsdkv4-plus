@@ -115,6 +115,7 @@ extern int disableFocusPause;
 extern int disableFocusPause_Config;
 extern int CheckForthemUpdates;
 extern int ControllerVibration;
+extern int VibrationIntensity;
 
 inline int GetGlobalVariableByName(const char *name)
 {
@@ -239,6 +240,8 @@ void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
+void GetWindowBrightness();
+void SetWindowBrightness(int *brightness, int *unused);
 void ApplyWindowChanges();
 int CheckUpdates(char website[]);
 

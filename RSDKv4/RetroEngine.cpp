@@ -1364,6 +1364,8 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
+    AddNativeFunction("GetWindowBrightness", GetWindowBrightness);
+    AddNativeFunction("SetWindowBrightness", SetWindowBrightness);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);
