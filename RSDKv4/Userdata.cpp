@@ -345,43 +345,23 @@ void InitUserdata()
 			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].keyMappings = SDL_SCANCODE_UNKNOWN);
 		}
 
-		ini.SetInteger("Controller 1", "Up", inputDevice[0][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_DPAD_UP);
-		ini.SetInteger("Controller 1", "Down", inputDevice[0][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-		ini.SetInteger("Controller 1", "Left", inputDevice[0][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-		ini.SetInteger("Controller 1", "Right", inputDevice[0][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
-		ini.SetInteger("Controller 1", "A", inputDevice[0][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_A);
-		ini.SetInteger("Controller 1", "B", inputDevice[0][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_B);
-		ini.SetInteger("Controller 1", "C", inputDevice[0][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_X);
-		ini.SetInteger("Controller 1", "X", inputDevice[0][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_ZL);
-		ini.SetInteger("Controller 1", "Y", inputDevice[0][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_Y);
-		ini.SetInteger("Controller 1", "Z", inputDevice[0][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_ZR);
-		ini.SetInteger("Controller 1", "L", inputDevice[0][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
-		ini.SetInteger("Controller 1", "R", inputDevice[0][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
-		ini.SetInteger("Controller 1", "Start", inputDevice[0][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
-		ini.SetInteger("Controller 1", "Select", inputDevice[0][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
-		
-		ini.SetFloat("Controller 1", "LStickDeadzone", LSTICK_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "RStickDeadzone", RSTICK_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "LTriggerDeadzone", LTRIGGER_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "RTriggerDeadzone", RTRIGGER_DEADZONE[0] = 0.3);
-		
-		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
-			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Down", inputDevice[i][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Left", inputDevice[i][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Right", inputDevice[i][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "A", inputDevice[i][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "B", inputDevice[i][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "C", inputDevice[i][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "X", inputDevice[i][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Y", inputDevice[i][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Z", inputDevice[i][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
-			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_INVALID);
+			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_DPAD_UP);
+			ini.SetInteger(inputBuffer, "Down", inputDevice[i][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+			ini.SetInteger(inputBuffer, "Left", inputDevice[i][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+			ini.SetInteger(inputBuffer, "Right", inputDevice[i][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+			ini.SetInteger(inputBuffer, "A", inputDevice[i][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_A);
+			ini.SetInteger(inputBuffer, "B", inputDevice[i][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_B);
+			ini.SetInteger(inputBuffer, "C", inputDevice[i][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_X);
+			ini.SetInteger(inputBuffer, "X", inputDevice[i][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_ZL);
+			ini.SetInteger(inputBuffer, "Y", inputDevice[i][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_Y);
+			ini.SetInteger(inputBuffer, "Z", inputDevice[i][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_ZR);
+			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
+			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
+			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
+			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
 			
 			ini.SetFloat(inputBuffer, "LStickDeadzone", LSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
@@ -425,43 +405,23 @@ void InitUserdata()
 			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].keyMappings = 0);
 		}
 
-		ini.SetInteger("Controller 1", "Up", inputDevice[0][INPUT_UP].contMappings = 1);
-		ini.SetInteger("Controller 1", "Down", inputDevice[0][INPUT_DOWN].contMappings = 2);
-		ini.SetInteger("Controller 1", "Left", inputDevice[0][INPUT_LEFT].contMappings = 3);
-		ini.SetInteger("Controller 1", "Right", inputDevice[0][INPUT_RIGHT].contMappings = 4);
-		ini.SetInteger("Controller 1", "A", inputDevice[0][INPUT_BUTTONA].contMappings = 5);
-		ini.SetInteger("Controller 1", "B", inputDevice[0][INPUT_BUTTONB].contMappings = 6);
-		ini.SetInteger("Controller 1", "C", inputDevice[0][INPUT_BUTTONC].contMappings = 7);
-		ini.SetInteger("Controller 1", "X", inputDevice[0][INPUT_BUTTONX].contMappings = 10);
-		ini.SetInteger("Controller 1", "Y", inputDevice[0][INPUT_BUTTONY].contMappings = 9);
-		ini.SetInteger("Controller 1", "Z", inputDevice[0][INPUT_BUTTONZ].contMappings = 11);
-		ini.SetInteger("Controller 1", "L", inputDevice[0][INPUT_BUTTONL].contMappings = 12);
-		ini.SetInteger("Controller 1", "R", inputDevice[0][INPUT_BUTTONR].contMappings = 13);
-		ini.SetInteger("Controller 1", "Start", inputDevice[0][INPUT_START].contMappings = 8);
-		ini.SetInteger("Controller 1", "Select", inputDevice[0][INPUT_SELECT].contMappings = 14);
-		
-		ini.SetFloat("Controller 1", "LStickDeadzone", LSTICK_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "RStickDeadzone", RSTICK_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "LTriggerDeadzone", LTRIGGER_DEADZONE[0] = 0.3);
-		ini.SetFloat("Controller 1", "RTriggerDeadzone", RTRIGGER_DEADZONE[0] = 0.3);
-		
-		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
-			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = 0); //idk what the null value is, im assuming its 0
-			ini.SetInteger(inputBuffer, "Down", inputDevice[i][INPUT_DOWN].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Left", inputDevice[i][INPUT_LEFT].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Right", inputDevice[i][INPUT_RIGHT].contMappings = 0);
-			ini.SetInteger(inputBuffer, "A", inputDevice[i][INPUT_BUTTONA].contMappings = 0);
-			ini.SetInteger(inputBuffer, "B", inputDevice[i][INPUT_BUTTONB].contMappings = 0);
-			ini.SetInteger(inputBuffer, "C", inputDevice[i][INPUT_BUTTONC].contMappings = 0);
-			ini.SetInteger(inputBuffer, "X", inputDevice[i][INPUT_BUTTONX].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Y", inputDevice[i][INPUT_BUTTONY].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Z", inputDevice[i][INPUT_BUTTONZ].contMappings = 0);
-			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = 0);
-			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = 0);
-			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = 0);
+			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = 1);
+			ini.SetInteger(inputBuffer, "Down", inputDevice[i][INPUT_DOWN].contMappings = 2);
+			ini.SetInteger(inputBuffer, "Left", inputDevice[i][INPUT_LEFT].contMappings = 3);
+			ini.SetInteger(inputBuffer, "Right", inputDevice[i][INPUT_RIGHT].contMappings = 4);
+			ini.SetInteger(inputBuffer, "A", inputDevice[i][INPUT_BUTTONA].contMappings = 5);
+			ini.SetInteger(inputBuffer, "B", inputDevice[i][INPUT_BUTTONB].contMappings = 6);
+			ini.SetInteger(inputBuffer, "C", inputDevice[i][INPUT_BUTTONC].contMappings = 7);
+			ini.SetInteger(inputBuffer, "X", inputDevice[i][INPUT_BUTTONX].contMappings = 10);
+			ini.SetInteger(inputBuffer, "Y", inputDevice[i][INPUT_BUTTONY].contMappings = 9);
+			ini.SetInteger(inputBuffer, "Z", inputDevice[i][INPUT_BUTTONZ].contMappings = 11);
+			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = 12);
+			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = 13);
+			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = 8);
+			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = 14);
 			
 			ini.SetFloat(inputBuffer, "LStickDeadzone", LSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
@@ -580,7 +540,6 @@ void InitUserdata()
             sfxVolume = 0;
 
 #if RETRO_USING_SDL2
-
 		if (!ini.GetInteger("Keyboard 1", "Up", &inputDevice[0][INPUT_UP].keyMappings))
 			inputDevice[0][INPUT_UP].keyMappings = SDL_SCANCODE_UP;
 		if (!ini.GetInteger("Keyboard 1", "Down", &inputDevice[0][INPUT_DOWN].keyMappings))
@@ -643,76 +602,37 @@ void InitUserdata()
 				inputDevice[i][INPUT_SELECT].keyMappings = SDL_SCANCODE_UNKNOWN;
 		}
 
-
-		if (!ini.GetInteger("Controller 1", "Up", &inputDevice[0][INPUT_UP].contMappings))
-			inputDevice[0][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_DPAD_UP;
-		if (!ini.GetInteger("Controller 1", "Down", &inputDevice[0][INPUT_DOWN].contMappings))
-			inputDevice[0][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-		if (!ini.GetInteger("Controller 1", "Left", &inputDevice[0][INPUT_LEFT].contMappings))
-			inputDevice[0][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-		if (!ini.GetInteger("Controller 1", "Right", &inputDevice[0][INPUT_RIGHT].contMappings))
-			inputDevice[0][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-		if (!ini.GetInteger("Controller 1", "A", &inputDevice[0][INPUT_BUTTONA].contMappings))
-			inputDevice[0][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_A;
-		if (!ini.GetInteger("Controller 1", "B", &inputDevice[0][INPUT_BUTTONB].contMappings))
-			inputDevice[0][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_B;
-		if (!ini.GetInteger("Controller 1", "C", &inputDevice[0][INPUT_BUTTONC].contMappings))
-			inputDevice[0][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_X;
-		if (!ini.GetInteger("Controller 1", "X", &inputDevice[0][INPUT_BUTTONX].contMappings))
-			inputDevice[0][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
-		if (!ini.GetInteger("Controller 1", "Y", &inputDevice[0][INPUT_BUTTONY].contMappings))
-			inputDevice[0][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_Y;
-		if (!ini.GetInteger("Controller 1", "Z", &inputDevice[0][INPUT_BUTTONZ].contMappings))
-			inputDevice[0][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
-		if (!ini.GetInteger("Controller 1", "L", &inputDevice[0][INPUT_BUTTONL].contMappings))
-			inputDevice[0][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_ZL;
-		if (!ini.GetInteger("Controller 1", "R", &inputDevice[0][INPUT_BUTTONR].contMappings))
-			inputDevice[0][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_ZR;
-		if (!ini.GetInteger("Controller 1", "Start", &inputDevice[0][INPUT_START].contMappings))
-			inputDevice[0][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
-		if (!ini.GetInteger("Controller 1", "Select", &inputDevice[0][INPUT_SELECT].contMappings))
-			inputDevice[0][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
-
-		if (!ini.GetFloat("Controller 1", "LStickDeadzone", &LSTICK_DEADZONE[0]))
-			LSTICK_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "RStickDeadzone", &RSTICK_DEADZONE[0]))
-			RSTICK_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "LTriggerDeadzone", &LTRIGGER_DEADZONE[0]))
-			LTRIGGER_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "RTriggerDeadzone", &RTRIGGER_DEADZONE[0]))
-			RTRIGGER_DEADZONE[0] = 0.3;
-
-		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
 			if (!ini.GetInteger(inputBuffer, "Up", &inputDevice[i][INPUT_UP].contMappings))
-				inputDevice[i][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_UP].contMappings = SDL_CONTROLLER_BUTTON_DPAD_UP;
 			if (!ini.GetInteger(inputBuffer, "Down", &inputDevice[i][INPUT_DOWN].contMappings))
-				inputDevice[i][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_DOWN].contMappings = SDL_CONTROLLER_BUTTON_DPAD_DOWN;
 			if (!ini.GetInteger(inputBuffer, "Left", &inputDevice[i][INPUT_LEFT].contMappings))
-				inputDevice[i][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_LEFT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_LEFT;
 			if (!ini.GetInteger(inputBuffer, "Right", &inputDevice[i][INPUT_RIGHT].contMappings))
-				inputDevice[i][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_RIGHT].contMappings = SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
 			if (!ini.GetInteger(inputBuffer, "A", &inputDevice[i][INPUT_BUTTONA].contMappings))
-				inputDevice[i][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONA].contMappings = SDL_CONTROLLER_BUTTON_A;
 			if (!ini.GetInteger(inputBuffer, "B", &inputDevice[i][INPUT_BUTTONB].contMappings))
-				inputDevice[i][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONB].contMappings = SDL_CONTROLLER_BUTTON_B;
 			if (!ini.GetInteger(inputBuffer, "C", &inputDevice[i][INPUT_BUTTONC].contMappings))
-				inputDevice[i][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONC].contMappings = SDL_CONTROLLER_BUTTON_X;
 			if (!ini.GetInteger(inputBuffer, "X", &inputDevice[i][INPUT_BUTTONX].contMappings))
-				inputDevice[i][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONX].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
 			if (!ini.GetInteger(inputBuffer, "Y", &inputDevice[i][INPUT_BUTTONY].contMappings))
-				inputDevice[i][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONY].contMappings = SDL_CONTROLLER_BUTTON_Y;
 			if (!ini.GetInteger(inputBuffer, "Z", &inputDevice[i][INPUT_BUTTONZ].contMappings))
-				inputDevice[i][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONZ].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
 			if (!ini.GetInteger(inputBuffer, "L", &inputDevice[i][INPUT_BUTTONL].contMappings))
-				inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_ZL;
 			if (!ini.GetInteger(inputBuffer, "R", &inputDevice[i][INPUT_BUTTONR].contMappings))
-				inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_ZR;
 			if (!ini.GetInteger(inputBuffer, "Start", &inputDevice[i][INPUT_START].contMappings))
-				inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].contMappings))
-				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_INVALID;
+				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
 
 			if (!ini.GetFloat(inputBuffer, "LStickDeadzone", &LSTICK_DEADZONE[i]))
 				LSTICK_DEADZONE[i] = 0.3;
@@ -788,46 +708,7 @@ void InitUserdata()
 				inputDevice[i][INPUT_SELECT].keyMappings = SDLK_TAB;
 		}
 
-
-		if (!ini.GetInteger("Controller 1", "Up", &inputDevice[0][INPUT_UP].contMappings))
-			inputDevice[0][INPUT_UP].contMappings = 1;
-		if (!ini.GetInteger("Controller 1", "Down", &inputDevice[0][INPUT_DOWN].contMappings))
-			inputDevice[0][INPUT_DOWN].contMappings = 2;
-		if (!ini.GetInteger("Controller 1", "Left", &inputDevice[0][INPUT_LEFT].contMappings))
-			inputDevice[0][INPUT_LEFT].contMappings = 3;
-		if (!ini.GetInteger("Controller 1", "Right", &inputDevice[0][INPUT_RIGHT].contMappings))
-			inputDevice[0][INPUT_RIGHT].contMappings = 4;
-		if (!ini.GetInteger("Controller 1", "A", &inputDevice[0][INPUT_BUTTONA].contMappings))
-			inputDevice[0][INPUT_BUTTONA].contMappings = 5;
-		if (!ini.GetInteger("Controller 1", "B", &inputDevice[0][INPUT_BUTTONB].contMappings))
-			inputDevice[0][INPUT_BUTTONB].contMappings = 6;
-		if (!ini.GetInteger("Controller 1", "C", &inputDevice[0][INPUT_BUTTONC].contMappings))
-			inputDevice[0][INPUT_BUTTONC].contMappings = 7;
-		if (!ini.GetInteger("Controller 1", "X", &inputDevice[0][INPUT_BUTTONX].contMappings))
-			inputDevice[0][INPUT_BUTTONX].contMappings = 9;
-		if (!ini.GetInteger("Controller 1", "Y", &inputDevice[0][INPUT_BUTTONY].contMappings))
-			inputDevice[0][INPUT_BUTTONY].contMappings = 10;
-		if (!ini.GetInteger("Controller 1", "Z", &inputDevice[0][INPUT_BUTTONZ].contMappings))
-			inputDevice[0][INPUT_BUTTONZ].contMappings = 11;
-		if (!ini.GetInteger("Controller 1", "L", &inputDevice[0][INPUT_BUTTONL].contMappings))
-			inputDevice[0][INPUT_BUTTONL].contMappings = 12;
-		if (!ini.GetInteger("Controller 1", "R", &inputDevice[0][INPUT_BUTTONR].contMappings))
-			inputDevice[0][INPUT_BUTTONR].contMappings = 13;
-		if (!ini.GetInteger("Controller 1", "Start", &inputDevice[0][INPUT_START].contMappings))
-			inputDevice[0][INPUT_START].contMappings = 8;
-		if (!ini.GetInteger("Controller 1", "Select", &inputDevice[0][INPUT_SELECT].contMappings))
-			inputDevice[0][INPUT_SELECT].contMappings = 14;
-
-		if (!ini.GetFloat("Controller 1", "LStickDeadzone", &LSTICK_DEADZONE[0]))
-			LSTICK_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "RStickDeadzone", &RSTICK_DEADZONE[0]))
-			RSTICK_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "LTriggerDeadzone", &LTRIGGER_DEADZONE[0]))
-			LTRIGGER_DEADZONE[0] = 0.3;
-		if (!ini.GetFloat("Controller 1", "RTriggerDeadzone", &RTRIGGER_DEADZONE[0]))
-			RTRIGGER_DEADZONE[0] = 0.3;
-
-		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
 			if (!ini.GetInteger(inputBuffer, "Up", &inputDevice[i][INPUT_UP].contMappings))
