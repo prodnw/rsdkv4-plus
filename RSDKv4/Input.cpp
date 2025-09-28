@@ -31,6 +31,8 @@ int mouseHideTimer = 0;
 int lastMouseX     = 0;
 int lastMouseY     = 0;
 
+int gamepadCount = 0;
+
 struct InputDevice {
 #if RETRO_USING_SDL2
     // we need the controller index reported from SDL2's controller added event
@@ -57,55 +59,57 @@ bool getControllerButton(byte buttonID, int deviceID)
 {
     bool pressed = false;
 
-    for (int i = 0; i < controllers.size(); ++i) {
-        SDL_GameController *controller = controllers[i].devicePtr;
+    if (deviceID < gamepadCount) {
+//        PrintLog("getControllerButton(%d, %d)", buttonID, deviceID);
+        SDL_GameController *controller = controllers[deviceID].devicePtr;
 
         if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)buttonID)) {
             pressed |= true;
-            continue;
+            PrintLog("getControllerButton(%d, %d) was true!!", buttonID, deviceID);
+            return pressed;
         }
         else {
             switch (buttonID) {
                 default: break;
                 case SDL_CONTROLLER_BUTTON_DPAD_UP: {
                     int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-                    float delta[DEFAULT_INPUT_COUNT];
+                    float delta;
                     if (axis < 0)
-                        delta[deviceID] = -normalize(-axis, 1, 32768);
+                        delta = -normalize(-axis, 1, 32768);
                     else
-                        delta[deviceID] = normalize(axis, 0, 32767);
-                    pressed |= delta[deviceID] < -LSTICK_DEADZONE[deviceID];
-                    continue;
+                        delta = normalize(axis, 0, 32767);
+                    pressed |= delta < -LSTICK_DEADZONE[deviceID];
+                    break;
                 }
                 case SDL_CONTROLLER_BUTTON_DPAD_DOWN: {
                     int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-                    float delta[DEFAULT_INPUT_COUNT];
+                    float delta;
                     if (axis < 0)
-                        delta[deviceID] = -normalize(-axis, 1, 32768);
+                        delta = -normalize(-axis, 1, 32768);
                     else
-                        delta[deviceID] = normalize(axis, 0, 32767);
-                    pressed |= delta[deviceID] > LSTICK_DEADZONE[deviceID];
-                    continue;
+                        delta = normalize(axis, 0, 32767);
+                    pressed |= delta > LSTICK_DEADZONE[deviceID];
+                    break;
                 }
                 case SDL_CONTROLLER_BUTTON_DPAD_LEFT: {
                     int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-                    float delta[DEFAULT_INPUT_COUNT];
+                    float delta;
                     if (axis < 0)
-                        delta[deviceID] = -normalize(-axis, 1, 32768);
+                        delta = -normalize(-axis, 1, 32768);
                     else
-                        delta[deviceID] = normalize(axis, 0, 32767);
-                    pressed |= delta[deviceID] < -LSTICK_DEADZONE[deviceID];
-                    continue;
+                        delta = normalize(axis, 0, 32767);
+                    pressed |= delta < -LSTICK_DEADZONE[deviceID];
+                    break;
                 }
                 case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: {
                     int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-                    float delta[DEFAULT_INPUT_COUNT];
+                    float delta;
                     if (axis < 0)
-                        delta[deviceID] = -normalize(-axis, 1, 32768);
+                        delta = -normalize(-axis, 1, 32768);
                     else
-                        delta[deviceID] = normalize(axis, 0, 32767);
-                    pressed |= delta[deviceID] > LSTICK_DEADZONE[deviceID];
-                    continue;
+                        delta = normalize(axis, 0, 32767);
+                    pressed |= delta > LSTICK_DEADZONE[deviceID];
+                    break;
                 }
             }
         }
@@ -113,102 +117,100 @@ bool getControllerButton(byte buttonID, int deviceID)
         switch (buttonID) {
             default: break;
             case SDL_CONTROLLER_BUTTON_ZL: {
-            	float delta[DEFAULT_INPUT_COUNT];
-				for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-					delta[i] = normalize(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT), 0, 32767);
-				}
-                pressed |= delta[deviceID] > LTRIGGER_DEADZONE[deviceID];
-                continue;
+            	float delta;
+			    delta = normalize(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERLEFT), 0, 32767);
+                pressed |= delta > LTRIGGER_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_ZR: {
-            	float delta[DEFAULT_INPUT_COUNT];
-				for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-					delta[i] = normalize(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT), 0, 32767);
-				}
-                pressed |= delta[deviceID] > RTRIGGER_DEADZONE[deviceID];
-                continue;
+            	float delta;
+			    delta = normalize(SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_TRIGGERRIGHT), 0, 32767);
+                pressed |= delta > RTRIGGER_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_LSTICK_UP: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] < -LSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta < -LSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_LSTICK_DOWN: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] > LSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta > LSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_LSTICK_LEFT: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] > LSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta > LSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_LSTICK_RIGHT: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] < -LSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta < -LSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_RSTICK_UP: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] < -RSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta < -RSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_RSTICK_DOWN: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTY);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] > RSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta > RSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_RSTICK_LEFT: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] > RSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta > RSTICK_DEADZONE[deviceID];
+                break;
             }
             case SDL_CONTROLLER_BUTTON_RSTICK_RIGHT: {
                 int axis    = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_RIGHTX);
-                float delta[DEFAULT_INPUT_COUNT];
+                float delta;
                 if (axis < 0)
-                    delta[deviceID] = -normalize(-axis, 1, 32768);
+                    delta = -normalize(-axis, 1, 32768);
                 else
-                    delta[deviceID] = normalize(axis, 0, 32767);
-                pressed |= delta[deviceID] < -RSTICK_DEADZONE[deviceID];
-                continue;
+                    delta = normalize(axis, 0, 32767);
+                pressed |= delta < -RSTICK_DEADZONE[deviceID];
+                break;
             }
         }
+        if (pressed)
+            PrintLog("getControllerButton(%d, %d) was true!!", buttonID, deviceID);
     }
 
     return pressed;
@@ -291,7 +293,7 @@ void InitInputDevices()
 
     int joyStickCount = SDL_NumJoysticks();
     controllers.clear();
-    int gamepadCount = 0;
+    gamepadCount = 0;
 
     // Count how many controllers there are
     for (int i = 0; i < joyStickCount; i++)
@@ -523,10 +525,8 @@ void CheckKeyPress(InputData input[])
 	int inputMap = 0;
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 		inputMap = i;
-		if (inputType[i] == 1) {
+		if (inputType[i] == 1)
 			inputMap = controllerIDMap[i];
-//			PrintLog("Controller %d PRESS mapping is: %d", i, inputMap);
-		}
 		
 		input[inputMap].up		|= inputDevice[i][INPUT_UP].press;
 		input[inputMap].down	|= inputDevice[i][INPUT_DOWN].press;
@@ -542,6 +542,10 @@ void CheckKeyPress(InputData input[])
 		input[inputMap].R		|= inputDevice[i][INPUT_BUTTONR].press;
 		input[inputMap].start	|= inputDevice[i][INPUT_START].press;
 		input[inputMap].select	|= inputDevice[i][INPUT_SELECT].press;
+//		if (inputDevice[0][INPUT_UP].press == true)
+//	    	PrintLog("Controller %d input[%d].up mapping is: %d", i, 0, true);
+//		if (inputDevice[1][INPUT_UP].press == true)
+//	    	PrintLog("Controller %d input[%d].up mapping is: %d", i, 1, true);
 		
 		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].press;
 		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].press;
@@ -602,10 +606,8 @@ void CheckKeyDown(InputData input[])
 	int inputMap = 0;
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 		inputMap = i;
-		if (inputType[i] == 1) {
+		if (inputType[i] == 1)
 			inputMap = controllerIDMap[i];
-//			PrintLog("Controller %d HOLD mapping is: %d", i, inputMap);
-		}
 		
 		input[inputMap].up		|= inputDevice[i][INPUT_UP].hold;
 		input[inputMap].down	|= inputDevice[i][INPUT_DOWN].hold;
