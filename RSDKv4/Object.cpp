@@ -350,20 +350,21 @@ void SetObjectTypeName(const char *objectName, int objectID)
 
 void ProcessObjectControl(Entity *entity)
 {
-    if (entity->controlMode == 0) {
-        entity->up   = keyDown.up;
-        entity->down = keyDown.down;
-        if (!keyDown.left || !keyDown.right) {
-            entity->left  = keyDown.left;
-            entity->right = keyDown.right;
-        }
-        else {
-            entity->left  = false;
-            entity->right = false;
-        }
-        entity->jumpHold  = keyDown.C || keyDown.B || keyDown.A;
-        entity->jumpPress = keyPress.C || keyPress.B || keyPress.A;
-    }
+	if (entity->controlMode < DEFAULT_INPUT_COUNT && entity->controlMode >= 0) {
+		int deviceID = entity->controlMode;
+		entity->up   = keyDown[deviceID].up;
+		entity->down = keyDown[deviceID].down;
+		if (!keyDown[deviceID].left || !keyDown[deviceID].right) {
+			entity->left  = keyDown[deviceID].left;
+			entity->right = keyDown[deviceID].right;
+		}
+		else {
+			entity->left  = false;
+			entity->right = false;
+		}
+		entity->jumpHold  =  keyDown[deviceID].C ||  keyDown[deviceID].B ||  keyDown[deviceID].A;
+		entity->jumpPress = keyPress[deviceID].C || keyPress[deviceID].B || keyPress[deviceID].A;
+	}
 }
 
 void InitNativeObjectSystem()

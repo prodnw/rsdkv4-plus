@@ -166,12 +166,12 @@ void SettingsScreen_Main(void *objPtr)
             }
             break;
         case SETTINGSSCREEN_STATE_MAIN:
-            CheckKeyDown(&keyDown);
-            CheckKeyPress(&keyPress);
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
             SetRenderMatrix(&self->tempMatrix);
             if (usePhysicalControls) {
                 if (touches <= 0) {
-                    if (keyPress.up) {
+                    if (keyPress[0].up) {
                         PlaySfxByName("Menu Move", false);
                         self->selected--;
                         if ((Engine.gameType != GAME_SONIC1 || self->isPauseMenu) && self->selected == SETTINGSSCREEN_SEL_SPINDASH)
@@ -179,7 +179,7 @@ void SettingsScreen_Main(void *objPtr)
                         if (self->selected <= SETTINGSSCREEN_SEL_NONE)
                             self->selected = SETTINGSSCREEN_SEL_CONTROLS;
                     }
-                    if (keyPress.down) {
+                    if (keyPress[0].down) {
                         PlaySfxByName("Menu Move", false);
                         self->selected++;
                         if ((Engine.gameType != GAME_SONIC1 || self->isPauseMenu) && self->selected == SETTINGSSCREEN_SEL_SPINDASH)
@@ -191,9 +191,9 @@ void SettingsScreen_Main(void *objPtr)
 
                     switch (self->selected) {
                         case SETTINGSSCREEN_SEL_MUSVOL:
-                            self->buttons[SETTINGSSCREEN_BTN_MUSUP]->state   = keyDown.left == true;
-                            self->buttons[SETTINGSSCREEN_BTN_MUSDOWN]->state = keyDown.right == true;
-                            if (keyPress.left) {
+                            self->buttons[SETTINGSSCREEN_BTN_MUSUP]->state   = keyDown[0].left == true;
+                            self->buttons[SETTINGSSCREEN_BTN_MUSDOWN]->state = keyDown[0].right == true;
+                            if (keyPress[0].left) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->musVolume > 0)
                                     saveGame->musVolume -= (MAX_VOLUME / 5);
@@ -201,7 +201,7 @@ void SettingsScreen_Main(void *objPtr)
                                 if (!saveGame->musVolume)
                                     musicEnabled = false;
                             }
-                            else if (keyPress.right) {
+                            else if (keyPress[0].right) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->musVolume < MAX_VOLUME)
                                     saveGame->musVolume += (MAX_VOLUME / 5);
@@ -214,15 +214,15 @@ void SettingsScreen_Main(void *objPtr)
                             }
                             break;
                         case SETTINGSSCREEN_SEL_SFXVOL:
-                            self->buttons[SETTINGSSCREEN_BTN_SFXUP]->state   = keyDown.left == true;
-                            self->buttons[SETTINGSSCREEN_BTN_SFXDOWN]->state = keyDown.right == true;
-                            if (keyPress.left) {
+                            self->buttons[SETTINGSSCREEN_BTN_SFXUP]->state   = keyDown[0].left == true;
+                            self->buttons[SETTINGSSCREEN_BTN_SFXDOWN]->state = keyDown[0].right == true;
+                            if (keyPress[0].left) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->sfxVolume > 0)
                                     saveGame->sfxVolume -= (MAX_VOLUME / 5);
                                 SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
                             }
-                            else if (keyPress.right) {
+                            else if (keyPress[0].right) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->sfxVolume < MAX_VOLUME)
                                     saveGame->sfxVolume += (MAX_VOLUME / 5);
@@ -234,7 +234,7 @@ void SettingsScreen_Main(void *objPtr)
                                 self->buttons[SETTINGSSCREEN_BTN_SDON]->state = PUSHBUTTON_STATE_SELECTED;
                             else
                                 self->buttons[SETTINGSSCREEN_BTN_SDOFF]->state = PUSHBUTTON_STATE_SELECTED;
-                            if (keyPress.left || keyPress.right) {
+                            if (keyPress[0].left || keyPress[0].right) {
                                 PlaySfxByName("Menu Move", false);
                                 if (saveGame->spindashEnabled) {
                                     self->buttons[SETTINGSSCREEN_BTN_SDON]->state            = PUSHBUTTON_STATE_UNSELECTED;
@@ -257,8 +257,8 @@ void SettingsScreen_Main(void *objPtr)
                             }
                             break;
                         case SETTINGSSCREEN_SEL_REGION:
-                            if (keyPress.left || keyPress.right) {
-                                if (keyPress.left) {
+                            if (keyPress[0].left || keyPress[0].right) {
+                                if (keyPress[0].left) {
                                     PlaySfxByName("Menu Move", false);
                                     if (saveGame->boxRegion - 1 >= 0)
                                         saveGame->boxRegion--;
@@ -282,7 +282,7 @@ void SettingsScreen_Main(void *objPtr)
                             break;
                         case SETTINGSSCREEN_SEL_CONTROLS:
                             self->buttons[SETTINGSSCREEN_BTN_CTRLS]->state = PUSHBUTTON_STATE_SELECTED;
-                            if (keyPress.start || keyPress.A) {
+                            if (keyPress[0].start || keyPress[0].A) {
                                 PlaySfxByName("Menu Select", false);
                                 self->buttons[SETTINGSSCREEN_BTN_CTRLS]->state = PUSHBUTTON_STATE_FLASHING;
                                 self->state                                    = SETTINGSSCREEN_STATE_ENTERCTRLS;
@@ -290,7 +290,7 @@ void SettingsScreen_Main(void *objPtr)
                             break;
                         default: break;
                     }
-                    if (self->state == SETTINGSSCREEN_STATE_MAIN && keyPress.B) {
+                    if (self->state == SETTINGSSCREEN_STATE_MAIN && keyPress[0].B) {
                         PlaySfxByName("Menu Back", false);
                         self->backPressed = false;
                         self->state       = SETTINGSSCREEN_STATE_EXIT;
@@ -409,17 +409,17 @@ void SettingsScreen_Main(void *objPtr)
                         self->buttons[SETTINGSSCREEN_BTN_CTRLS]->state = PUSHBUTTON_STATE_FLASHING;
                         self->state                                    = SETTINGSSCREEN_STATE_ENTERCTRLS;
                     }
-                    if (self->backPressed || keyPress.B) {
+                    if (self->backPressed || keyPress[0].B) {
                         PlaySfxByName("Menu Back", false);
                         self->backPressed = false;
                         self->state       = SETTINGSSCREEN_STATE_EXIT;
                     }
                     else if (self->state == SETTINGSSCREEN_STATE_MAIN) {
-                        if (keyDown.up) {
+                        if (keyDown[0].up) {
                             self->selected      = SETTINGSSCREEN_SEL_CONTROLS;
                             usePhysicalControls = true;
                         }
-                        else if (keyDown.down) {
+                        else if (keyDown[0].down) {
                             self->selected      = SETTINGSSCREEN_SEL_MUSVOL;
                             usePhysicalControls = true;
                         }
@@ -520,8 +520,8 @@ void SettingsScreen_Main(void *objPtr)
             for (int l = 0; l < SETTINGSSCREEN_BTN_COUNT; ++l) self->buttons[l]->renderMatrix = self->buttonMatrix;
             break;
         case SETTINGSSCREEN_STATE_CTRLS_TOUCH:
-            CheckKeyDown(&keyDown);
-            CheckKeyPress(&keyPress);
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
             SetRenderMatrix(&self->tempMatrix);
 
             if (touches > 0) {
@@ -686,7 +686,7 @@ void SettingsScreen_Main(void *objPtr)
                 }
             }
 
-            if (self->state == SETTINGSSCREEN_STATE_CTRLS_TOUCH && keyPress.B) {
+            if (self->state == SETTINGSSCREEN_STATE_CTRLS_TOUCH && keyPress[0].B) {
                 PlaySfxByName("Menu Back", false);
                 self->backPressed = false;
                 self->state       = SETTINGSSCREEN_STATE_FLIP_CTRLSTOUCH;
@@ -801,8 +801,8 @@ void SettingsScreen_Main(void *objPtr)
             for (int l = 0; l < SETTINGSSCREEN_BTN_COUNT; ++l) self->buttons[l]->renderMatrix = self->buttonMatrix;
             break;
         case SETTINGSSCREEN_STATE_CTRLS:
-            CheckKeyDown(&keyDown);
-            CheckKeyPress(&keyPress);
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
             SetRenderMatrix(&self->tempMatrix);
             if (touches <= 0) {
                 if (self->backPressed) {
@@ -815,7 +815,7 @@ void SettingsScreen_Main(void *objPtr)
             else {
                 self->backPressed = CheckTouchRect(136.0, 88.0, 32.0, 16.0) >= 0;
             }
-            if (keyPress.B) {
+            if (keyPress[0].B) {
                 PlaySfxByName("Menu Back", false);
                 self->backPressed = false;
                 self->state       = SETTINGSSCREEN_STATE_FLIP_CTRLS;

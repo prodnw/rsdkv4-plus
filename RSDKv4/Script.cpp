@@ -384,7 +384,6 @@ const char variableNames[][0x20] = {
 #endif
 
 // Extras
-#if RETRO_REV03
     "screen.currentID",
     "camera.enabled",
     "camera.target",
@@ -392,7 +391,6 @@ const char variableNames[][0x20] = {
     "camera.xpos",
     "camera.ypos",
     "camera.adjustY",
-#endif
 
 // Haptics
 #if RETRO_USE_HAPTICS
@@ -1085,7 +1083,6 @@ enum ScrVar {
     VAR_ENGINEDEVICETYPE, // v4-style device type aka Standard/Mobile/Etc
 #endif
 
-#if RETRO_REV03
     // Extras
     VAR_SCREENCURRENTID,
     VAR_CAMERAENABLED,
@@ -1094,7 +1091,6 @@ enum ScrVar {
     VAR_CAMERAXPOS,
     VAR_CAMERAYPOS,
     VAR_CAMERAADJUSTY,
-#endif
 
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
@@ -3668,11 +3664,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     default: break;
                 }
 
-#if RETRO_REV03 && !RETRO_USE_ORIGINAL_CODE
-                bool inputCheck = true; // Default to true for mobile bytecode
-                // If we're using the scripts or an Origins datafile, check the array value
-                if (forceUseScripts || Engine.usingOrigins)
-                    inputCheck = arrayVal <= 1;
+#if !RETRO_USE_ORIGINAL_CODE
+				// Default to 1 for mobile bytecode
+                int inputCheck = 1;
+				
+				if (forceUseScripts || Engine.usingOrigins) {
+					if (arrayVal < DEFAULT_INPUT_COUNT && arrayVal > 0)
+						inputCheck = arrayVal - 1;
+					else	// Make 0 count inputs from every controller
+						inputCheck = DEFAULT_INPUT_COUNT;
+				}
 #endif
 
                 // Variables
@@ -4275,94 +4276,63 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_MUSICVOLUME: scriptEng.operands[i] = masterVolume; break;
                     case VAR_MUSICCURRENTTRACK: scriptEng.operands[i] = trackID; break;
                     case VAR_MUSICPOSITION: scriptEng.operands[i] = musicPosition; break;
-#if RETRO_REV03 && !RETRO_USE_ORIGINAL_CODE
-                    case VAR_KEYDOWNUP: scriptEng.operands[i] = keyDown.up && inputCheck; break;
-                    case VAR_KEYDOWNDOWN: scriptEng.operands[i] = keyDown.down && inputCheck; break;
-                    case VAR_KEYDOWNLEFT: scriptEng.operands[i] = keyDown.left && inputCheck; break;
-                    case VAR_KEYDOWNRIGHT: scriptEng.operands[i] = keyDown.right && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONA: scriptEng.operands[i] = keyDown.A && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONB: scriptEng.operands[i] = keyDown.B && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONC: scriptEng.operands[i] = keyDown.C && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONX: scriptEng.operands[i] = keyDown.X && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONY: scriptEng.operands[i] = keyDown.Y && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONZ: scriptEng.operands[i] = keyDown.Z && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONL: scriptEng.operands[i] = keyDown.L && inputCheck; break;
-                    case VAR_KEYDOWNBUTTONR: scriptEng.operands[i] = keyDown.R && inputCheck; break;
-                    case VAR_KEYDOWNSTART: scriptEng.operands[i] = keyDown.start && inputCheck; break;
-                    case VAR_KEYDOWNSELECT: scriptEng.operands[i] = keyDown.select && inputCheck; break;
-                    case VAR_KEYPRESSUP: scriptEng.operands[i] = keyPress.up && inputCheck; break;
-                    case VAR_KEYPRESSDOWN: scriptEng.operands[i] = keyPress.down && inputCheck; break;
-                    case VAR_KEYPRESSLEFT: scriptEng.operands[i] = keyPress.left && inputCheck; break;
-                    case VAR_KEYPRESSRIGHT: scriptEng.operands[i] = keyPress.right && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONA: scriptEng.operands[i] = keyPress.A && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONB: scriptEng.operands[i] = keyPress.B && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONC: scriptEng.operands[i] = keyPress.C && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONX: scriptEng.operands[i] = keyPress.X && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONY: scriptEng.operands[i] = keyPress.Y && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONZ: scriptEng.operands[i] = keyPress.Z && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONL: scriptEng.operands[i] = keyPress.L && inputCheck; break;
-                    case VAR_KEYPRESSBUTTONR: scriptEng.operands[i] = keyPress.R && inputCheck; break;
-                    case VAR_KEYPRESSSTART: scriptEng.operands[i] = keyPress.start && inputCheck; break;
-                    case VAR_KEYPRESSSELECT: scriptEng.operands[i] = keyPress.select && inputCheck; break;
-#else
-                    case VAR_KEYDOWNUP: scriptEng.operands[i] = keyDown.up; break;
-                    case VAR_KEYDOWNDOWN: scriptEng.operands[i] = keyDown.down; break;
-                    case VAR_KEYDOWNLEFT: scriptEng.operands[i] = keyDown.left; break;
-                    case VAR_KEYDOWNRIGHT: scriptEng.operands[i] = keyDown.right; break;
-                    case VAR_KEYDOWNBUTTONA: scriptEng.operands[i] = keyDown.A; break;
-                    case VAR_KEYDOWNBUTTONB: scriptEng.operands[i] = keyDown.B; break;
-                    case VAR_KEYDOWNBUTTONC: scriptEng.operands[i] = keyDown.C; break;
-                    case VAR_KEYDOWNBUTTONX: scriptEng.operands[i] = keyDown.X; break;
-                    case VAR_KEYDOWNBUTTONY: scriptEng.operands[i] = keyDown.Y; break;
-                    case VAR_KEYDOWNBUTTONZ: scriptEng.operands[i] = keyDown.Z; break;
-                    case VAR_KEYDOWNBUTTONL: scriptEng.operands[i] = keyDown.L; break;
-                    case VAR_KEYDOWNBUTTONR: scriptEng.operands[i] = keyDown.R; break;
-                    case VAR_KEYDOWNSTART: scriptEng.operands[i] = keyDown.start; break;
-                    case VAR_KEYDOWNSELECT: scriptEng.operands[i] = keyDown.select; break;
-                    case VAR_KEYPRESSUP: scriptEng.operands[i] = keyPress.up; break;
-                    case VAR_KEYPRESSDOWN: scriptEng.operands[i] = keyPress.down; break;
-                    case VAR_KEYPRESSLEFT: scriptEng.operands[i] = keyPress.left; break;
-                    case VAR_KEYPRESSRIGHT: scriptEng.operands[i] = keyPress.right; break;
-                    case VAR_KEYPRESSBUTTONA: scriptEng.operands[i] = keyPress.A; break;
-                    case VAR_KEYPRESSBUTTONB: scriptEng.operands[i] = keyPress.B; break;
-                    case VAR_KEYPRESSBUTTONC: scriptEng.operands[i] = keyPress.C; break;
-                    case VAR_KEYPRESSBUTTONX: scriptEng.operands[i] = keyPress.X; break;
-                    case VAR_KEYPRESSBUTTONY: scriptEng.operands[i] = keyPress.Y; break;
-                    case VAR_KEYPRESSBUTTONZ: scriptEng.operands[i] = keyPress.Z; break;
-                    case VAR_KEYPRESSBUTTONL: scriptEng.operands[i] = keyPress.L; break;
-                    case VAR_KEYPRESSBUTTONR: scriptEng.operands[i] = keyPress.R; break;
-                    case VAR_KEYPRESSSTART: scriptEng.operands[i] = keyPress.start; break;
-                    case VAR_KEYPRESSSELECT: scriptEng.operands[i] = keyPress.select; break;
-#endif
+                    case VAR_KEYDOWNUP: scriptEng.operands[i] = keyDown[inputCheck].up; break;
+                    case VAR_KEYDOWNDOWN: scriptEng.operands[i] = keyDown[inputCheck].down; break;
+                    case VAR_KEYDOWNLEFT: scriptEng.operands[i] = keyDown[inputCheck].left; break;
+                    case VAR_KEYDOWNRIGHT: scriptEng.operands[i] = keyDown[inputCheck].right; break;
+                    case VAR_KEYDOWNBUTTONA: scriptEng.operands[i] = keyDown[inputCheck].A; break;
+                    case VAR_KEYDOWNBUTTONB: scriptEng.operands[i] = keyDown[inputCheck].B; break;
+                    case VAR_KEYDOWNBUTTONC: scriptEng.operands[i] = keyDown[inputCheck].C; break;
+                    case VAR_KEYDOWNBUTTONX: scriptEng.operands[i] = keyDown[inputCheck].X; break;
+                    case VAR_KEYDOWNBUTTONY: scriptEng.operands[i] = keyDown[inputCheck].Y; break;
+                    case VAR_KEYDOWNBUTTONZ: scriptEng.operands[i] = keyDown[inputCheck].Z; break;
+                    case VAR_KEYDOWNBUTTONL: scriptEng.operands[i] = keyDown[inputCheck].L; break;
+                    case VAR_KEYDOWNBUTTONR: scriptEng.operands[i] = keyDown[inputCheck].R; break;
+                    case VAR_KEYDOWNSTART: scriptEng.operands[i] = keyDown[inputCheck].start; break;
+                    case VAR_KEYDOWNSELECT: scriptEng.operands[i] = keyDown[inputCheck].select; break;
+                    case VAR_KEYPRESSUP: scriptEng.operands[i] = keyPress[inputCheck].up; break;
+                    case VAR_KEYPRESSDOWN: scriptEng.operands[i] = keyPress[inputCheck].down; break;
+                    case VAR_KEYPRESSLEFT: scriptEng.operands[i] = keyPress[inputCheck].left; break;
+                    case VAR_KEYPRESSRIGHT: scriptEng.operands[i] = keyPress[inputCheck].right; break;
+                    case VAR_KEYPRESSBUTTONA: scriptEng.operands[i] = keyPress[inputCheck].A; break;
+                    case VAR_KEYPRESSBUTTONB: scriptEng.operands[i] = keyPress[inputCheck].B; break;
+                    case VAR_KEYPRESSBUTTONC: scriptEng.operands[i] = keyPress[inputCheck].C; break;
+                    case VAR_KEYPRESSBUTTONX: scriptEng.operands[i] = keyPress[inputCheck].X; break;
+                    case VAR_KEYPRESSBUTTONY: scriptEng.operands[i] = keyPress[inputCheck].Y; break;
+                    case VAR_KEYPRESSBUTTONZ: scriptEng.operands[i] = keyPress[inputCheck].Z; break;
+                    case VAR_KEYPRESSBUTTONL: scriptEng.operands[i] = keyPress[inputCheck].L; break;
+                    case VAR_KEYPRESSBUTTONR: scriptEng.operands[i] = keyPress[inputCheck].R; break;
+                    case VAR_KEYPRESSSTART: scriptEng.operands[i] = keyPress[inputCheck].start; break;
+                    case VAR_KEYPRESSSELECT: scriptEng.operands[i] = keyPress[inputCheck].select; break;
 #if RETRO_ACCEPT_OLD_SYNTAX
-                    case VAR_INPUTDOWNUP: scriptEng.operands[i] = keyDown.up; break;
-                    case VAR_INPUTDOWNDOWN: scriptEng.operands[i] = keyDown.down; break;
-                    case VAR_INPUTDOWNLEFT: scriptEng.operands[i] = keyDown.left; break;
-                    case VAR_INPUTDOWNRIGHT: scriptEng.operands[i] = keyDown.right; break;
-                    case VAR_INPUTDOWNBUTTONA: scriptEng.operands[i] = keyDown.A; break;
-                    case VAR_INPUTDOWNBUTTONB: scriptEng.operands[i] = keyDown.B; break;
-                    case VAR_INPUTDOWNBUTTONC: scriptEng.operands[i] = keyDown.C; break;
-                    case VAR_INPUTDOWNBUTTONX: scriptEng.operands[i] = keyDown.X; break;
-                    case VAR_INPUTDOWNBUTTONY: scriptEng.operands[i] = keyDown.Y; break;
-                    case VAR_INPUTDOWNBUTTONZ: scriptEng.operands[i] = keyDown.Z; break;
-                    case VAR_INPUTDOWNBUTTONL: scriptEng.operands[i] = keyDown.L; break;
-                    case VAR_INPUTDOWNBUTTONR: scriptEng.operands[i] = keyDown.R; break;
-                    case VAR_INPUTDOWNSTART: scriptEng.operands[i] = keyDown.start; break;
-                    case VAR_INPUTDOWNSELECT: scriptEng.operands[i] = keyDown.select; break;
-                    case VAR_INPUTPRESSUP: scriptEng.operands[i] = keyPress.up; break;
-                    case VAR_INPUTPRESSDOWN: scriptEng.operands[i] = keyPress.down; break;
-                    case VAR_INPUTPRESSLEFT: scriptEng.operands[i] = keyPress.left; break;
-                    case VAR_INPUTPRESSRIGHT: scriptEng.operands[i] = keyPress.right; break;
-                    case VAR_INPUTPRESSBUTTONA: scriptEng.operands[i] = keyPress.A; break;
-                    case VAR_INPUTPRESSBUTTONB: scriptEng.operands[i] = keyPress.B; break;
-                    case VAR_INPUTPRESSBUTTONC: scriptEng.operands[i] = keyPress.C; break;
-                    case VAR_INPUTPRESSBUTTONX: scriptEng.operands[i] = keyPress.X; break;
-                    case VAR_INPUTPRESSBUTTONY: scriptEng.operands[i] = keyPress.Y; break;
-                    case VAR_INPUTPRESSBUTTONZ: scriptEng.operands[i] = keyPress.Z; break;
-                    case VAR_INPUTPRESSBUTTONL: scriptEng.operands[i] = keyPress.L; break;
-                    case VAR_INPUTPRESSBUTTONR: scriptEng.operands[i] = keyPress.R; break;
-					case VAR_INPUTPRESSSTART: scriptEng.operands[i] = keyPress.start; break;
-                    case VAR_INPUTPRESSSELECT: scriptEng.operands[i] = keyPress.select; break;
+                    case VAR_INPUTDOWNUP: scriptEng.operands[i] = keyDown[inputCheck].up; break;
+                    case VAR_INPUTDOWNDOWN: scriptEng.operands[i] = keyDown[inputCheck].down; break;
+                    case VAR_INPUTDOWNLEFT: scriptEng.operands[i] = keyDown[inputCheck].left; break;
+                    case VAR_INPUTDOWNRIGHT: scriptEng.operands[i] = keyDown[inputCheck].right; break;
+                    case VAR_INPUTDOWNBUTTONA: scriptEng.operands[i] = keyDown[inputCheck].A; break;
+                    case VAR_INPUTDOWNBUTTONB: scriptEng.operands[i] = keyDown[inputCheck].B; break;
+                    case VAR_INPUTDOWNBUTTONC: scriptEng.operands[i] = keyDown[inputCheck].C; break;
+                    case VAR_INPUTDOWNBUTTONX: scriptEng.operands[i] = keyDown[inputCheck].X; break;
+                    case VAR_INPUTDOWNBUTTONY: scriptEng.operands[i] = keyDown[inputCheck].Y; break;
+                    case VAR_INPUTDOWNBUTTONZ: scriptEng.operands[i] = keyDown[inputCheck].Z; break;
+                    case VAR_INPUTDOWNBUTTONL: scriptEng.operands[i] = keyDown[inputCheck].L; break;
+                    case VAR_INPUTDOWNBUTTONR: scriptEng.operands[i] = keyDown[inputCheck].R; break;
+                    case VAR_INPUTDOWNSTART: scriptEng.operands[i] = keyDown[inputCheck].start; break;
+                    case VAR_INPUTDOWNSELECT: scriptEng.operands[i] = keyDown[inputCheck].select; break;
+                    case VAR_INPUTPRESSUP: scriptEng.operands[i] = keyPress[inputCheck].up; break;
+                    case VAR_INPUTPRESSDOWN: scriptEng.operands[i] = keyPress[inputCheck].down; break;
+                    case VAR_INPUTPRESSLEFT: scriptEng.operands[i] = keyPress[inputCheck].left; break;
+                    case VAR_INPUTPRESSRIGHT: scriptEng.operands[i] = keyPress[inputCheck].right; break;
+                    case VAR_INPUTPRESSBUTTONA: scriptEng.operands[i] = keyPress[inputCheck].A; break;
+                    case VAR_INPUTPRESSBUTTONB: scriptEng.operands[i] = keyPress[inputCheck].B; break;
+                    case VAR_INPUTPRESSBUTTONC: scriptEng.operands[i] = keyPress[inputCheck].C; break;
+                    case VAR_INPUTPRESSBUTTONX: scriptEng.operands[i] = keyPress[inputCheck].X; break;
+                    case VAR_INPUTPRESSBUTTONY: scriptEng.operands[i] = keyPress[inputCheck].Y; break;
+                    case VAR_INPUTPRESSBUTTONZ: scriptEng.operands[i] = keyPress[inputCheck].Z; break;
+                    case VAR_INPUTPRESSBUTTONL: scriptEng.operands[i] = keyPress[inputCheck].L; break;
+                    case VAR_INPUTPRESSBUTTONR: scriptEng.operands[i] = keyPress[inputCheck].R; break;
+					case VAR_INPUTPRESSSTART: scriptEng.operands[i] = keyPress[inputCheck].start; break;
+                    case VAR_INPUTPRESSSELECT: scriptEng.operands[i] = keyPress[inputCheck].select; break;
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
@@ -4423,7 +4393,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = RETRO_DEVICETYPE; break;
 #endif
 
-#if RETRO_REV03
                     // Origins Extras
                     // Due to using regular v4, these don't support array values like origins expects, so its always screen[0]
                     case VAR_SCREENCURRENTID: scriptEng.operands[i] = 0; break;
@@ -4463,7 +4432,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         else
                             scriptEng.operands[i] = 0;
                         break;
-#endif
 
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
@@ -6052,9 +6020,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-#if RETRO_REV03
                 // Extras for origins 2PVS,
                 // most of these aren't (and won't be) implemented here because they rely on v5 tech that isn't part of the scope of this project
+                // but they will in THIS project [insert evil face here]
             case FUNC_CHECKCAMERAPROXIMITY:
                 scriptEng.checkResult = false;
 
@@ -6120,9 +6088,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // FUNCTION NOTES:
                 // - Assigns the device's id to scriptEng.operands[0]
 
+				scriptEng.operands[0] = entity->controlMode;
+				//The input system thing i implemented works almost completely different from v5U,,, but its easier so whos complaining
                 break;
 
-            case FUNC_GETFILTEREDINPUTDEVICEID:
+            case FUNC_GETFILTEREDINPUTDEVICEID: //dunno how dis even works :urm:  //but its unused so :bleh:  //if anybody figures this out pls add it 🙏️
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = deviceID
                 // scriptEng.operands[1] = confirmOnly
@@ -6134,7 +6104,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                 break;
 
-            case FUNC_GETINPUTDEVICETYPE:
+            case FUNC_GETINPUTDEVICETYPE: //its unused sooooooooooooooooooooooooooooooooooooo... to lazy to do it
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = deviceType
                 // scriptEng.operands[1] = deviceID
@@ -6148,6 +6118,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = deviceID
 
+				scriptEng.checkResult = true;
+				//Again, the input system thing i implemented works almost completely different from v5U so its easy peasyebyfbyebgrbghbeghbeagbhg ahrbg bhejgreg
                 break;
 
             case FUNC_ASSIGNINPUTSLOTTODEVICE:
@@ -6164,6 +6136,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // FUNCTION NOTES:
                 // - Sets scriptEng.checkResult
 
+				scriptEng.checkResult = true;
                 break;
 
             case FUNC_RESETINPUTSLOTASSIGNMENTS:
@@ -6171,7 +6144,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // None
 
                 break;
-#endif
 
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
@@ -6336,11 +6308,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     default: break;
                 }
 
-#if RETRO_REV03 && !RETRO_USE_ORIGINAL_CODE
-                bool inputCheck = true; // Default to true for mobile bytecode
-                // If we're using the scripts or an Origins datafile, check the array value
-                if (forceUseScripts || Engine.usingOrigins)
-                    inputCheck = arrayVal <= 1;
+#if !RETRO_USE_ORIGINAL_CODE
+				// Default to 1 for mobile bytecode
+                int inputCheck = 1;
+				
+				if (forceUseScripts || Engine.usingOrigins) {
+					if (arrayVal < DEFAULT_INPUT_COUNT && arrayVal > 0)
+						inputCheck = arrayVal - 1;
+					else	// Make 0 count inputs from every controller
+						inputCheck = DEFAULT_INPUT_COUNT;
+				}
 #endif
 
                 // Variables
@@ -6858,178 +6835,63 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_MUSICVOLUME: SetMusicVolume(scriptEng.operands[i]); break;
                     case VAR_MUSICCURRENTTRACK: break;
                     case VAR_MUSICPOSITION: break;
-#if RETRO_REV03 && !RETRO_USE_ORIGINAL_CODE
-                    case VAR_KEYDOWNUP:
-                        if (inputCheck)
-                            keyDown.up = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNDOWN:
-                        if (inputCheck)
-                            keyDown.down = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNLEFT:
-                        if (inputCheck)
-                            keyDown.left = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNRIGHT:
-                        if (inputCheck)
-                            keyDown.right = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONA:
-                        if (inputCheck)
-                            keyDown.A = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONB:
-                        if (inputCheck)
-                            keyDown.B = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONC:
-                        if (inputCheck)
-                            keyDown.C = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONX:
-                        if (inputCheck)
-                            keyDown.X = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONY:
-                        if (inputCheck)
-                            keyDown.Y = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONZ:
-                        if (inputCheck)
-                            keyDown.Z = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONL:
-                        if (inputCheck)
-                            keyDown.L = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNBUTTONR:
-                        if (inputCheck)
-                            keyDown.R = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNSTART:
-                        if (inputCheck)
-                            keyDown.start = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYDOWNSELECT:
-                        if (inputCheck)
-                            keyDown.select = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSUP:
-                        if (inputCheck)
-                            keyPress.up = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSDOWN:
-                        if (inputCheck)
-                            keyPress.down = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSLEFT:
-                        if (inputCheck)
-                            keyPress.left = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSRIGHT:
-                        if (inputCheck)
-                            keyPress.right = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONA:
-                        if (inputCheck)
-                            keyPress.A = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONB:
-                        if (inputCheck)
-                            keyPress.B = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONC:
-                        if (inputCheck)
-                            keyPress.C = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONX:
-                        if (inputCheck)
-                            keyPress.X = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONY:
-                        if (inputCheck)
-                            keyPress.Y = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONZ:
-                        if (inputCheck)
-                            keyPress.Z = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONL:
-                        if (inputCheck)
-                            keyPress.L = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSBUTTONR:
-                        if (inputCheck)
-                            keyPress.R = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSSTART:
-                        if (inputCheck)
-                            keyPress.start = scriptEng.operands[i];
-                        break;
-                    case VAR_KEYPRESSSELECT:
-                        if (inputCheck)
-                            keyPress.select = scriptEng.operands[i];
-                        break;
-#else
-                    case VAR_KEYDOWNUP: keyDown.up = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNDOWN: keyDown.down = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNLEFT: keyDown.left = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNRIGHT: keyDown.right = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONA: keyDown.A = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONB: keyDown.B = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONC: keyDown.C = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONX: keyDown.X = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONY: keyDown.Y = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONZ: keyDown.Z = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONL: keyDown.L = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNBUTTONR: keyDown.R = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNSTART: keyDown.start = scriptEng.operands[i]; break;
-                    case VAR_KEYDOWNSELECT: keyDown.select = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSUP: keyPress.up = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSDOWN: keyPress.down = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSLEFT: keyPress.left = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSRIGHT: keyPress.right = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONA: keyPress.A = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONB: keyPress.B = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONC: keyPress.C = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONX: keyPress.X = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONY: keyPress.Y = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONZ: keyPress.Z = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONL: keyPress.L = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSBUTTONR: keyPress.R = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSSTART: keyPress.start = scriptEng.operands[i]; break;
-                    case VAR_KEYPRESSSELECT: keyPress.select = scriptEng.operands[i]; break;
-#endif
+                    case VAR_KEYDOWNUP: keyDown[inputCheck].up = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNDOWN: keyDown[inputCheck].down = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNLEFT: keyDown[inputCheck].left = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNRIGHT: keyDown[inputCheck].right = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONA: keyDown[inputCheck].A = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONB: keyDown[inputCheck].B = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONC: keyDown[inputCheck].C = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONX: keyDown[inputCheck].X = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONY: keyDown[inputCheck].Y = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONZ: keyDown[inputCheck].Z = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONL: keyDown[inputCheck].L = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNBUTTONR: keyDown[inputCheck].R = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNSTART: keyDown[inputCheck].start = scriptEng.operands[i]; break;
+                    case VAR_KEYDOWNSELECT: keyDown[inputCheck].select = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSUP: keyPress[inputCheck].up = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSDOWN: keyPress[inputCheck].down = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSLEFT: keyPress[inputCheck].left = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSRIGHT: keyPress[inputCheck].right = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONA: keyPress[inputCheck].A = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONB: keyPress[inputCheck].B = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONC: keyPress[inputCheck].C = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONX: keyPress[inputCheck].X = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONY: keyPress[inputCheck].Y = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONZ: keyPress[inputCheck].Z = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONL: keyPress[inputCheck].L = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSBUTTONR: keyPress[inputCheck].R = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
+                    case VAR_KEYPRESSSELECT: keyPress[inputCheck].select = scriptEng.operands[i]; break;
 #if RETRO_ACCEPT_OLD_SYNTAX
-                    case VAR_INPUTDOWNUP: keyDown.up = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNDOWN: keyDown.down = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNLEFT: keyDown.left = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNRIGHT: keyDown.right = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONA: keyDown.A = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONB: keyDown.B = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONC: keyDown.C = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONX: keyDown.X = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONY: keyDown.Y = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONZ: keyDown.Z = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONL: keyDown.L = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNBUTTONR: keyDown.R = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNSTART: keyDown.start = scriptEng.operands[i]; break;
-                    case VAR_INPUTDOWNSELECT: keyDown.select = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSUP: keyPress.up = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSDOWN: keyPress.down = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSLEFT: keyPress.left = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSRIGHT: keyPress.right = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONA: keyPress.A = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONB: keyPress.B = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONC: keyPress.C = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONX: keyPress.X = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONY: keyPress.Y = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONZ: keyPress.Z = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONL: keyPress.L = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSBUTTONR: keyPress.R = scriptEng.operands[i]; break;
-					case VAR_INPUTPRESSSTART: keyPress.start = scriptEng.operands[i]; break;
-                    case VAR_INPUTPRESSSELECT: keyPress.select = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNUP: keyDown[inputCheck].up = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNDOWN: keyDown[inputCheck].down = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNLEFT: keyDown[inputCheck].left = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNRIGHT: keyDown[inputCheck].right = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONA: keyDown[inputCheck].A = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONB: keyDown[inputCheck].B = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONC: keyDown[inputCheck].C = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONX: keyDown[inputCheck].X = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONY: keyDown[inputCheck].Y = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONZ: keyDown[inputCheck].Z = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONL: keyDown[inputCheck].L = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNBUTTONR: keyDown[inputCheck].R = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNSTART: keyDown[inputCheck].start = scriptEng.operands[i]; break;
+                    case VAR_INPUTDOWNSELECT: keyDown[inputCheck].select = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSUP: keyPress[inputCheck].up = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSDOWN: keyPress[inputCheck].down = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSLEFT: keyPress[inputCheck].left = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSRIGHT: keyPress[inputCheck].right = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONA: keyPress[inputCheck].A = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONB: keyPress[inputCheck].B = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONC: keyPress[inputCheck].C = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONX: keyPress[inputCheck].X = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONY: keyPress[inputCheck].Y = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONZ: keyPress[inputCheck].Z = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONL: keyPress[inputCheck].L = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSBUTTONR: keyPress[inputCheck].R = scriptEng.operands[i]; break;
+					case VAR_INPUTPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSSELECT: keyPress[inputCheck].select = scriptEng.operands[i]; break;
 #endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;
