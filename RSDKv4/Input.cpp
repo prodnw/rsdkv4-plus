@@ -59,13 +59,11 @@ bool getControllerButton(byte buttonID, int deviceID)
 {
     bool pressed = false;
 
-    if (deviceID < gamepadCount) {
-//        PrintLog("getControllerButton(%d, %d)", buttonID, deviceID);
+    if (deviceID < gamepadCount && deviceID < DEFAULT_INPUT_COUNT) {
         SDL_GameController *controller = controllers[deviceID].devicePtr;
 
         if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)buttonID)) {
             pressed |= true;
-            PrintLog("getControllerButton(%d, %d) was true!!", buttonID, deviceID);
             return pressed;
         }
         else {
@@ -209,8 +207,6 @@ bool getControllerButton(byte buttonID, int deviceID)
                 break;
             }
         }
-        if (pressed)
-            PrintLog("getControllerButton(%d, %d) was true!!", buttonID, deviceID);
     }
 
     return pressed;
@@ -542,10 +538,6 @@ void CheckKeyPress(InputData input[])
 		input[inputMap].R		|= inputDevice[i][INPUT_BUTTONR].press;
 		input[inputMap].start	|= inputDevice[i][INPUT_START].press;
 		input[inputMap].select	|= inputDevice[i][INPUT_SELECT].press;
-//		if (inputDevice[0][INPUT_UP].press == true)
-//	    	PrintLog("Controller %d input[%d].up mapping is: %d", i, 0, true);
-//		if (inputDevice[1][INPUT_UP].press == true)
-//	    	PrintLog("Controller %d input[%d].up mapping is: %d", i, 1, true);
 		
 		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].press;
 		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].press;
