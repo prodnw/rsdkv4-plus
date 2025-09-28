@@ -289,7 +289,7 @@ void IniParser::Write(const char *filename, bool addPath)
         return;
     }
 
-    char sections[10][60];
+    char sections[0x10][60];
     char past[60];
     int c = 0;
     sprintf(past, "");
