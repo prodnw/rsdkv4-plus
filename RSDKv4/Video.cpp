@@ -213,7 +213,7 @@ int ProcessVideo()
             fadeMode += 8;
         }
 
-        if (inputDevice[0][INPUT_ANY].press || touches > 0) {
+        if (inputDevice[0][INPUT_BUTTONA].press || inputDevice[0][INPUT_START].press > 0 || touches > 0) {
             if (!videoSkipped)
                 fadeMode = 0;
 

@@ -361,7 +361,7 @@ void InitUserdata()
 			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
 			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
-			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
+			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK);
 			
 			ini.SetFloat(inputBuffer, "LStickDeadzone", LSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
@@ -632,7 +632,7 @@ void InitUserdata()
 			if (!ini.GetInteger(inputBuffer, "Start", &inputDevice[i][INPUT_START].contMappings))
 				inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].contMappings))
-				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
+				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK;
 
 			if (!ini.GetFloat(inputBuffer, "LStickDeadzone", &LSTICK_DEADZONE[i]))
 				LSTICK_DEADZONE[i] = 0.3;
