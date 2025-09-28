@@ -2,6 +2,7 @@
 
 InputData keyPress[DEFAULT_INPUT_COUNT + 1];
 InputData keyDown[DEFAULT_INPUT_COUNT + 1];
+int controllerIDMap[DEFAULT_INPUT_COUNT];
 
 int touchDown[8];
 int touchX[8];
@@ -304,6 +305,7 @@ void InitInputDevices()
         device.id        = 0;
         device.index     = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(gamepad));
         device.devicePtr = gamepad;
+        PrintLog("Gamepad %d: %s", i, SDL_GameControllerName(gamepad));
 
         if (SDL_GameControllerGetAttached(gamepad))
             controllers.push_back(device);
@@ -486,6 +488,23 @@ void ProcessInput(int deviceID)
 // Pretty much is this code in the original, just formatted differently
 void CheckKeyPress(InputData input[])
 {
+	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+		input[i].up		= false;
+		input[i].down	= false;
+		input[i].left	= false;
+		input[i].right	= false;
+		input[i].A		= false;
+		input[i].B		= false;
+		input[i].C		= false;
+		input[i].X		= false;
+		input[i].Y		= false;
+		input[i].Z		= false;
+		input[i].L		= false;
+		input[i].R		= false;
+		input[i].start	= false;
+		input[i].select	= false;
+	}
+	
 	input[DEFAULT_INPUT_COUNT].up		= false;
 	input[DEFAULT_INPUT_COUNT].down		= false;
 	input[DEFAULT_INPUT_COUNT].left		= false;
@@ -501,22 +520,28 @@ void CheckKeyPress(InputData input[])
 	input[DEFAULT_INPUT_COUNT].start	= false;
 	input[DEFAULT_INPUT_COUNT].select	= false;
 	
+	int inputMap = 0;
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-#if !RETRO_USE_ORIGINAL_CODE
-		input[i].up		= inputDevice[i][INPUT_UP].press;
-		input[i].down	= inputDevice[i][INPUT_DOWN].press;
-		input[i].left	= inputDevice[i][INPUT_LEFT].press;
-		input[i].right	= inputDevice[i][INPUT_RIGHT].press;
-		input[i].A		= inputDevice[i][INPUT_BUTTONA].press;
-		input[i].B		= inputDevice[i][INPUT_BUTTONB].press;
-		input[i].C		= inputDevice[i][INPUT_BUTTONC].press;
-		input[i].X		= inputDevice[i][INPUT_BUTTONX].press;
-		input[i].Y		= inputDevice[i][INPUT_BUTTONY].press;
-		input[i].Z		= inputDevice[i][INPUT_BUTTONZ].press;
-		input[i].L		= inputDevice[i][INPUT_BUTTONL].press;
-		input[i].R		= inputDevice[i][INPUT_BUTTONR].press;
-		input[i].start	= inputDevice[i][INPUT_START].press;
-		input[i].select	= inputDevice[i][INPUT_SELECT].press;
+		inputMap = i;
+		if (inputType[i] == 1) {
+			inputMap = controllerIDMap[i];
+//			PrintLog("Controller %d PRESS mapping is: %d", i, inputMap);
+		}
+		
+		input[inputMap].up		|= inputDevice[i][INPUT_UP].press;
+		input[inputMap].down	|= inputDevice[i][INPUT_DOWN].press;
+		input[inputMap].left	|= inputDevice[i][INPUT_LEFT].press;
+		input[inputMap].right	|= inputDevice[i][INPUT_RIGHT].press;
+		input[inputMap].A		|= inputDevice[i][INPUT_BUTTONA].press;
+		input[inputMap].B		|= inputDevice[i][INPUT_BUTTONB].press;
+		input[inputMap].C		|= inputDevice[i][INPUT_BUTTONC].press;
+		input[inputMap].X		|= inputDevice[i][INPUT_BUTTONX].press;
+		input[inputMap].Y		|= inputDevice[i][INPUT_BUTTONY].press;
+		input[inputMap].Z		|= inputDevice[i][INPUT_BUTTONZ].press;
+		input[inputMap].L		|= inputDevice[i][INPUT_BUTTONL].press;
+		input[inputMap].R		|= inputDevice[i][INPUT_BUTTONR].press;
+		input[inputMap].start	|= inputDevice[i][INPUT_START].press;
+		input[inputMap].select	|= inputDevice[i][INPUT_SELECT].press;
 		
 		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].press;
 		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].press;
@@ -532,7 +557,6 @@ void CheckKeyPress(InputData input[])
 		input[DEFAULT_INPUT_COUNT].R		|= inputDevice[i][INPUT_BUTTONR].press;
 		input[DEFAULT_INPUT_COUNT].start	|= inputDevice[i][INPUT_START].press;
 		input[DEFAULT_INPUT_COUNT].select	|= inputDevice[i][INPUT_SELECT].press;
-#endif
 	}
 
 #if RETRO_REV03
@@ -543,6 +567,23 @@ void CheckKeyPress(InputData input[])
 
 void CheckKeyDown(InputData input[])
 {
+	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+		input[i].up		= false;
+		input[i].down	= false;
+		input[i].left	= false;
+		input[i].right	= false;
+		input[i].A		= false;
+		input[i].B		= false;
+		input[i].C		= false;
+		input[i].X		= false;
+		input[i].Y		= false;
+		input[i].Z		= false;
+		input[i].L		= false;
+		input[i].R		= false;
+		input[i].start	= false;
+		input[i].select	= false;
+	}
+	
 	input[DEFAULT_INPUT_COUNT].up		= false;
 	input[DEFAULT_INPUT_COUNT].down		= false;
 	input[DEFAULT_INPUT_COUNT].left		= false;
@@ -558,22 +599,28 @@ void CheckKeyDown(InputData input[])
 	input[DEFAULT_INPUT_COUNT].start	= false;
 	input[DEFAULT_INPUT_COUNT].select	= false;
 	
+	int inputMap = 0;
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-#if !RETRO_USE_ORIGINAL_CODE
-		input[i].up		= inputDevice[i][INPUT_UP].hold;
-		input[i].down	= inputDevice[i][INPUT_DOWN].hold;
-		input[i].left	= inputDevice[i][INPUT_LEFT].hold;
-		input[i].right	= inputDevice[i][INPUT_RIGHT].hold;
-		input[i].A		= inputDevice[i][INPUT_BUTTONA].hold;
-		input[i].B		= inputDevice[i][INPUT_BUTTONB].hold;
-		input[i].C		= inputDevice[i][INPUT_BUTTONC].hold;
-		input[i].X		= inputDevice[i][INPUT_BUTTONX].hold;
-		input[i].Y		= inputDevice[i][INPUT_BUTTONY].hold;
-		input[i].Z		= inputDevice[i][INPUT_BUTTONZ].hold;
-		input[i].L		= inputDevice[i][INPUT_BUTTONL].hold;
-		input[i].R		= inputDevice[i][INPUT_BUTTONR].hold;
-		input[i].start	= inputDevice[i][INPUT_START].hold;
-		input[i].select	= inputDevice[i][INPUT_SELECT].hold;
+		inputMap = i;
+		if (inputType[i] == 1) {
+			inputMap = controllerIDMap[i];
+//			PrintLog("Controller %d HOLD mapping is: %d", i, inputMap);
+		}
+		
+		input[inputMap].up		|= inputDevice[i][INPUT_UP].hold;
+		input[inputMap].down	|= inputDevice[i][INPUT_DOWN].hold;
+		input[inputMap].left	|= inputDevice[i][INPUT_LEFT].hold;
+		input[inputMap].right	|= inputDevice[i][INPUT_RIGHT].hold;
+		input[inputMap].A		|= inputDevice[i][INPUT_BUTTONA].hold;
+		input[inputMap].B		|= inputDevice[i][INPUT_BUTTONB].hold;
+		input[inputMap].C		|= inputDevice[i][INPUT_BUTTONC].hold;
+		input[inputMap].X		|= inputDevice[i][INPUT_BUTTONX].hold;
+		input[inputMap].Y		|= inputDevice[i][INPUT_BUTTONY].hold;
+		input[inputMap].Z		|= inputDevice[i][INPUT_BUTTONZ].hold;
+		input[inputMap].L		|= inputDevice[i][INPUT_BUTTONL].hold;
+		input[inputMap].R		|= inputDevice[i][INPUT_BUTTONR].hold;
+		input[inputMap].start	|= inputDevice[i][INPUT_START].hold;
+		input[inputMap].select	|= inputDevice[i][INPUT_SELECT].hold;
 		
 		input[DEFAULT_INPUT_COUNT].up		|= inputDevice[i][INPUT_UP].hold;
 		input[DEFAULT_INPUT_COUNT].down		|= inputDevice[i][INPUT_DOWN].hold;
@@ -589,7 +636,6 @@ void CheckKeyDown(InputData input[])
 		input[DEFAULT_INPUT_COUNT].R		|= inputDevice[i][INPUT_BUTTONR].hold;
 		input[DEFAULT_INPUT_COUNT].start	|= inputDevice[i][INPUT_START].hold;
 		input[DEFAULT_INPUT_COUNT].select	|= inputDevice[i][INPUT_SELECT].hold;
-#endif
 	}
 }
 
