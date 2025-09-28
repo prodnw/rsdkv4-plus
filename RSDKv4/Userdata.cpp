@@ -239,6 +239,7 @@ void InitUserdata()
 #endif
 
     char buffer[0x100];
+    char inputBuffer[0x20];
 #if RETRO_PLATFORM == RETRO_UWP
     if (!usingCWD)
         sprintf(buffer, "%s/settings.ini", getResourcesPath());
@@ -309,7 +310,6 @@ void InitUserdata()
         ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
         ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
 
-		char inputBuffer[0x20];
 #if RETRO_USING_SDL2
 		ini.SetInteger("Keyboard 1", "Up", inputDevice[0][INPUT_UP].keyMappings = SDL_SCANCODE_UP);
 		ini.SetInteger("Keyboard 1", "Down", inputDevice[0][INPUT_DOWN].keyMappings = SDL_SCANCODE_DOWN);
@@ -448,7 +448,7 @@ void InitUserdata()
 		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
-			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = 0); //idk what the null value is im assuming 0
+			ini.SetInteger(inputBuffer, "Up", inputDevice[i][INPUT_UP].contMappings = 0); //idk what the null value is, im assuming its 0
 			ini.SetInteger(inputBuffer, "Down", inputDevice[i][INPUT_DOWN].contMappings = 0);
 			ini.SetInteger(inputBuffer, "Left", inputDevice[i][INPUT_LEFT].contMappings = 0);
 			ini.SetInteger(inputBuffer, "Right", inputDevice[i][INPUT_RIGHT].contMappings = 0);
@@ -469,6 +469,10 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
 		}
 #endif
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+			sprintf(inputBuffer, "Controller%d", i + 1);
+			ini.SetInteger("Controller ID Mappings", inputBuffer, controllerIDMap[i] = i);
+		}
 
         ini.Write(buffer);
     }
@@ -575,7 +579,6 @@ void InitUserdata()
         if (sfxVolume < 0)
             sfxVolume = 0;
 
-		char inputBuffer[0x10];
 #if RETRO_USING_SDL2
 
 		if (!ini.GetInteger("Keyboard 1", "Up", &inputDevice[0][INPUT_UP].keyMappings))
@@ -755,7 +758,7 @@ void InitUserdata()
 		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Keyboard %d", i + 1);
 			
-			if (!ini.GetInteger(inputBuffer, "Up", &inputDevice[i][INPUT_UP].keyMappings))sigm
+			if (!ini.GetInteger(inputBuffer, "Up", &inputDevice[i][INPUT_UP].keyMappings))
 				inputDevice[i][INPUT_UP].keyMappings = SDLK_UP;
 			if (!ini.GetInteger(inputBuffer, "Down", &inputDevice[i][INPUT_DOWN].keyMappings))
 				inputDevice[i][INPUT_DOWN].keyMappings = SDLK_DOWN;
@@ -866,6 +869,12 @@ void InitUserdata()
 				RTRIGGER_DEADZONE[i] = 0.3;
 		}
 #endif
+		
+		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+			sprintf(inputBuffer, "Controller%d", i + 1);
+			if (!ini.GetInteger("Controller ID Mappings", inputBuffer, &controllerIDMap[i]))
+				controllerIDMap[i] = i;
+		}
     }
 
 #if RETRO_USING_SDL2
@@ -1053,8 +1062,16 @@ void WriteSettings()
 		ini.SetFloat(buf[0], "LTriggerDeadzone", LTRIGGER_DEADZONE[i]);
 		ini.SetFloat(buf[0], "RTriggerDeadzone", RTRIGGER_DEADZONE[i]);
 	}
+	
+	ini.SetComment("Controller ID Mappings", "ICMappingsComment",
+					"Controller to Input ID mappings, in the format of \n; "
+					"Gamepad number = Player number");
+	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+		sprintf(buf[0], "Controller%d", i + 1);
+		ini.SetInteger("Controller ID Mappings", buf[0], controllerIDMap[i]);
+	}
 
-    char buffer[0x280];
+    char buffer[0x100];
 
 #if RETRO_PLATFORM == RETRO_UWP
     if (!usingCWD)
@@ -1076,7 +1093,7 @@ void ReadUserdata()
 #if RETRO_USE_MOD_LOADER
 #if RETRO_PLATFORM == RETRO_UWP
     if (!usingCWD)
-        sprintf(buffer, "%s/%sUData.bin", redirectSave ? modsPath : getResourcesPath(), savePath);
+        sprintf(buffer, "%s/%sUData.bin", redirecunusedtSave ? modsPath : getResourcesPath(), savePath);
     else
         sprintf(buffer, "%s%sUData.bin", redirectSave ? modsPath : gamePath, savePath);
 #elif RETRO_PLATFORM == RETRO_OSX
