@@ -4,15 +4,15 @@
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (123)
+#define COMMON_SCRIPT_VAR_COUNT (129)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (122)
+#define COMMON_SCRIPT_VAR_COUNT (128)
 #endif
 #else
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (41)
+#define COMMON_SCRIPT_VAR_COUNT (42)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (40)
+#define COMMON_SCRIPT_VAR_COUNT (41)
 #endif
 #endif
 #endif
@@ -319,6 +319,8 @@ const char variableNames[][0x20] = {
     // Menu Properties
     "menu1.selection",
     "menu2.selection",
+    "menu3.selection",
+    "menu4.selection",
 
     // Tile Layer Properties
     "tileLayer.xsize",
@@ -371,6 +373,7 @@ const char variableNames[][0x20] = {
     "engine.language",
     "engine.onlineActive",
     "engine.sfxVolume",
+    "engine.voiceVolume",
     "engine.bgmVolume",
 #if RETRO_REV00
     "engine.platformID",
@@ -516,6 +519,8 @@ const FunctionInfo functions[] = {
     // Sound FX
     FunctionInfo("PlaySfx", 2),
     FunctionInfo("StopSfx", 1),
+    FunctionInfo("PlayVoice", 2),
+    FunctionInfo("StopVoice", 1),
     FunctionInfo("SetSfxAttributes", 3),
 
     // More Collision Stuff
@@ -619,6 +624,14 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetPresenceSmallImage", 1),
     FunctionInfo("SetPresenceSmallText", 1),
     FunctionInfo("UpdatePresence", 0),
+
+    FunctionInfo("SetControllerVibration", 1),
+    FunctionInfo("GetControllerVibration", 0),
+    FunctionInfo("VibrateController", 0),
+    FunctionInfo("SetVibrationIntensity", 1),
+    FunctionInfo("GetVibrationIntensity", 0),
+
+    FunctionInfo("CheckButtonPress", 0),
 };
 
 #if RETRO_USE_COMPILER
@@ -644,6 +657,8 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "SPECIAL_STAGE", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_1", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_2", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_3", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_4", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_TOUCH", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID2", "2"),
@@ -1011,6 +1026,8 @@ enum ScrVar {
 #endif
     VAR_MENU1SELECTION,
     VAR_MENU2SELECTION,
+    VAR_MENU3SELECTION,
+    VAR_MENU4SELECTION,
     VAR_TILELAYERXSIZE,
     VAR_TILELAYERYSIZE,
     VAR_TILELAYERTYPE,
@@ -1056,6 +1073,7 @@ enum ScrVar {
     VAR_ENGINELANGUAGE,
     VAR_ENGINEONLINEACTIVE,
     VAR_ENGINESFXVOLUME,
+    VAR_ENGINEVOICEVOLUME,
     VAR_ENGINEBGMVOLUME,
 #if RETRO_REV00
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
@@ -1177,6 +1195,8 @@ enum ScrFunc {
     FUNC_NEXTVIDEOFRAME,
     FUNC_PLAYSFX,
     FUNC_STOPSFX,
+    FUNC_PLAYVOICE,
+    FUNC_STOPVOICE,
     FUNC_SETSFXATTRIBUTES,
     FUNC_OBJECTTILECOLLISION,
     FUNC_OBJECTTILEGRIP,
@@ -1250,7 +1270,7 @@ enum ScrFunc {
     
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
-
+    
     // Discord presence
     FUNC_SET_PRESENCE_DETAILS,
     FUNC_SET_PRESENCE_STATE,
@@ -1259,6 +1279,14 @@ enum ScrFunc {
     FUNC_SET_PRESENCE_SMALLIMAGE,
     FUNC_SET_PRESENCE_SMALLTEXT,
     FUNC_UPDATE_PRESENCE,
+
+    FUNC_SETCONTROLLERVIBRATION,
+    FUNC_GETCONTROLLERVIBRATION,
+    FUNC_CONTROLLER_VIBRATION,
+    FUNC_SETVIBRATIONINTENSITY,
+    FUNC_GETVIBRATIONINTENSITY,
+
+    FUNC_CHECKBUTTONPRESSED,
 
     FUNC_MAX_CNT,
 };
@@ -4308,6 +4336,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
+                    case VAR_MENU3SELECTION: scriptEng.operands[i] = gameMenu[2].selection1; break;
+                    case VAR_MENU4SELECTION: scriptEng.operands[i] = gameMenu[3].selection1; break;
                     case VAR_TILELAYERXSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].xsize; break;
                     case VAR_TILELAYERYSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].ysize; break;
                     case VAR_TILELAYERTYPE: scriptEng.operands[i] = stageLayouts[arrayVal].type; break;
@@ -4353,6 +4383,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINELANGUAGE: scriptEng.operands[i] = Engine.language; break;
                     case VAR_ENGINEONLINEACTIVE: scriptEng.operands[i] = Engine.onlineActive; break;
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
+                    case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
 #if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
@@ -5525,6 +5556,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 StopSfx(scriptEng.operands[0]);
                 break;
+            case FUNC_PLAYVOICE:
+                opcodeSize = 0;
+                PlayVoice(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+            case FUNC_STOPVOICE:
+                opcodeSize = 0;
+                StopVoice(scriptEng.operands[0]);
+                break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
                 SetSfxAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
@@ -6106,7 +6145,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                 break;
 
-
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
 				char temporarChar[0x4000];
@@ -6184,6 +6222,54 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_DISCORD_SDK
                 API_Discord_UpdatePresence();
 #endif
+                break;
+            }
+
+            case FUNC_SETCONTROLLERVIBRATION: {
+                opcodeSize = 0;
+                ControllerVibration = scriptEng.operands[0];
+                break;
+            }
+
+            case FUNC_GETCONTROLLERVIBRATION: {
+                opcodeSize = 0;
+                scriptEng.checkResult = ControllerVibration;
+                break;
+            }
+
+            case FUNC_CONTROLLER_VIBRATION: {
+                opcodeSize = 0;
+				if (ControllerVibration == true) {
+					if (scriptEng.operands[0] != -1) {
+						SDL_GameController *controller = SDL_GameControllerOpen(0);
+						if (controller) {
+							SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+							if (SDL_JoystickHasRumble(joystick)) {
+								SDL_JoystickRumble(joystick, VibrationIntensity, VibrationIntensity, scriptEng.operands[0] * 10);
+							}
+							SDL_GameControllerClose(controller);
+						}
+
+					}
+				}
+                break;
+            }
+
+            case FUNC_SETVIBRATIONINTENSITY: {
+                opcodeSize = 0;
+                VibrationIntensity = scriptEng.operands[0];
+                break;
+            }
+
+            case FUNC_GETVIBRATIONINTENSITY: {
+                opcodeSize = 0;
+                scriptEng.checkResult = VibrationIntensity;
+                break;
+            }
+
+            case FUNC_CHECKBUTTONPRESSED: {
+                opcodeSize = 0;
+                // idk yet
                 break;
             }
         }
@@ -6809,6 +6895,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU3SELECTION: gameMenu[2].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU4SELECTION: gameMenu[3].selection1 = scriptEng.operands[i]; break;
                     case VAR_TILELAYERXSIZE: stageLayouts[arrayVal].xsize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERYSIZE: stageLayouts[arrayVal].ysize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERTYPE: stageLayouts[arrayVal].type = scriptEng.operands[i]; break;
@@ -6861,11 +6949,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEONLINEACTIVE: Engine.onlineActive = scriptEng.operands[i]; break;
                     case VAR_ENGINESFXVOLUME:
                         sfxVolume = scriptEng.operands[i];
-                        SetGameVolumes(bgmVolume, sfxVolume);
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
+                        break;
+                    case VAR_ENGINEVOICEVOLUME:
+                        voiceVolume = scriptEng.operands[i];
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
                     case VAR_ENGINEBGMVOLUME:
                         bgmVolume = scriptEng.operands[i];
-                        SetGameVolumes(bgmVolume, sfxVolume);
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
 #if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: break;

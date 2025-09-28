@@ -57,6 +57,8 @@ bool skipStartMenu_Config    = false;
 int disableFocusPause        = 3;
 int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
+int ControllerVibration      = false;
+int VibrationIntensity       = 1; // 0 = Low, 1 = Medium, 2 = High
 
 bool useSGame = false;
 
@@ -289,6 +291,8 @@ void InitUserdata()
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
+        ini.SetInteger("Game", "ControllerVibration", ControllerVibration = false);
+        ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity = 1);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -304,11 +308,15 @@ void InitUserdata()
         ini.SetInteger("Window", "ScreenWidth", SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE);
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         ini.SetInteger("Window", "RefreshRate", Engine.refreshRate = 60);
+	    if (Engine.refreshRate > 60)
+	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
+        ini.SetBool("Window", "Brightness", Engine.brightness = 1);
 
         ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
         ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
+        ini.SetFloat("Audio", "VoiceVolume", voiceVolume / (float)MAX_VOLUME);
 
 #if RETRO_USING_SDL2
 		ini.SetInteger("Keyboard 1", "Up", inputDevice[0][INPUT_UP].keyMappings = SDL_SCANCODE_UP);
@@ -492,6 +500,10 @@ void InitUserdata()
         disableFocusPause_Config = disableFocusPause;
         if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
             CheckForthemUpdates = true;
+        if (!ini.GetInteger("Game", "ControllerVibration", &ControllerVibration))
+            ControllerVibration = false;
+        if (!ini.GetInteger("Game", "VibrationIntensity", &VibrationIntensity))
+            VibrationIntensity = 1;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -514,20 +526,27 @@ void InitUserdata()
             SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE;
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         if (!ini.GetInteger("Window", "RefreshRate", &Engine.refreshRate))
+            Engine.refreshRate = 60;		
+        if (Engine.refreshRate > 60)
             Engine.refreshRate = 60;
         if (!ini.GetInteger("Window", "DimLimit", &Engine.dimLimit))
             Engine.dimLimit = 300; // 5 mins
         if (Engine.dimLimit >= 0)
             Engine.dimLimit *= Engine.refreshRate;
+        if (!ini.GetInteger("Window", "Brightness", &Engine.brightness))
+            Engine.brightness = 1;
 
-        float bv = 0, sv = 0;
+        float bv = 0, sv = 0, vv = 0;
         if (!ini.GetFloat("Audio", "BGMVolume", &bv))
             bv = 1.0f;
         if (!ini.GetFloat("Audio", "SFXVolume", &sv))
             sv = 1.0f;
+        if (!ini.GetFloat("Audio", "VoiceVolume", &vv))
+            vv = 1.0f;
 
         bgmVolume = bv * MAX_VOLUME;
         sfxVolume = sv * MAX_VOLUME;
+        voiceVolume = vv * MAX_VOLUME;
 
         if (bgmVolume > MAX_VOLUME)
             bgmVolume = MAX_VOLUME;
@@ -538,6 +557,11 @@ void InitUserdata()
             sfxVolume = MAX_VOLUME;
         if (sfxVolume < 0)
             sfxVolume = 0;
+
+        if (voiceVolume > MAX_VOLUME)
+            voiceVolume = MAX_VOLUME;
+        if (voiceVolume < 0)
+            voiceVolume = 0;
 
 #if RETRO_USING_SDL2
 		if (!ini.GetInteger("Keyboard 1", "Up", &inputDevice[0][INPUT_UP].keyMappings))
@@ -854,6 +878,10 @@ void WriteSettings()
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
     ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
+    ini.SetComment("Game", "ControllerComment", "When enabled, your controller will vibrate when applicable.");
+    ini.SetInteger("Game", "ControllerVibration", ControllerVibration);
+    ini.SetComment("Game", "VibrationComment", "Changes the intensity of controller vibration if the option is enabled.");
+    ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
@@ -879,9 +907,12 @@ void WriteSettings()
     ini.SetInteger("Window", "RefreshRate", Engine.refreshRate);
     ini.SetComment("Window", "DLComment", "Determines the dim timer in seconds, set to -1 to disable dimming");
     ini.SetInteger("Window", "DimLimit", Engine.dimLimit >= 0 ? Engine.dimLimit / Engine.refreshRate : -1);
+    ini.SetComment("Window", "BNComment", "Determines how bright the screen will be");
+    ini.SetInteger("Window", "Brightness", Engine.brightness);
 
     ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
     ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
+    ini.SetFloat("Audio", "VoiceVolume", voiceVolume / (float)MAX_VOLUME);
 
 	char buf[3][0x100];
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
@@ -1481,6 +1512,7 @@ void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
 void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
+void GetWindowBrightness() { scriptEng.checkResult = Engine.brightness; }
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1542,6 +1574,14 @@ void SetFrameRate(int *enabled, int *unused)
     if (Engine.refreshRate > 60)
         Engine.refreshRate = 60;
 	//ApplyWindowChanges();
+}
+
+void SetWindowBrightness(int *brightness, int *unused)
+{
+    if (!brightness)
+        return;
+
+    Engine.brightness = *brightness;
 }
 
 void ApplyWindowChanges()

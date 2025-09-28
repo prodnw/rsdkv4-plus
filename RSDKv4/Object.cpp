@@ -399,6 +399,7 @@ void InitNativeObjectSystem()
         saveGame->vDPadY_Move     = 184;
         saveGame->vDPadX_Jump     = -56;
         saveGame->vDPadY_Jump     = 188;
+        saveGame->voiceVolume     = MAX_VOLUME;
         saveGame->tailsUnlocked   = Engine.gameType != GAME_SONIC1;
         saveGame->knuxUnlocked    = Engine.gameType != GAME_SONIC1;
         saveGame->unlockedActs    = 0;
@@ -415,6 +416,7 @@ void InitNativeObjectSystem()
 #endif
     saveGame->musVolume = bgmVolume;
     saveGame->sfxVolume = sfxVolume;
+    saveGame->voiceVolume = voiceVolume;
 
     if (!saveGame->musVolume)
         musicEnabled = false;
@@ -427,7 +429,7 @@ void InitNativeObjectSystem()
     }
 
     Engine.globalBoxRegion = saveGame->boxRegion;
-    SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume);
+    SetGameVolumes(saveGame->musVolume, saveGame->sfxVolume, saveGame->voiceVolume);
 #if !RETRO_USE_ORIGINAL_CODE
     if (skipStartMenu) {
         CREATE_ENTITY(RetroGameLoop);

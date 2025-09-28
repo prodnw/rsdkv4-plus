@@ -496,6 +496,7 @@ public:
     int refreshRate       = 60; // user-picked screen update rate
     int screenRefreshRate = 60; // hardware screen update rate
     int targetRefreshRate = 60; // game logic update rate
+    int brightness        = 1;  // how bright the screen is
 
     int renderFrameIndex = 0;
     int skipFrameIndex   = 0;

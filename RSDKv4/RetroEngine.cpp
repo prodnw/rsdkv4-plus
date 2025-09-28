@@ -582,6 +582,7 @@ void RetroEngine::Run()
     unsigned long long targetFreq = SDL_GetPerformanceFrequency() / Engine.refreshRate;
     unsigned long long curTicks   = 0;
     unsigned long long prevTicks  = 0;
+    int lastFPS = Engine.refreshRate;
 
     while (running) {
 #if !RETRO_USE_ORIGINAL_CODE
@@ -595,6 +596,11 @@ void RetroEngine::Run()
         Engine.deltaTime = 1.0 / 60;
 #endif
         running = ProcessEvents();
+
+        if (lastFPS != Engine.refreshRate) {
+		    targetFreq = SDL_GetPerformanceFrequency() / Engine.refreshRate;
+			lastFPS = Engine.refreshRate;
+		}
 
         // Focus Checks
         if (!(disableFocusPause & 2)) {
@@ -1358,6 +1364,8 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
+    AddNativeFunction("GetWindowBrightness", GetWindowBrightness);
+    AddNativeFunction("SetWindowBrightness", SetWindowBrightness);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);

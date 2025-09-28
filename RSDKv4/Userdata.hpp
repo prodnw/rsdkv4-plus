@@ -51,7 +51,8 @@ struct SaveGame {
     int knuxUnlocked;    // Value 44
     int unlockedActs;    // Value 45
     int unlockedHPZ;     // Value 46
-    int unused[17];      // Values 47-63
+    int voiceVolume;     // Value 47
+    int unused[16];      // Values 48-63
     int records[0x80];   // Values 64-192
     int padding[0x73F];  // Values 193-2047
     int customSS[0x400]; // Values 2048-3072
@@ -113,6 +114,8 @@ extern bool skipStartMenu_Config;
 extern int disableFocusPause;
 extern int disableFocusPause_Config;
 extern int CheckForthemUpdates;
+extern int ControllerVibration;
+extern int VibrationIntensity;
 
 inline int GetGlobalVariableByName(const char *name)
 {
@@ -237,6 +240,8 @@ void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
+void GetWindowBrightness();
+void SetWindowBrightness(int *brightness, int *unused);
 void ApplyWindowChanges();
 int CheckUpdates(char website[]);
 
