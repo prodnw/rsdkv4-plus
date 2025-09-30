@@ -22,10 +22,10 @@ endif()
 option(RETRO_USE_CURL "Compiles with cURL." OFF)
 option(RETRO_ACCEPT_OLD_SYNTAX "Allows compatibility with the old syntax." OFF)
 
-if(WIN32)
-    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
-else()
+if(ANDROID)
     option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
+else()
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 endif()
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
@@ -127,7 +127,26 @@ if(NOT PLATFORM)
     endif()
 endif()
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 4) # SHOULD work...?
+	message("System is supected to be 32 bit")
+	set(RETRO_ARCH "32")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	message("System is supected to be 64 bit")
+	set(RETRO_ARCH "64")
+else()
+	# Might mean the system is 16/128bit
+	# Or its just because of an error
+	message("Error detecting system architecture")
+	set(RETRO_ARCH "INVALID")
+endif()
+
 include(platforms/${PLATFORM}.cmake)
+
+# https://github.com/discord/gamesdk-and-dispatch/issues/144
+# guess we gotta include <cstdint> manually
+if(RETRO_USE_DISCORD)
+	target_precompile_headers(RetroEngine PRIVATE RSDKv4/DiscordHeaders.hpp)
+endif()
 
 set_target_properties(RetroEngine PROPERTIES OUTPUT_NAME ${RETRO_OUTPUT_NAME})
 
@@ -240,8 +259,6 @@ target_include_directories(RetroEngine PRIVATE
     dependencies/all/theoraplay/
     dependencies/all/stb-image/
     dependencies/all/tinyxml2/
-    dependencies/all/steamworks_sdk/public
-    dependencies/all/discord_game_sdk/cpp
 )
 
 if(RETRO_NETWORKING)
@@ -256,17 +273,22 @@ if(DEFINED DEP_PATH)
     )
 endif()
 
-# TODO: borrowing this from S2M
+if(RETRO_USE_STEAM)
+	target_include_directories(RetroEngine PRIVATE
+		dependencies/all/steamworks_sdk/public/
+	)
+endif()
 
-if(RETRO_USE_DISCORD AND WIN32)
-    file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/cpp/*.cpp)
-    target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
+if(RETRO_USE_DISCORD)
+	target_include_directories(RetroEngine PRIVATE
+		dependencies/all/discord_game_sdk/
+		dependencies/all/discord_game_sdk/cpp/
+		dependencies/all/discord_game_sdk/lib/x86/
+		dependencies/all/discord_game_sdk/lib/x86_64/
+	)
 
-    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86_64/discord_game_sdk.dll.lib )
-    elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "X86")
-        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86/discord_game_sdk.dll.lib )
-    endif()
+	file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/cpp/*.cpp)
+	target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
 endif()
 
 target_compile_definitions(RetroEngine PRIVATE

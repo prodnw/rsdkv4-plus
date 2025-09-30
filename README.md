@@ -21,10 +21,11 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * New fade function - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
  * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
  * New temp values - temp8, temp9, temp10
- * New functions (be sure to add these as values in GameConfig.bin!)
+ * New functions
     * "CheckUpdates" - Checks whether your game needs an update
     * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
-    * "GetModID" - Gets the ID of any mod in in the mod list and stores it in the checkResult (this could be used for having better mod compatibility with other mods)
+    * Native Functions (used via "CallNativeFunction"/"2"/"4" - be sure to add these as values in GameConfig.bin/Game.xml!)
+      * "GetModID" - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for having better mod compatibility with other mods)
     * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw
 
 # Fork Credits
@@ -148,10 +149,12 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_HW_RENDER`: Enables the Hardware Renderer used by the main menu and touch controls UI. Takes a boolean, defaults to `on`.
 - `RETRO_ORIGINAL_CODE`: Removes any custom code. *A playable game will not be built with this enabled.* Takes a boolean, defaults to `off`.
 - `RETRO_SDL_VERSION`: *Only change this if you know what you're doing.* Switches between using SDL1 or SDL2. Takes an integer of either `1` or `2`, defaults to `2`.
-- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well, defaults to `off`.
-- `RETRO_USE_DISCORD` : Toggles whether or not Discord RPC is enabled, defaults to `off`.
-- `RETRO_USE_CURL` : Adds support for cURL, which is used for loading websites, defaults to `off`.
-- `RETRO_ACCEPT_OLD_SYNTAX` : Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
+- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well, defaults to `off`, requires the [Steamworks SDK](https://partner.steamgames.com/downloads/list) extracted to `./dependencies/all/steamworks_sdk`.
+- `RETRO_USE_DISCORD`: Toggles whether or not Discord RPC is enabled, defaults to `on` if not on Android, requires the [Discord SDK](https://discord.com/developers/docs/developer-tools/game-sdk#getting-started) `sdk` folder extracted to `./dependencies/all/discord_game_sdk`.
+  - Unfortunatly, on Linux, you must rename `./dependencies/all/discord_game_sdk/lib/x86_64/discord_game_sdk.so` from `discord_game_sdk.so` to `libdiscord_game_sdk.so`.
+- `RETRO_USE_CURL`: Adds support for cURL, which is used for loading websites, defaults to `off`.
+- `RETRO_UPDATE_CHECKER`: Adds support for the update checker, which is used for checking updates, defaults to `on` if not on Android, forces `RETRO_USE_CURL` to be set to `on`.
+- `RETRO_ACCEPT_OLD_SYNTAX`: Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
 
 ## Unofficial Branches
 Follow the installation instructions in the readme of each branch.

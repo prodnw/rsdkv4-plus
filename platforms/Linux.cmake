@@ -75,25 +75,46 @@ if(RETRO_MOD_LOADER)
 endif()
 
 if(RETRO_USE_STEAM)
-
-	# TODO this if() kinda stinky,,, but i cant figure out any other way to do it
-	if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+	if(RETRO_ARCH STREQUAL "64")
 		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/linux64")
-		message("System is supected to be 64 bit")
-	else()
+		
+		find_library(STEAM_API_LIB
+			NAMES steam_api
+			PATHS "${STEAMWORKS_REDIST_BIN}"
+
+			NO_DEFAULT_PATH
+		)
+	elseif(RETRO_ARCH STREQUAL "32")
 		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/linux32")
-		message("System is supected to be 32 bit")
+		
+		find_library(STEAM_API_LIB
+			NAMES steam_api
+			PATHS "${STEAMWORKS_REDIST_BIN}"
+
+			NO_DEFAULT_PATH
+		)
 	endif()
 
-	find_library(STEAM_API_LIB
-		NAMES libsteam_api.so
-		PATHS "${STEAMWORKS_REDIST_BIN}"
-
-		NO_DEFAULT_PATH
-	)
-
-	# there should be an error for the above if this isnt found - but for now,
+    if(NOT STEAM_API_LIB)
+        message(FATAL_ERROR "Steam API library not found in ${STEAMWORKS_REDIST_BIN}")
+	else()
+		message("found Steam API")
+    endif()
 
 	target_link_libraries(RetroEngine ${STEAM_API_LIB})
+endif()
 
+# TODO: borrowing this from S2M
+# TODO: for some reason you gotta manually add the "lib" prefix to "libdiscord_game_sdk.so"
+#		might be able to use "set_target_properties(discor PROPERTIES PREFIX "")", "CMAKE_STATIC_LIBRARY_PREFIX", or "CMAKE_SHARED_LIBRARY_PREFIX"
+if(RETRO_USE_DISCORD)
+	if(RETRO_ARCH STREQUAL "64")
+		set(DISCORD_REDIST_BIN "${DISCORD_SDK_DIR}/lib/x86_64")
+	elseif(RETRO_ARCH STREQUAL "32") # There are no 32 bit linux libraries yet-
+										# (although the SDK got archived so I doubt there ever will be)
+		message(WARNING "Discord SDK libraries for 32bit Linux may not exist (yet)")
+		set(DISCORD_REDIST_BIN "${DISCORD_SDK_DIR}/lib/x86")
+	endif()
+
+	target_link_libraries(RetroEngine ${DISCORD_REDIST_BIN}/libdiscord_game_sdk.so)
 endif()
