@@ -397,6 +397,9 @@ const char variableNames[][0x20] = {
     "engine.hapticsEnabled",
 #endif
     "game.checkForUpdates",
+
+	"controller.vibrationEnabled",
+	"controller.vibrationIntensity",
 };
 #endif
 
@@ -625,11 +628,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetPresenceSmallText", 1),
     FunctionInfo("UpdatePresence", 0),
 
-    FunctionInfo("SetControllerVibration", 1),
-    FunctionInfo("GetControllerVibration", 0),
-    FunctionInfo("VibrateController", 0),
-    FunctionInfo("SetVibrationIntensity", 1),
-    FunctionInfo("GetVibrationIntensity", 0),
+	FunctionInfo("VibrateController", 2), // VibrateController(int duration, int ControllerID (0 = ALL))
 
     FunctionInfo("CheckButtonPress", 0),
 };
@@ -1096,6 +1095,10 @@ enum ScrVar {
     VAR_HAPTICSENABLED,
 #endif
     VAR_GAMECHECKFORUPDATES,
+
+	VAR_CONTROLLER_VIBRATIONENABLED,
+	VAR_CONTROLLER_VIBRATIONINTENSITY,
+
     VAR_MAX_CNT
 };
 
@@ -1280,11 +1283,7 @@ enum ScrFunc {
     FUNC_SET_PRESENCE_SMALLTEXT,
     FUNC_UPDATE_PRESENCE,
 
-    FUNC_SETCONTROLLERVIBRATION,
-    FUNC_GETCONTROLLERVIBRATION,
-    FUNC_CONTROLLER_VIBRATION,
-    FUNC_SETVIBRATIONINTENSITY,
-    FUNC_GETVIBRATIONINTENSITY,
+	FUNC_VIBRATECONTROLLER,
 
     FUNC_CHECKBUTTONPRESSED,
 
@@ -4437,6 +4436,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
+					// arrayVal is offset by 1 to make sure 1 means the first controller, like other input variables
+					// You have been warned!!
+					case VAR_CONTROLLER_VIBRATIONENABLED:   if (arrayVal > 0) {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} break;
+					case VAR_CONTROLLER_VIBRATIONINTENSITY: if (arrayVal > 0) {scriptEng.operands[i] =  VibrationIntensity[arrayVal - 1];} break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6225,45 +6228,39 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_SETCONTROLLERVIBRATION: {
+            case FUNC_VIBRATECONTROLLER: {
                 opcodeSize = 0;
-                ControllerVibration = scriptEng.operands[0];
-                break;
-            }
-
-            case FUNC_GETCONTROLLERVIBRATION: {
-                opcodeSize = 0;
-                scriptEng.checkResult = ControllerVibration;
-                break;
-            }
-
-            case FUNC_CONTROLLER_VIBRATION: {
-                opcodeSize = 0;
-				if (ControllerVibration == true) {
-					if (scriptEng.operands[0] != -1) {
-						SDL_GameController *controller = SDL_GameControllerOpen(0);
-						if (controller) {
-							SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
-							if (SDL_JoystickHasRumble(joystick)) {
-								SDL_JoystickRumble(joystick, VibrationIntensity, VibrationIntensity, scriptEng.operands[0] * 10);
+                // idk if its possible to optimise this so it only runs the loop if (operands[1] == 0 || operands[1] > INPUT_COUNT)
+                // since it runs the same code either way
+                // but if it is, that would be cool
+				if (scriptEng.operands[0] >= 0) {
+					if (scriptEng.operands[1] == 0 || scriptEng.operands[1] > DEFAULT_INPUT_COUNT) {
+						for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+							if (ControllerVibration[i] == true) {
+								SDL_GameController *controller = SDL_GameControllerOpen(i);
+								if (controller) {
+									SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+									if (SDL_JoystickHasRumble(joystick))
+										SDL_JoystickRumble(joystick, (VibrationIntensity[i] + 1) * 0x5000, (VibrationIntensity[i] + 1) * 0x5000,
+																													scriptEng.operands[0] * 10);
+									SDL_GameControllerClose(controller);
+								}
 							}
-							SDL_GameControllerClose(controller);
 						}
-
+					} else {
+						int i = (scriptEng.operands[1] - 1);
+						if (ControllerVibration[i] == true) {
+							SDL_GameController *controller = SDL_GameControllerOpen(i);
+							if (controller) {
+								SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+								if (SDL_JoystickHasRumble(joystick))
+									SDL_JoystickRumble(joystick, (VibrationIntensity[i] + 1) * 0x5000, (VibrationIntensity[i] + 1) * 0x5000,
+																												scriptEng.operands[0] * 10);
+								SDL_GameControllerClose(controller);
+							}
+						}
 					}
 				}
-                break;
-            }
-
-            case FUNC_SETVIBRATIONINTENSITY: {
-                opcodeSize = 0;
-                VibrationIntensity = scriptEng.operands[0];
-                break;
-            }
-
-            case FUNC_GETVIBRATIONINTENSITY: {
-                opcodeSize = 0;
-                scriptEng.checkResult = VibrationIntensity;
                 break;
             }
 
@@ -7001,6 +6998,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
                     case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
+					// arrayVal is offset by 1 to make sure 1 means the first controller, like other input variables
+					// You have been warned!!
+					case VAR_CONTROLLER_VIBRATIONENABLED:   if (arrayVal > 0) {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} break;
+					case VAR_CONTROLLER_VIBRATIONINTENSITY: if (arrayVal > 0)  {VibrationIntensity[arrayVal - 1] = scriptEng.operands[i];} break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

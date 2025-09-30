@@ -57,8 +57,8 @@ bool skipStartMenu_Config    = false;
 int disableFocusPause        = 3;
 int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
-int ControllerVibration      = false;
-int VibrationIntensity       = 1; // 0 = Low, 1 = Medium, 2 = High
+bool ControllerVibration[DEFAULT_INPUT_COUNT];
+int VibrationIntensity[DEFAULT_INPUT_COUNT]; // 0 = Low, 1 = Medium, 2 = High
 
 bool useSGame = false;
 
@@ -207,6 +207,9 @@ bool WriteSaveRAMData()
 
 void InitUserdata()
 {
+	// Initialize array values
+	for (int c = 0; c < DEFAULT_INPUT_COUNT; c++) {VibrationIntensity[c]  = 1;}
+
     // userdata files are loaded from this directory
     sprintf(gamePath, "%s", BASE_PATH);
 #if RETRO_USE_MOD_LOADER
@@ -291,8 +294,6 @@ void InitUserdata()
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
-        ini.SetInteger("Game", "ControllerVibration", ControllerVibration = false);
-        ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity = 1);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -375,6 +376,9 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "LTriggerDeadzone", LTRIGGER_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
+			
+			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
+			ini.SetInteger(inputBuffer, "VibrationIntensity", VibrationIntensity[i] = 1);
 		}
 #endif
 
@@ -435,6 +439,9 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "LTriggerDeadzone", LTRIGGER_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
+			
+			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
+			ini.SetInteger(inputBuffer, "VibrationIntensity", VibrationIntensity[i] = 1);
 		}
 #endif
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
@@ -500,10 +507,6 @@ void InitUserdata()
         disableFocusPause_Config = disableFocusPause;
         if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
             CheckForthemUpdates = true;
-        if (!ini.GetInteger("Game", "ControllerVibration", &ControllerVibration))
-            ControllerVibration = false;
-        if (!ini.GetInteger("Game", "VibrationIntensity", &VibrationIntensity))
-            VibrationIntensity = 1;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -666,6 +669,11 @@ void InitUserdata()
 				LTRIGGER_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RTriggerDeadzone", &RTRIGGER_DEADZONE[i]))
 				RTRIGGER_DEADZONE[i] = 0.3;
+			
+			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
+				ControllerVibration[i] = true;
+			if (!ini.GetInteger(inputBuffer, "VibrationIntensity", &VibrationIntensity[i]))
+				VibrationIntensity[i] = 1;
 		}
 #endif
 
@@ -772,6 +780,11 @@ void InitUserdata()
 				LTRIGGER_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RTriggerDeadzone", &RTRIGGER_DEADZONE[i]))
 				RTRIGGER_DEADZONE[i] = 0.3;
+			
+			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
+				ControllerVibration[i] = true;
+			if (!ini.GetInteger(inputBuffer, "VibrationIntensity", &VibrationIntensity[i]))
+				VibrationIntensity[i] = 1;
 		}
 #endif
 		
@@ -878,10 +891,6 @@ void WriteSettings()
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
     ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
-    ini.SetComment("Game", "ControllerComment", "When enabled, your controller will vibrate when applicable.");
-    ini.SetInteger("Game", "ControllerVibration", ControllerVibration);
-    ini.SetComment("Game", "VibrationComment", "Changes the intensity of controller vibration if the option is enabled.");
-    ini.SetInteger("Game", "VibrationIntensity", VibrationIntensity);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
@@ -973,6 +982,12 @@ void WriteSettings()
 		ini.SetFloat(buf[0], "RStickDeadzone", RSTICK_DEADZONE[i]);
 		ini.SetFloat(buf[0], "LTriggerDeadzone", LTRIGGER_DEADZONE[i]);
 		ini.SetFloat(buf[0], "RTriggerDeadzone", RTRIGGER_DEADZONE[i]);
+		
+		ini.SetComment(buf[0], "VibrationComment", "When enabled, your controller will vibrate when applicable");
+		ini.SetBool(buf[0], "ControllerVibration", ControllerVibration[i]);
+		ini.SetComment(buf[0], "VibrationIntensityComment",
+								"Changes the intensity of controller vibration if vibration is enabled. (0 = low, 1 = medium, 2 = high)");
+		ini.SetInteger(buf[0], "VibrationIntensity", VibrationIntensity[i]);
 	}
 	
 	ini.SetComment("Controller ID Mappings", "ICMappingsComment",
