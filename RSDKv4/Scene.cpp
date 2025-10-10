@@ -174,6 +174,8 @@ void ProcessStage(void)
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                             playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                            playerListPos = 0;
                     }
                 break;
                 case GAME_SONICCDTIMELESS:
@@ -181,6 +183,8 @@ void ProcessStage(void)
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                            playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
                     }
                 break;
@@ -194,6 +198,10 @@ void ProcessStage(void)
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                             playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
+                            playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                            playerListPos = 0;
                     }
                 break;
             }
@@ -205,12 +213,16 @@ void ProcessStage(void)
                         playerListPos = 0;
                     else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                         playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        playerListPos = 0;
                     break;
 
                 case GAME_SONICCDTIMELESS: // prevent players from using Knuckles without the DLC, as Amy is a little special.
                     if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                         playerListPos = 0;
                     else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                        playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                         playerListPos = 0;
                     break;
                 case GAME_SONICCD: // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
@@ -221,6 +233,10 @@ void ProcessStage(void)
                     else if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
                         playerListPos = 0;
                     else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
+                        playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
                         playerListPos = 0;
                     break;
             }
