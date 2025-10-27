@@ -3229,6 +3229,7 @@ void ParseScriptFile(char *scriptName, int scriptID)
 #if RETRO_USE_MOD_LOADER
                                 && FindStringToken(scriptText, "USE_MOD_LOADER", 1) == -1
 #endif
+                                && FindStringToken(scriptText, "USE_V4_PLUS", 1) == -1
                             ) {
                                 parseMode = PARSEMODE_PLATFORMSKIP;
                             }
