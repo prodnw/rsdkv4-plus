@@ -60,6 +60,7 @@ struct ChannelInfo {
     int sfxID;
     byte loopSFX;
     sbyte pan;
+    bool paused;
 };
 
 struct StreamFile {
@@ -176,6 +177,12 @@ inline void StopSfx(int sfx)
         }
     }
 }
+
+void PauseSfx(int sfx);
+void ResumeSfx(int sfx);
+void PauseAnySfx();
+void SetSfxPitch(int sfxID, int pitchLevel);
+
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan);
 
 void SetSfxName(const char *sfxName, int sfxID);
@@ -269,7 +276,10 @@ inline void StopAllSfx()
     LockAudioDevice();
 #endif
 
-    for (int i = 0; i < CHANNEL_COUNT; ++i) sfxChannels[i].sfxID = -1;
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        sfxChannels[i].sfxID = -1;
+        sfxChannels[i].paused = false;
+    }
 
 #if !RETRO_USE_ORIGINAL_CODE
     UnlockAudioDevice();

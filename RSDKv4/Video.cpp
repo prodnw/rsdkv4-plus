@@ -49,7 +49,7 @@ void PlayVideoFile(char *filePath)
         filePath[len - 2] = 0;
     }
 
-    StrCopy(pathBuffer, "videos/");
+    StrCopy(pathBuffer, "Data/Videos/");
     StrAdd(pathBuffer, filePath);
     StrAdd(pathBuffer, ".ogv");
 
@@ -213,11 +213,20 @@ int ProcessVideo()
             fadeMode += 8;
         }
 
-        if (inputDevice[0][INPUT_ANY].press || touches > 0) {
+        if (inputDevice[0][INPUT_BUTTONA].press || inputDevice[0][INPUT_START].press > 0 || touches > 0) {
             if (!videoSkipped)
                 fadeMode = 0;
 
             videoSkipped = true;
+        }
+
+        if (Engine.gameDeviceType == RETRO_MOBILE) {
+            if (touches > 0) {
+                if (!videoSkipped)
+                    fadeMode = 0;
+
+                videoSkipped = true;
+            }
         }
 
         if (fadeMode <= 0) {

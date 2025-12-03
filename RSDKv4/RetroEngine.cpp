@@ -9,6 +9,12 @@ bool engineDebugMode = false;
 #include <unistd.h>
 #endif
 
+static int connectedControllerCount = 0;
+
+void AddPlaytimeMilliseconds(unsigned int ms);
+unsigned int GetPlaytimeSeconds();
+extern unsigned long long totalPlaytimeMs;
+
 RetroEngine Engine = RetroEngine();
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -34,6 +40,9 @@ bool ProcessEvents()
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
     while (SDL_PollEvent(&Engine.sdlEvents)) {
+
+        UpdateCursorVisibility(&Engine.sdlEvents);
+
         // Main Events
         switch (Engine.sdlEvents.type) {
 #if RETRO_USING_SDL2
@@ -59,8 +68,24 @@ bool ProcessEvents()
                     case SDL_WINDOWEVENT_FOCUS_GAINED: Engine.hasFocus = true; break;
                 }
                 break;
-            case SDL_CONTROLLERDEVICEADDED: controllerInit(Engine.sdlEvents.cdevice.which); break;
-            case SDL_CONTROLLERDEVICEREMOVED: controllerClose(Engine.sdlEvents.cdevice.which); break;
+            case SDL_CONTROLLERDEVICEADDED:
+                controllerInit(Engine.sdlEvents.cdevice.which);
+
+                // fast update: increment connected count and notify script
+                ++connectedControllerCount;
+                scriptEng.checkResult = 0; // 0 = no disconnect (added)
+                PrintLog("Controller added, now %d connected", connectedControllerCount);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                controllerClose(Engine.sdlEvents.cdevice.which);
+                if (connectedControllerCount > 0)
+                    --connectedControllerCount;
+
+                // immediate notify to script that a disconnect happened
+                scriptEng.checkResult = 1; // 1 = disconnected
+                PrintLog("Controller removed, now %d connected", connectedControllerCount);
+                break;
             case SDL_APP_WILLENTERBACKGROUND:
                 if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
                     Engine.gameMode = ENGINE_INITPAUSE;
@@ -346,6 +371,16 @@ void RetroEngine::Init()
                 initialised = true;
                 running     = true;
 
+#if RETRO_USING_SDL2
+                // initialize connectedControllerCount once SDL is ready
+                connectedControllerCount = 0;
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i))
+                        ++connectedControllerCount;
+                }
+#endif
+
 #if !RETRO_USE_ORIGINAL_CODE
                 if ((startList_Game != 0xFF && startList_Game) || (startStage_Game != 0xFF && startStage_Game) || startPlayer != 0xFF) {
                     skipStart = true;
@@ -453,11 +488,15 @@ void RetroEngine::Init()
         gameType = GAME_SONICNEXUS;
     }
 
-    if (strstr(gameWindowText, "Sonic Vengeance")) {
-        gameType = GAME_SONICVENGEANCE;
+    if (strstr(gameWindowText, "Sonic and the Duel of Fates")) {
+        gameType = GAME_SONICDUELOFFATES;
     }
 
-    if (strstr(gameWindowText, "Sonic 1 Forever") || forceSonic1) {
+    if (strstr(gameWindowText, "Sonic Essence")) {
+        gameType = GAME_SONICESSENCE;
+    }
+
+    if (strstr(gameWindowText, "Sonic 1 Forever")) {
         gameType = GAME_SONIC1FOREVER;
     }
 
@@ -465,8 +504,13 @@ void RetroEngine::Init()
         gameType = GAME_SONIC2ABSOLUTE;
     }
 
+    if (strstr(gameWindowText, "Sonic CD Infinite")) {
+        gameType = GAME_SONICCDINFINITE;
+    }
+
+    gameType = GAME_UNKNOWN;
     if (strstr(gameWindowText, "Sonic CD Timeless")) {
-        gameType = GAME_SONICCDTIMELESS;
+        gameType = GAME_SONICCDINFINITE;
     }
 
     // Feel free to insert your own games!
@@ -488,11 +532,11 @@ void RetroEngine::Init()
 
     ReadSaveRAMData();
 
-    if (Engine.gameType == GAME_SONIC1 || Engine.gameType == GAME_SONIC1FOREVER) {
+     if (Engine.gameType == GAME_SONIC1 || Engine.gameType == GAME_SONIC1FOREVER) {
         AddAchievement("Ramp Ring Acrobatics",
                        "Without touching the ground,\rcollect all the rings in a\rtrapezoid formation in Green\rHill Zone Act 1");
         AddAchievement("Blast Processing", "Clear Green Hill Zone Act 1\rin under 30 seconds");
-        AddAchievement("Secret of Marble Zone", "Travel though a secret\rroom in Marbale Zone Act 3");
+        AddAchievement("Secret of Marble Zone", "Travel though a secret\rroom in Marble Zone Act 3");
         AddAchievement("Block Buster", "Break 16 blocks in a row\rwithout stopping");
         AddAchievement("Ring King", "Collect 200 Rings");
         AddAchievement("Secret of Labyrinth Zone", "Activate and ride the\rhidden platform in\rLabyrinth Zone Act 1");
@@ -523,7 +567,6 @@ void RetroEngine::Init()
     else
         Engine.gameMode = ENGINE_WAIT;
 
-#if RETRO_USE_STEAMWORKS
     char rootDir[0x80];
     char pathBuffer[0x80];
 #if RETRO_PLATFORM == RETRO_UWP
@@ -536,6 +579,8 @@ void RetroEngine::Init()
 #else
     sprintf(rootDir, "%s", "");
 #endif
+
+#if RETRO_USE_STEAMWORKS
     sprintf(pathBuffer, "%s%s", rootDir, "steam_appid.txt");
 
     FileIO *f;
@@ -625,6 +670,7 @@ void RetroEngine::Run()
     unsigned long long targetFreq = SDL_GetPerformanceFrequency() / Engine.refreshRate;
     unsigned long long curTicks   = 0;
     unsigned long long prevTicks  = 0;
+    int lastFPS = Engine.refreshRate;
 
     while (running) {
 #if !RETRO_USE_ORIGINAL_CODE
@@ -638,6 +684,13 @@ void RetroEngine::Run()
         Engine.deltaTime = 1.0 / 60;
 #endif
         running = ProcessEvents();
+        
+        AddPlaytimeMilliseconds((unsigned int)(Engine.deltaTime * 1000.0f));
+
+        if (lastFPS != Engine.refreshRate) {
+		    targetFreq = SDL_GetPerformanceFrequency() / Engine.refreshRate;
+			lastFPS = Engine.refreshRate;
+		}
 
         // Focus Checks
         if (!(disableFocusPause & 2)) {
@@ -696,6 +749,7 @@ void RetroEngine::Run()
         }
     }
 
+    WriteUserdata();
     ReleaseAudioDevice();
     StopVideoPlayback();
     ReleaseRenderDevice();
@@ -1088,7 +1142,9 @@ void RetroEngine::LoadXMLPlayers(TextMenu *menu)
                             if (nameAttr)
                                 plrName = GetXMLAttributeValueString(nameAttr);
 
-                            if (menu)
+                            if (playerCount >= PLAYER_COUNT)
+                                PrintLog("Failed to add dev menu character '%s' (max limit reached)", plrName);
+                            else if (menu)
                                 AddTextMenuEntry(menu, plrName);
                             else
                                 StrCopy(playerNames[playerCount++], plrName);
@@ -1276,6 +1332,13 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
         // Read Player Names
         byte plrCount = 0;
         FileRead(&plrCount, 1);
+#if RETRO_USE_MOD_LOADER
+        // Check for max player limit
+        if (plrCount >= PLAYER_COUNT) {
+            PrintLog("WARNING: GameConfig attempted to exceed the player limit, truncating to supported limit");
+            plrCount = PLAYER_COUNT;
+        }
+#endif
         for (byte p = 0; p < plrCount; ++p) {
             FileRead(&fileBuffer, 1);
             FileRead(&strBuffer, fileBuffer);
@@ -1334,13 +1397,9 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
         SetGlobalVariableByName("options.devMenuFlag", devMenu ? 1 : 0);
         SetGlobalVariableByName("engine.standalone", 1);
 #endif
-#if !RETRO_USE_ORIGINAL_CODE
-        SetGlobalVariableByName(
-            "isRemovedAds", true); // we're disabling ads for setups with no scripts (bytecode) to make it more in-line with script-enabled setups.
-#endif
     }
 
-#if !RSDK_AUTOBUILD && RETRO_USE_STEAMWORKS
+#if RETRO_REV03 && RETRO_USE_STEAMWORKS
     if (SteamAPI_Init()) {
         bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
         SetGlobalVariableByName("game.hasPlusDLC", installed);
@@ -1434,4 +1493,28 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
 
     return loaded;
+}
+
+static bool cursorHiddenByInput = false;
+
+void UpdateCursorVisibility(const SDL_Event* event)
+{
+    // Enable cursor if mouse moves or keyboard key is pressed
+    if (event->type == SDL_MOUSEMOTION || event->type == SDL_KEYDOWN) {
+        SDL_SetRelativeMouseMode(SDL_FALSE); // Cursor enabled (normal)
+        cursorHiddenByInput = false;
+        return;
+    }
+
+    // Disable cursor if controller input is pressed
+    if (event->type == SDL_CONTROLLERBUTTONDOWN) {
+        SDL_SetRelativeMouseMode(SDL_TRUE); // Cursor disabled and locked
+        cursorHiddenByInput = true;
+        return;
+    }
+
+    // Keep cursor disabled if it was disabled by input
+    if (cursorHiddenByInput) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+    }
 }

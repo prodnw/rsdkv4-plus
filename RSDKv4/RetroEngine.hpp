@@ -290,10 +290,11 @@ enum RetroGameType {
     GAME_SONIC3  = 3,
     GAME_SONICCD = 4,
     GAME_SONICNEXUS = 5,
-    GAME_SONICVENGEANCE = 6,
-    GAME_SONIC1FOREVER = 7,
-    GAME_SONIC2ABSOLUTE = 8,
-    GAME_SONICCDTIMELESS = 9,
+    GAME_SONICDUELOFFATES = 6,
+    GAME_SONICESSENCE = 7,
+    GAME_SONIC1FOREVER = 8,
+    GAME_SONIC2ABSOLUTE = 9,
+    GAME_SONICCDINFINITE = 10,
     // Feel free to insert your own games!
 };
 
@@ -334,6 +335,7 @@ extern bool engineDebugMode;
 #include "Math.hpp"
 #include "Reader.hpp"
 #include "String.hpp"
+#include "API.hpp"
 #include "Animation.hpp"
 #include "Audio.hpp"
 #include "Input.hpp"
@@ -542,4 +544,6 @@ public:
 };
 
 extern RetroEngine Engine;
+
+void UpdateCursorVisibility(const SDL_Event* event);
 #endif // !RETROENGINE_H

@@ -8,7 +8,16 @@ void InitPauseMenu()
     CREATE_ENTITY(PauseMenu);
 }
 
-void RetroGameLoop_Create(void *objPtr) { mixFiltersOnJekyll = Engine.useHighResAssets; }
+void RetroGameLoop_Create(void *objPtr)
+{
+    mixFiltersOnJekyll = Engine.useHighResAssets;
+
+#if RETRO_USE_DISCORD_SDK
+    if (GetGlobalVariableByName("engine.useDiscordRPC") == true)
+        API_Discord_Init();
+#endif
+}
+
 void RetroGameLoop_Main(void *objPtr)
 {
     switch (Engine.gameMode) {

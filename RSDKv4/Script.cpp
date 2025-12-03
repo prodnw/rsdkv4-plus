@@ -1,21 +1,29 @@
 #include "RetroEngine.hpp"
 #include <cmath>
 
+#include <SDL.h>
+#include <ctime>
+
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (123)
+#define COMMON_SCRIPT_VAR_COUNT (130)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (122)
+#define COMMON_SCRIPT_VAR_COUNT (129)
 #endif
 #else
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (41)
+#define COMMON_SCRIPT_VAR_COUNT (43)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (40)
+#define COMMON_SCRIPT_VAR_COUNT (42)
 #endif
 #endif
 #endif
+
+#include "Userdata.hpp"
+#include "Video.hpp"
+
+extern float networkPing;
 
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
@@ -316,10 +324,11 @@ const char variableNames[][0x20] = {
     "inputPress.start",
     "inputPress.select",
 #endif
-
     // Menu Properties
     "menu1.selection",
     "menu2.selection",
+    "menu3.selection",
+    "menu4.selection",
 
     // Tile Layer Properties
     "tileLayer.xsize",
@@ -373,9 +382,9 @@ const char variableNames[][0x20] = {
     "engine.onlineActive",
     "engine.sfxVolume",
     "engine.bgmVolume",
-//#if RETRO_REV00
+#if RETRO_REV00
     "engine.platformID",
-//#endif
+#endif
     "engine.trialMode",
 #if !RETRO_REV00
     "engine.deviceType",
@@ -395,6 +404,8 @@ const char variableNames[][0x20] = {
     "engine.hapticsEnabled",
 #endif
     "game.checkForUpdates",
+    "game.networkPing",
+	"controller.vibrationEnabled",
 };
 #endif
 
@@ -517,6 +528,12 @@ const FunctionInfo functions[] = {
     // Sound FX
     FunctionInfo("PlaySfx", 2),
     FunctionInfo("StopSfx", 1),
+
+    // New
+    FunctionInfo("PauseSfx", 1),
+    FunctionInfo("ResumeSfx", 1),
+
+    // Now old again
     FunctionInfo("SetSfxAttributes", 3),
 
     // More Collision Stuff
@@ -606,8 +623,38 @@ const FunctionInfo functions[] = {
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
     
+    // New functions start here
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
+
+    // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
+    // This ensures that these functions remain "callable" via script, instead of
+    // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
+    // ProcessScript instead
+    FunctionInfo("SetPresenceDetails", 1),
+    FunctionInfo("SetPresenceState", 1),
+    FunctionInfo("SetPresenceLargeImage", 1),
+    FunctionInfo("SetPresenceLargeText", 1),
+    FunctionInfo("SetPresenceSmallImage", 1),
+    FunctionInfo("SetPresenceSmallText", 1),
+    FunctionInfo("UpdatePresence", 0),
+    FunctionInfo("ClearPresence", 0),
+    FunctionInfo("ClearPresenceType", 1),
+
+    FunctionInfo("VibrateController", 5), // VibrateController(true/false, controller ID, intensity L, intensity R, intensity timer)
+    FunctionInfo("AutoDetectController", 0),
+    FunctionInfo("SetControllerLEDColour", 3),
+    FunctionInfo("CheckWindowFocus", 0),
+    FunctionInfo("GetSystemDateTime", 0),
+    FunctionInfo("CheckAnyButtonPressed", 0),
+    FunctionInfo("CheckControllerConnect", 0),
+    FunctionInfo("CheckControllerDisconnect", 0),
+    FunctionInfo("CheckMouseMoved", 0),
+    FunctionInfo("CheckMouseLeftPress", 0),
+    FunctionInfo("CheckMouseRightPress", 0),
+    FunctionInfo("GetPlaytimeHours", 1),
+    FunctionInfo("GetPlaytimeMinutes", 1),
+    FunctionInfo("GetPlaytimeSeconds", 1),
 };
 
 #if RETRO_USE_COMPILER
@@ -615,21 +662,26 @@ const FunctionInfo functions[] = {
 int scriptValueListCount = 0;
 // clang-format off
 ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
+	//IMPORTANT: If you add aliases to this list, remember to increment COMMON_SCRIPT_VAR_COUNT at the top of the file
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "true", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "false", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_FLIP", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTATE", "2"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "4"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "6"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "8"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "15"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "16"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_HSCALE", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_VSCALE", "8"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_SCALE", "13"), //scale applies hscale, vscale AND flip (but only horizontally? TODO perhaps?
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ROTOZOOM", "15"), //rotozoom applies all of scale and rotate
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_INK", "16"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_ALL", "31"), //not tint, it's unused
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FX_TINT", "32"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENTATION_STAGE", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "REGULAR_STAGE", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "BONUS_STAGE", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "SPECIAL_STAGE", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_1", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_2", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_3", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MENU_4", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_TOUCH", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "C_SOLID2", "2"),
@@ -653,11 +705,9 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_ANDROID", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_NINTENDO", "6"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_STEAM", "7"),
-
 #if !RETRO_REV00
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
 #endif
-
 	//missing aliases for old syntax
 #if RETRO_ACCEPT_OLD_SYNTAX
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
@@ -999,6 +1049,8 @@ enum ScrVar {
 #endif
     VAR_MENU1SELECTION,
     VAR_MENU2SELECTION,
+    VAR_MENU3SELECTION,
+    VAR_MENU4SELECTION,
     VAR_TILELAYERXSIZE,
     VAR_TILELAYERYSIZE,
     VAR_TILELAYERTYPE,
@@ -1045,9 +1097,9 @@ enum ScrVar {
     VAR_ENGINEONLINEACTIVE,
     VAR_ENGINESFXVOLUME,
     VAR_ENGINEBGMVOLUME,
-//#if RETRO_REV00
+#if RETRO_REV00
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
-//#endif
+#endif
     VAR_ENGINETRIALMODE,
 #if !RETRO_REV00
     VAR_ENGINEDEVICETYPE, // v4-style device type aka Standard/Mobile/Etc
@@ -1065,7 +1117,9 @@ enum ScrVar {
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
 #endif
-    VAR_GAMECHECKFORUPDATES,
+    VAR_GAME_CHECKFORUPDATES,
+    VAR_GAME_NETWORKPING,
+    VAR_CONTROLLER_VIBRATIONENABLED,
     VAR_MAX_CNT
 };
 
@@ -1165,6 +1219,8 @@ enum ScrFunc {
     FUNC_NEXTVIDEOFRAME,
     FUNC_PLAYSFX,
     FUNC_STOPSFX,
+    FUNC_PAUSESFX,
+    FUNC_RESUMESFX,
     FUNC_SETSFXATTRIBUTES,
     FUNC_OBJECTTILECOLLISION,
     FUNC_OBJECTTILEGRIP,
@@ -1236,8 +1292,36 @@ enum ScrFunc {
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
     
+    // New functions start here
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
+    
+    // Discord presence
+    FUNC_SET_PRESENCE_DETAILS,
+    FUNC_SET_PRESENCE_STATE,
+    FUNC_SET_PRESENCE_LARGEIMAGE,
+    FUNC_SET_PRESENCE_LARGETEXT,
+    FUNC_SET_PRESENCE_SMALLIMAGE,
+    FUNC_SET_PRESENCE_SMALLTEXT,
+    FUNC_UPDATE_PRESENCE,
+    FUNC_CLEAR_PRESENCE,
+    FUNC_CLEAR_PRESENCE_TYPE,
+
+    FUNC_VIBRATECONTROLLER,
+    FUNC_AUTODETECTCONTROLLER,
+    FUNC_SETCONTROLLERLEDCOLOUR,
+    FUNC_CHECKWINDOWFOCUS,
+    FUNC_GETSYSTEMDATETIME,
+    FUNC_CHECKANYBUTTONPRESSED,
+    FUNC_CHECKCONTROLLERCONNECT,
+    FUNC_CHECKCONTROLLERDISCONNECT,
+    FUNC_CHECKMOUSEMOVED,
+    FUNC_CHECKMOUSE1PRESS,
+    FUNC_CHECKMOUSE2PRESS,
+    FUNC_GETPLAYTIMEHOURS,
+    FUNC_GETPLAYTIMEMINUTES,
+    FUNC_GETPLAYTIMESECONDS,
+
     FUNC_MAX_CNT,
 };
 
@@ -3036,7 +3120,6 @@ void ParseScriptFile(char *scriptName, int scriptID)
                         jumpTableOffset                                      = jumpTablePos;
                     }
 #endif
-
                     if (StrComp(scriptText, "eventObjectDraw")) {
                         parseMode                                          = PARSEMODE_FUNCTION;
                         objectScriptList[scriptID].eventDraw.scriptCodePtr = scriptCodePos;
@@ -3228,6 +3311,9 @@ void ParseScriptFile(char *scriptName, int scriptID)
 #endif
 #if RETRO_USE_MOD_LOADER
                                 && FindStringToken(scriptText, "USE_MOD_LOADER", 1) == -1
+#endif
+#if RETRO_ACCEPT_OLD_SYNTAX
+                                && FindStringToken(scriptText, "USE_OLD_SYNTAX", 1) == -1
 #endif
                                 && FindStringToken(scriptText, "USE_V4_PLUS", 1) == -1
                             ) {
@@ -3566,6 +3652,171 @@ void ClearScriptData()
     }
 
     SetObjectTypeName("Blank Object", OBJ_TYPE_BLANKOBJECT);
+}
+
+void AutoDetectController()
+{
+    scriptEng.checkResult = 0; // Default: No device
+    bool detected = false;
+
+    int numJoysticks = SDL_NumJoysticks();
+    for (int i = 0; i < numJoysticks; ++i) {
+        const char* joyName = SDL_JoystickNameForIndex(i);
+        PrintLog("Joystick %d: %s", i, joyName ? joyName : "(null)");
+        if (SDL_IsGameController(i)) {
+            SDL_GameController* controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char* gcName = SDL_GameControllerName(controller);
+                PrintLog("GameController %d: %s", i, gcName ? gcName : "(null)");
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+
+    // Check for keyboard (always present on desktop)
+    const Uint8 *keyState = SDL_GetKeyboardState(NULL);
+    int numKeys = 0;
+    SDL_GetKeyboardState(&numKeys);
+    for (int i = 0; i < numKeys; ++i) {
+        if (keyState[i]) {
+            scriptEng.checkResult = 1; // Keyboard
+            PrintLog("Detected Input Device: Keyboard");
+            return;
+        }
+    }
+
+    // Check all controllers
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController *controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char *name = SDL_GameControllerName(controller);
+                if (name) {
+                    if (strstr(name, "Xbox 360")) {
+                        scriptEng.checkResult = 2; // Xbox 360
+                        PrintLog("Detected Input Device: Xbox 360 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Xbox") || strstr(name, "XInput")) {
+                        scriptEng.checkResult = 3; // Xbox One/Series
+                        PrintLog("Detected Input Device: Xbox One/Series Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PLAYSTATION(R)3") || strstr(name, "PS3") || strstr(name, "Sony PLAYSTATION(R)3 Controller")) {
+                        scriptEng.checkResult = 4; // PlayStation 3
+                        PrintLog("Detected Input Device: PlayStation 3 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PS4") || strstr(name, "DualShock 4") || strstr(name, "Wireless Controller") || strstr(name, "DualShock Wireless Controller")) {
+                        scriptEng.checkResult = 5; // PlayStation 4
+                        PrintLog("Detected Input Device: PlayStation 4 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PS5") || strstr(name, "DualSense") || (strstr(name, "Wireless Controller") && SDL_JoystickGetVendor(SDL_GameControllerGetJoystick(controller)) == 0x054C && SDL_JoystickGetProduct(SDL_GameControllerGetJoystick(controller)) == 0x0CE6)) {
+                        scriptEng.checkResult = 6; // PlayStation 5
+                        PrintLog("Detected Input Device: PlayStation 5 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PlayStation")) {
+                        scriptEng.checkResult = 4; // fallback to PS3
+                        PrintLog("Detected Input Device: PlayStation Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Nintendo") || strstr(name, "Switch") || strstr(name, "Joy-Con") || strstr(name, "Pro Controller")) {
+                        scriptEng.checkResult = 7; // Nintendo
+                        PrintLog("Detected Input Device: Nintendo Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Steam Deck")) {
+                        scriptEng.checkResult = 8; // Steam Deck
+                        PrintLog("Detected Input Device: Steam Deck Controller (%s)", name);
+                    }
+                    else {
+                        scriptEng.checkResult = 9; // Generic/Other
+                        PrintLog("Detected Input Device: Generic/Other Controller (%s)", name);
+                    }
+                }
+                SDL_GameControllerClose(controller);
+                return;
+
+                // Holy shit PS5 controllers are picky
+                SDL_Joystick* joy = SDL_GameControllerGetJoystick(controller);
+                Uint16 vendor = SDL_JoystickGetVendor(joy);
+                Uint16 product = SDL_JoystickGetProduct(joy);
+                if (vendor == 0x054C && (product == 0x0CE6 || product == 0x0DF2)) {
+                    scriptEng.checkResult = 6;
+                    PrintLog("Detected Input Device: PlayStation 5 Controller (%s)", name);
+                }
+            }
+        }
+    }
+
+    if (!detected) {
+        PrintLog("No input device detected, defaulting to no input device");
+    }
+}
+
+// Set the LED color of the first connected PlayStation controller
+void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b)
+{
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController *controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char* name = SDL_GameControllerName(controller);
+                if (name && (strstr(name, "PlayStation") || strstr(name, "DualShock") || strstr(name, "DualSense") || strstr(name, "Wireless Controller"))) {
+                    if (SDL_GameControllerSetLED(controller, r, g, b) == 0) {
+                        PrintLog("Set LED color for controller %d to (%d, %d, %d)", i, r, g, b);
+                    } else {
+                        PrintLog("Controller %d does not support RGB LED", i);
+                    }
+                } else {
+                    PrintLog("Controller %d is not a PlayStation controller, skipping LED set", i);
+                }
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+}
+
+// Checks if any key or controller button is pressed
+void CheckAnyButtonPressed()
+{
+    scriptEng.checkResult = 0;
+
+    // Check keyboard
+    const Uint8* keyState = SDL_GetKeyboardState(NULL);
+    for (int scancode = SDL_SCANCODE_UNKNOWN + 1; scancode < SDL_NUM_SCANCODES; ++scancode) {
+        if (keyState[scancode]) {
+            scriptEng.checkResult = 1;
+            return;
+        }
+    }
+
+    // Check controllers
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController* controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                for (int button = SDL_CONTROLLER_BUTTON_A; button < SDL_CONTROLLER_BUTTON_MAX; ++button) {
+                    if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)button)) {
+                        scriptEng.checkResult = 1;
+                        SDL_GameControllerClose(controller);
+                        return;
+                    }
+                }
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+}
+
+unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions (reset on full engine reset)
+
+void AddPlaytimeMilliseconds(unsigned int ms)
+{
+    totalPlaytimeMs += ms;
+}
+
+unsigned int GetPlaytimeSeconds()
+{
+    return (unsigned int)(totalPlaytimeMs / 1000ULL);
 }
 
 void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
@@ -4288,6 +4539,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
+                    case VAR_MENU3SELECTION: scriptEng.operands[i] = gameMenu[2].selection1; break;
+                    case VAR_MENU4SELECTION: scriptEng.operands[i] = gameMenu[3].selection1; break;
                     case VAR_TILELAYERXSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].xsize; break;
                     case VAR_TILELAYERYSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].ysize; break;
                     case VAR_TILELAYERTYPE: scriptEng.operands[i] = stageLayouts[arrayVal].type; break;
@@ -4334,9 +4587,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEONLINEACTIVE: scriptEng.operands[i] = Engine.onlineActive; break;
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
-//#if RETRO_REV00
+#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
-//#endif
+#endif
                     case VAR_ENGINETRIALMODE: scriptEng.operands[i] = Engine.trialMode; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = RETRO_DEVICETYPE; break;
@@ -4385,7 +4638,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
-                    case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
+                    case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
+                    case VAR_GAME_NETWORKPING: scriptEng.operands[i] = networkPing; break;
+					case VAR_CONTROLLER_VIBRATIONENABLED:
+                        if (arrayVal > 0) 
+                            {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} 
+                        break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -4731,20 +4989,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_DRAWACTNAME: {
                 opcodeSize = 0;
                 int charID = 0;
+				int wordoffset = 0;
                 switch (scriptEng.operands[3]) { // Draw Mode
-                    case 0:                      // Draw Word 1 (but aligned from the right instead of left)
+                    case 0: // Draw Word 1 right aligned
                         charID = 0;
-
-                        for (charID = 0;; ++charID) {
-                            int nextChar = titleCardText[charID + 1];
-                            if (nextChar == '-' || !nextChar)
-                                break;
-                        }
-
-                        while (charID >= 0) {
+						
+						//Do a dummy run to get the length
+                        if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0) {
                             int character = titleCardText[charID];
                             if (character == ' ')
-                                character = -1; // special space char
+                                character = -1;
                             if (character == '-')
                                 character = 0;
                             if (character >= '0' && character <= '9')
@@ -4753,22 +5007,99 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 character -= 'A';
 
                             if (character <= -1) {
-                                scriptEng.operands[1] -= scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                                wordoffset += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
                             }
                             else {
                                 character += scriptEng.operands[0];
                                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                wordoffset += spriteFrame->width + scriptEng.operands[6];
+                            }
 
-                                scriptEng.operands[1] -= spriteFrame->width + scriptEng.operands[6];
+                            scriptEng.operands[0] += 26;
+                            charID++;
+                        }
 
+                        while (titleCardText[charID] != 0 && titleCardText[charID] != '-') {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = -1;
+                            if (character == '-')
+                                character = 0;
+                            if (character > '/' && character < ':')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                wordoffset += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                wordoffset += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            charID++;
+                        }
+						//Shift left by the calculated amount, and reset for the next run
+						scriptEng.operands[1] -= wordoffset;
+						charID = 0;
+						if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0)
+							scriptEng.operands[0] -= 26;
+						
+                        // Draw the first letter as a capital letter, the rest are lowercase (if scriptEng.operands[4] is true, otherwise they're all
+                        // uppercase)
+                        if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0) {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = -1;
+                            if (character == '-')
+                                character = 0;
+                            if (character >= '0' && character <= '9')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                scriptEng.operands[1] += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
                                 DrawSprite(scriptEng.operands[1] + spriteFrame->pivotX, scriptEng.operands[2] + spriteFrame->pivotY,
                                            spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
                             }
-                            charID--;
+
+                            scriptEng.operands[0] += 26;
+                            charID++;
+                        }
+
+                        while (titleCardText[charID] != 0 && titleCardText[charID] != '-') {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = -1;
+                            if (character == '-')
+                                character = 0;
+                            if (character > '/' && character < ':')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                scriptEng.operands[1] += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                DrawSprite(scriptEng.operands[1] + spriteFrame->pivotX, scriptEng.operands[2] + spriteFrame->pivotY,
+                                           spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            charID++;
                         }
                         break;
 
-                    case 1: // Draw Word 1
+                    case 1: // Draw Word 1 left aligned
                         charID = 0;
 
                         // Draw the first letter as a capital letter, the rest are lowercase (if scriptEng.operands[4] is true, otherwise they're all
@@ -4824,8 +5155,115 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         }
                         break;
 
-                    case 2: // Draw Word 2
+                    case 2: // Draw Word 2 left aligned
                         charID = titleCardWord2;
+
+                        // Draw the first letter as a capital letter, the rest are lowercase (if scriptEng.operands[4] is true, otherwise they're all
+                        // uppercase)
+                        if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0) {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = 0;
+                            if (character == '-')
+                                character = 0;
+                            if (character >= '0' && character <= '9')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                scriptEng.operands[1] += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                DrawSprite(scriptEng.operands[1] + spriteFrame->pivotX, scriptEng.operands[2] + spriteFrame->pivotY,
+                                           spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            scriptEng.operands[0] += 26;
+                            charID++;
+                        }
+
+                        while (titleCardText[charID] != 0) {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = 0;
+                            if (character == '-')
+                                character = 0;
+                            if (character >= '0' && character <= '9')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                scriptEng.operands[1] += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                DrawSprite(scriptEng.operands[1] + spriteFrame->pivotX, scriptEng.operands[2] + spriteFrame->pivotY,
+                                           spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            charID++;
+                        }
+                        break;
+
+                    case 3: // Draw Word 2 right aligned
+                        charID = titleCardWord2;
+						
+						//another dummy run for the length
+						if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0) {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = 0;
+                            if (character == '-')
+                                character = 0;
+                            if (character >= '0' && character <= '9')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                wordoffset += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                wordoffset += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            scriptEng.operands[0] += 26;
+                            charID++;
+                        }
+
+                        while (titleCardText[charID] != 0) {
+                            int character = titleCardText[charID];
+                            if (character == ' ')
+                                character = 0;
+                            if (character == '-')
+                                character = 0;
+                            if (character >= '0' && character <= '9')
+                                character -= 22;
+                            if (character > '9' && character < 'f')
+                                character -= 'A';
+
+                            if (character <= -1) {
+                                wordoffset += scriptEng.operands[5] + scriptEng.operands[6]; // spaceWidth + spacing
+                            }
+                            else {
+                                character += scriptEng.operands[0];
+                                spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+                                wordoffset += spriteFrame->width + scriptEng.operands[6];
+                            }
+                            charID++;
+                        }
+						
+						//Shift left by the calculated amount, and reset for the next run
+						scriptEng.operands[1] -= wordoffset;
+						charID = titleCardWord2;
+						if (scriptEng.operands[4] == 1 && titleCardText[charID] != 0)
+							scriptEng.operands[0] -= 26;
 
                         // Draw the first letter as a capital letter, the rest are lowercase (if scriptEng.operands[4] is true, otherwise they're all
                         // uppercase)
@@ -5325,6 +5763,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 StopSfx(scriptEng.operands[0]);
                 break;
+            case FUNC_PAUSESFX:
+                opcodeSize = 0;
+                PauseSfx(scriptEng.operands[0]);
+                break;
+            case FUNC_RESUMESFX:
+                opcodeSize = 0;
+                ResumeSfx(scriptEng.operands[0]);
+                break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
                 SetSfxAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
@@ -5611,6 +6057,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #else
                 LoadTextFile(menu, scriptText, false);
 #endif
+                PrintLog("Using MENU_%d to load '%s'", scriptEng.operands[0], scriptText);
                 break;
             }
             case FUNC_GETTEXTINFO: {
@@ -5927,6 +6374,276 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Successfully loaded website!!: %s", temporar);
 				else
 					PrintLog("Unsuccessfully loaded website: %s", temporar);
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_DETAILS: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ACTIVITY_DETAILS);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_STATE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ACTIVITY_STATE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_LARGEIMAGE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_LARGEIMAGE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_LARGETEXT: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_LARGETEXT);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_SMALLIMAGE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_SMALLIMAGE);
+#endif
+                break;
+            }
+
+            case FUNC_SET_PRESENCE_SMALLTEXT: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_SMALLTEXT);
+#endif
+                break;
+            }
+
+            case FUNC_UPDATE_PRESENCE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_UpdatePresence();
+#endif
+                break;
+            }
+
+            case FUNC_CLEAR_PRESENCE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_ClearAllPresence();
+#endif
+                break;
+            }
+
+            case FUNC_CLEAR_PRESENCE_TYPE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                // value = presence type
+                // 0 - details
+                // 1 - state
+                // 2 - large image
+                // 3 - large text
+                // 4 - small image
+                // 5 - small text
+                API_Discord_ClearPresenceType(scriptEng.operands[0]);
+#endif
+                break;
+            }
+
+            case FUNC_VIBRATECONTROLLER: {
+                opcodeSize = 0;
+                // idk if its possible to optimise this so it only runs the loop if (operands[1] == 0 || operands[1] > INPUT_COUNT)
+                // since it runs the same code either way
+                // but if it is, that would be cool
+				if (scriptEng.operands[0] >= 0) {
+					if (scriptEng.operands[1] == 0 || scriptEng.operands[1] > DEFAULT_INPUT_COUNT) {
+						for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+							if (ControllerVibration[i] == true) {
+								SDL_GameController *controller = SDL_GameControllerOpen(i);
+								if (controller) {
+									SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+									if (SDL_JoystickHasRumble(joystick))
+										SDL_JoystickRumble(joystick, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3] * 10);
+									SDL_GameControllerClose(controller);
+								}
+							}
+						}
+					} else {
+						int i = (scriptEng.operands[1] - 1);
+						if (ControllerVibration[i] == true) {
+							SDL_GameController *controller = SDL_GameControllerOpen(i);
+							if (controller) {
+								SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+								if (SDL_JoystickHasRumble(joystick))
+									SDL_JoystickRumble(joystick, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3] * 10);
+								SDL_GameControllerClose(controller);
+							}
+						}
+					}
+				}
+                break;
+            }
+
+            case FUNC_AUTODETECTCONTROLLER: {
+                opcodeSize = 0;
+                AutoDetectController();
+                break;
+            }
+
+            case FUNC_SETCONTROLLERLEDCOLOUR: {
+                opcodeSize = 0;
+                SetControllerLEDColour((Uint8)scriptEng.operands[0], (Uint8)scriptEng.operands[1], (Uint8)scriptEng.operands[2]);
+                break;
+            }
+
+            case FUNC_CHECKWINDOWFOCUS: {
+                opcodeSize = 0;
+#if RETRO_USING_SDL2
+                Uint32 flags = SDL_GetWindowFlags(Engine.window);
+                // SDL_WINDOW_INPUT_FOCUS means the window has keyboard focus
+                scriptEng.checkResult = (flags & SDL_WINDOW_INPUT_FOCUS) ? 0 : 1;
+#else
+                scriptEng.checkResult = 0; // Always focused if not using SDL2
+#endif
+                break;
+            }
+
+            case FUNC_GETSYSTEMDATETIME: {
+                opcodeSize = 0;
+                time_t now = time(NULL);
+                struct tm *tm_now = localtime(&now);
+
+                scriptEng.temp[0] = tm_now->tm_year + 1900; // Year
+                scriptEng.temp[1] = tm_now->tm_mon + 1;     // Month (1-12)
+                scriptEng.temp[2] = tm_now->tm_mday;        // Day (1-31)
+                scriptEng.temp[3] = tm_now->tm_hour;        // Hour (0-23)
+                scriptEng.temp[4] = tm_now->tm_min;         // Minute (0-59)
+                scriptEng.temp[5] = tm_now->tm_sec;         // Second (0-59)
+
+                PrintLog(
+                    "System DateTime: %04d-%02d-%02d %02d:%02d:%02d",
+                    scriptEng.temp[0],
+                    scriptEng.temp[1],
+                    scriptEng.temp[2],
+                    scriptEng.temp[3],
+                    scriptEng.temp[4],
+                    scriptEng.temp[5]
+                );
+                break;
+            }
+
+            case FUNC_CHECKANYBUTTONPRESSED: {
+                opcodeSize = 0;
+                CheckAnyButtonPressed();
+                break;
+            }
+
+            case FUNC_CHECKCONTROLLERCONNECT: {
+                opcodeSize = 0;
+                scriptEng.checkResult = 0;
+
+                static int prevControllerCount = -1;
+                int currentControllerCount     = 0;
+
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i))
+                        ++currentControllerCount;
+                }
+
+                // On first call, initialize previous count and do not signal a new connection.
+                if (prevControllerCount == -1) {
+                    prevControllerCount = currentControllerCount;
+                    return;
+                }
+
+                if (currentControllerCount > prevControllerCount) {
+                    PrintLog("Controller connected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+                    scriptEng.checkResult = 1;
+                }
+                else {
+                    scriptEng.checkResult = 0;
+                }
+
+                prevControllerCount = currentControllerCount;
+                break;
+            }
+
+            case FUNC_CHECKCONTROLLERDISCONNECT: {
+                opcodeSize = 0;
+                static int prevControllerCount = 0;
+                int currentControllerCount = 0;
+
+                // Count currently connected controllers without opening them (much faster)
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i)) {
+                        ++currentControllerCount;
+                    }
+                }
+
+                // Compare with previous count
+                if (currentControllerCount < prevControllerCount) {
+                    PrintLog("Controller disconnected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+                    scriptEng.checkResult = 1; // 1 = disconnected
+                } else {
+                    scriptEng.checkResult = 0; // 0 = no disconnect
+                }
+
+                prevControllerCount = currentControllerCount;
+                break;
+            }
+
+            case FUNC_CHECKMOUSEMOVED: {
+                opcodeSize = 0;
+                static int lastMouseX = -1;
+                static int lastMouseY = -1;
+                int mouseX, mouseY;
+
+                SDL_GetMouseState(&mouseX, &mouseY);
+                if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
+                    scriptEng.checkResult = 1; // Mouse moved
+                } else {
+                    scriptEng.checkResult = 0; // Not moved or first check
+                }
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+                opcodeSize = 0;
+                break;
+            }
+
+            case FUNC_CHECKMOUSE1PRESS: {
+                opcodeSize = 0;
+                int mouseState = SDL_GetMouseState(NULL, NULL);
+                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
+                break;
+            }
+
+            case FUNC_CHECKMOUSE2PRESS: {
+                opcodeSize = 0;
+                int mouseState = SDL_GetMouseState(NULL, NULL);
+                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
+                break;
+            }
+
+            case FUNC_GETPLAYTIMEHOURS: {
+                scriptEng.operands[0] = GetPlaytimeSeconds() / 3600;
+                break;
+            }
+
+            case FUNC_GETPLAYTIMEMINUTES: {
+                scriptEng.operands[0] = (GetPlaytimeSeconds() % 3600) / 60;
+                break;
+            }
+            
+            case FUNC_GETPLAYTIMESECONDS: {
+                scriptEng.operands[0] = GetPlaytimeSeconds() % 60;
                 break;
             }
         }
@@ -6549,9 +7266,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_INPUTPRESSBUTTONR: keyPress[inputCheck].R = scriptEng.operands[i]; break;
 					case VAR_INPUTPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
                     case VAR_INPUTPRESSSELECT: keyPress[inputCheck].select = scriptEng.operands[i]; break;
-#endif
+#endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU3SELECTION: gameMenu[2].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU4SELECTION: gameMenu[3].selection1 = scriptEng.operands[i]; break;
                     case VAR_TILELAYERXSIZE: stageLayouts[arrayVal].xsize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERYSIZE: stageLayouts[arrayVal].ysize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERTYPE: stageLayouts[arrayVal].type = scriptEng.operands[i]; break;
@@ -6610,9 +7329,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         bgmVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume);
                         break;
-//#if RETRO_REV00
+#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: break;
-//#endif
+#endif
                     case VAR_ENGINETRIALMODE: Engine.trialMode = scriptEng.operands[i]; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: break;
@@ -6651,7 +7370,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
-                    case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
+                    case VAR_GAME_CHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
+                    case VAR_GAME_NETWORKPING: networkPing = scriptEng.operands[i]; break;
+                    case VAR_CONTROLLER_VIBRATIONENABLED:   
+                        if (arrayVal > 0) 
+                            {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} 
+                        break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

@@ -13,7 +13,7 @@
 #endif
 
 #if RETRO_USE_MOD_LOADER
-#define NATIIVEFUNCTION_COUNT (0x31)
+#define NATIIVEFUNCTION_COUNT (0x64)
 #else
 #define NATIIVEFUNCTION_COUNT (0x10)
 #endif
@@ -113,6 +113,8 @@ extern bool skipStartMenu_Config;
 extern int disableFocusPause;
 extern int disableFocusPause_Config;
 extern int CheckForthemUpdates;
+extern bool ControllerVibration[DEFAULT_INPUT_COUNT];
+extern int VibrationIntensity[DEFAULT_INPUT_COUNT];
 
 inline int GetGlobalVariableByName(const char *name)
 {
@@ -237,6 +239,8 @@ void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
 void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
+void GetWindowBrightness();
+void SetWindowBrightness(int *brightness, int *unused);
 void ApplyWindowChanges();
 int CheckUpdates(char website[]);
 

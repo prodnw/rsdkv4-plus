@@ -367,12 +367,12 @@ void RefreshEngine()
 #if RETRO_USING_SDL2
     if (Engine.window) {
         char gameTitle[0x40];
-        sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : " (Using Data Folder)");
+        sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : "");
         SDL_SetWindowTitle(Engine.window, gameTitle);
     }
 #elif RETRO_USING_SDL1
     char gameTitle[0x40];
-    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : " (Using Data Folder)");
+    sprintf(gameTitle, "%s%s", Engine.gameWindowText, Engine.usingDataFile_Config ? "" : "");
     SDL_WM_SetCaption(gameTitle, NULL);
 #endif
 
@@ -453,30 +453,22 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICNEXUS;
     }
 
-    if (strstr(Engine.gameWindowText, "Sonic Vengeance")) {
-        Engine.gameType = GAME_SONICVENGEANCE;
+    if (strstr(Engine.gameWindowText, "Sonic and the Duel of Fates")) {
+        Engine.gameType = GAME_SONICDUELOFFATES;
     }
 
-    if (strstr(Engine.gameWindowText, "Sonic 1 Forever") || Engine.forceSonic1) {
-        Engine.gameType = GAME_SONIC1FOREVER;
-    }
-
-    if (strstr(Engine.gameWindowText, "Sonic 2 Absolute")) {
-        Engine.gameType = GAME_SONIC2ABSOLUTE;
-    }
-
-    if (strstr(Engine.gameWindowText, "Sonic CD Timeless" )) {
-        Engine.gameType = GAME_SONICCDTIMELESS;
+    if (strstr(Engine.gameWindowText, "Sonic Essence")) {
+        Engine.gameType = GAME_SONICESSENCE;
     }
 
     // Feel free to insert your own games!
 
     achievementCount = 0;
-    if (Engine.gameType == GAME_SONIC1 || Engine.gameType == GAME_SONIC1FOREVER) {
+    if (Engine.gameType == GAME_SONIC1) {
         AddAchievement("Ramp Ring Acrobatics",
                        "Without touching the ground,\rcollect all the rings in a\rtrapezoid formation in Green\rHill Zone Act 1");
         AddAchievement("Blast Processing", "Clear Green Hill Zone Act 1\rin under 30 seconds");
-        AddAchievement("Secret of Marble Zone", "Travel though a secret\rroom in Marbale Zone Act 3");
+        AddAchievement("Secret of Marble Zone", "Travel though a secret\rroom in Marble Zone Act 3");
         AddAchievement("Block Buster", "Break 16 blocks in a row\rwithout stopping");
         AddAchievement("Ring King", "Collect 200 Rings");
         AddAchievement("Secret of Labyrinth Zone", "Activate and ride the\rhidden platform in\rLabyrinth Zone Act 1");
@@ -487,7 +479,7 @@ void RefreshEngine()
         AddAchievement("One For the Road", "As a parting gift, land a\rfinal hit on Dr. Eggman's\rescaping Egg Mobile");
         AddAchievement("Beat The Clock", "Clear the Time Attack\rmode in less than 45\rminutes");
     }
-    else if (Engine.gameType == GAME_SONIC2 || Engine.gameType == GAME_SONIC2ABSOLUTE) {
+    else if (Engine.gameType == GAME_SONIC2) {
         AddAchievement("Quick Run", "Complete Emerald Hill\rZone Act 1 in under 35\rseconds");
         AddAchievement("100% Chemical Free", "Complete Chemical Plant\rwithout going underwater");
         AddAchievement("Early Bird Special", "Collect all the Chaos\rEmeralds before Chemical\rPlant");

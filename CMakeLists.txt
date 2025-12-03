@@ -11,7 +11,7 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
-option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" ON)
+option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
 
 if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
 	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
@@ -20,18 +20,18 @@ else()
 endif()
 
 option(RETRO_USE_CURL "Compiles with cURL." OFF)
-
-if(WIN32)
-    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
-else()
-    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
-endif()
-
 option(RETRO_ACCEPT_OLD_SYNTAX "Allows compatibility with the old syntax." OFF)
+
+if(ANDROID)
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
+else()
+    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
+endif()
 
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
 
 set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
+set(DISCORD_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/discord_game_sdk")
 
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
@@ -50,6 +50,7 @@ set(RETRO_FILES
     dependencies/all/tinyxml2/tinyxml2.cpp
     dependencies/all/theoraplay/theoraplay.c
     RSDKv4/Animation.cpp
+    RSDKv4/API.cpp
     RSDKv4/Audio.cpp
     RSDKv4/Collision.cpp
     RSDKv4/Debug.cpp
@@ -126,7 +127,26 @@ if(NOT PLATFORM)
     endif()
 endif()
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 4) # SHOULD work...?
+	message("System is supected to be 32 bit")
+	set(RETRO_ARCH "32")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	message("System is supected to be 64 bit")
+	set(RETRO_ARCH "64")
+else()
+	# Might mean the system is 16/128bit
+	# Or its just because of an error
+	message("Error detecting system architecture")
+	set(RETRO_ARCH "INVALID")
+endif()
+
 include(platforms/${PLATFORM}.cmake)
+
+# https://github.com/discord/gamesdk-and-dispatch/issues/144
+# guess we gotta include <cstdint> manually
+if(RETRO_USE_DISCORD)
+	target_precompile_headers(RetroEngine PRIVATE RSDKv4/DiscordHeaders.hpp)
+endif()
 
 set_target_properties(RetroEngine PROPERTIES OUTPUT_NAME ${RETRO_OUTPUT_NAME})
 
@@ -239,7 +259,6 @@ target_include_directories(RetroEngine PRIVATE
     dependencies/all/theoraplay/
     dependencies/all/stb-image/
     dependencies/all/tinyxml2/
-    dependencies/all/steamworks_sdk/public
 )
 
 if(RETRO_NETWORKING)
@@ -252,6 +271,24 @@ if(DEFINED DEP_PATH)
     target_include_directories(RetroEngine PRIVATE
         dependencies/${DEP_PATH}/
     )
+endif()
+
+if(RETRO_USE_STEAM)
+	target_include_directories(RetroEngine PRIVATE
+		dependencies/all/steamworks_sdk/public/
+	)
+endif()
+
+if(RETRO_USE_DISCORD)
+	target_include_directories(RetroEngine PRIVATE
+		dependencies/all/discord_game_sdk/
+		dependencies/all/discord_game_sdk/cpp/
+		dependencies/all/discord_game_sdk/lib/x86/
+		dependencies/all/discord_game_sdk/lib/x86_64/
+	)
+
+	file(GLOB DISCORD_SRC ${DISCORD_SDK_DIR}/cpp/*.cpp)
+	target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
 endif()
 
 target_compile_definitions(RetroEngine PRIVATE

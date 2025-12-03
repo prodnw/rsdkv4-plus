@@ -10,7 +10,6 @@ struct MemoryStruct {
 };
 #endif
 
-
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
 char globalVariableNames[GLOBALVAR_COUNT][0x20];
@@ -57,6 +56,12 @@ bool skipStartMenu_Config    = false;
 int disableFocusPause        = 3;
 int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
+bool ControllerVibration[DEFAULT_INPUT_COUNT];
+int VibrationIntensity[DEFAULT_INPUT_COUNT]; // 0 = Low, 1 = Medium, 2 = High
+
+extern void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b);
+
+extern unsigned long long totalPlaytimeMs;
 
 bool useSGame = false;
 
@@ -205,6 +210,9 @@ bool WriteSaveRAMData()
 
 void InitUserdata()
 {
+	// Initialize array values
+	for (int c = 0; c < DEFAULT_INPUT_COUNT; c++) {VibrationIntensity[c]  = 1;}
+
     // userdata files are loaded from this directory
     sprintf(gamePath, "%s", BASE_PATH);
 #if RETRO_USE_MOD_LOADER
@@ -304,6 +312,8 @@ void InitUserdata()
         ini.SetInteger("Window", "ScreenWidth", SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE);
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         ini.SetInteger("Window", "RefreshRate", Engine.refreshRate = 60);
+	    if (Engine.refreshRate > 60)
+	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
 
@@ -361,12 +371,14 @@ void InitUserdata()
 			ini.SetInteger(inputBuffer, "L", inputDevice[i][INPUT_BUTTONL].contMappings = SDL_CONTROLLER_BUTTON_LEFTSHOULDER);
 			ini.SetInteger(inputBuffer, "R", inputDevice[i][INPUT_BUTTONR].contMappings = SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 			ini.SetInteger(inputBuffer, "Start", inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START);
-			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE);
+			ini.SetInteger(inputBuffer, "Select", inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK);
 			
 			ini.SetFloat(inputBuffer, "LStickDeadzone", LSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "LTriggerDeadzone", LTRIGGER_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
+			
+			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
 		}
 #endif
 
@@ -427,6 +439,8 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RStickDeadzone", RSTICK_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "LTriggerDeadzone", LTRIGGER_DEADZONE[i] = 0.3);
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
+			
+			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
 		}
 #endif
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
@@ -514,6 +528,8 @@ void InitUserdata()
             SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE;
         SCREEN_XSIZE = SCREEN_XSIZE_CONFIG;
         if (!ini.GetInteger("Window", "RefreshRate", &Engine.refreshRate))
+            Engine.refreshRate = 60;		
+        if (Engine.refreshRate > 60)
             Engine.refreshRate = 60;
         if (!ini.GetInteger("Window", "DimLimit", &Engine.dimLimit))
             Engine.dimLimit = 300; // 5 mins
@@ -632,7 +648,7 @@ void InitUserdata()
 			if (!ini.GetInteger(inputBuffer, "Start", &inputDevice[i][INPUT_START].contMappings))
 				inputDevice[i][INPUT_START].contMappings = SDL_CONTROLLER_BUTTON_START;
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].contMappings))
-				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_GUIDE;
+				inputDevice[i][INPUT_SELECT].contMappings = SDL_CONTROLLER_BUTTON_BACK;
 
 			if (!ini.GetFloat(inputBuffer, "LStickDeadzone", &LSTICK_DEADZONE[i]))
 				LSTICK_DEADZONE[i] = 0.3;
@@ -642,6 +658,9 @@ void InitUserdata()
 				LTRIGGER_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RTriggerDeadzone", &RTRIGGER_DEADZONE[i]))
 				RTRIGGER_DEADZONE[i] = 0.3;
+			
+			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
+				ControllerVibration[i] = true;
 		}
 #endif
 
@@ -748,6 +767,9 @@ void InitUserdata()
 				LTRIGGER_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RTriggerDeadzone", &RTRIGGER_DEADZONE[i]))
 				RTRIGGER_DEADZONE[i] = 0.3;
+			
+			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
+				ControllerVibration[i] = true;
 		}
 #endif
 		
@@ -942,6 +964,9 @@ void WriteSettings()
 		ini.SetFloat(buf[0], "RStickDeadzone", RSTICK_DEADZONE[i]);
 		ini.SetFloat(buf[0], "LTriggerDeadzone", LTRIGGER_DEADZONE[i]);
 		ini.SetFloat(buf[0], "RTriggerDeadzone", RTRIGGER_DEADZONE[i]);
+		
+		ini.SetComment(buf[0], "VibrationComment", "When enabled, your controller will vibrate when applicable");
+		ini.SetBool(buf[0], "ControllerVibration", ControllerVibration[i]);
 	}
 	
 	ini.SetComment("Controller ID Mappings", "ICMappingsComment",
@@ -1014,6 +1039,11 @@ void ReadUserdata()
             leaderboards[l].score = 0x7FFFFFF;
     }
 
+    unsigned long long filePlaytime = 0;
+    if (fRead(&filePlaytime, sizeof(filePlaytime), 1, userFile) == 1) {
+        totalPlaytimeMs = filePlaytime;
+    }
+
     fClose(userFile);
 
     if (Engine.onlineActive) {
@@ -1058,6 +1088,8 @@ void WriteUserdata()
 
     for (int a = 0; a < ACHIEVEMENT_COUNT; ++a) fWrite(&achievements[a].status, 4, 1, userFile);
     for (int l = 0; l < LEADERBOARD_COUNT; ++l) fWrite(&leaderboards[l].score, 4, 1, userFile);
+
+    fWrite(&totalPlaytimeMs, sizeof(totalPlaytimeMs), 1, userFile);
 
     fClose(userFile);
 
@@ -1462,7 +1494,12 @@ void NotifyCallback(int *callback, int *param1, int *param2, int *param3)
 }
 #endif
 
-void ExitGame() { Engine.running = false; }
+void ExitGame() 
+{
+    WriteUserdata();
+    Engine.running = false; 
+    SetControllerLEDColour(0, 0, 255);
+}
 
 void FileExists(int *unused, const char *filePath)
 {
