@@ -1,8 +1,8 @@
 #ifndef TEXTSYSTEM_H
 #define TEXTSYSTEM_H
 
-#define TEXTDATA_COUNT  (0x2800)
-#define TEXTENTRY_COUNT (0x200)
+#define TEXTDATA_COUNT  (0x6400)
+#define TEXTENTRY_COUNT (0x1000)
 #define TEXTMENU_COUNT  (0x5)
 
 #define FONTLIST_CHAR_COUNT (0x1000)
@@ -69,7 +69,7 @@ enum TextMenuAlignments {
 extern TextMenu gameMenu[TEXTMENU_COUNT];
 extern int textMenuSurfaceNo;
 
-extern char playerListText[0x80][0x20];
+extern char playerListText[0x800][0x200];
 
 extern BitmapFont fontList[FONTLIST_COUNT];
 

@@ -3,7 +3,7 @@
 TextMenu gameMenu[TEXTMENU_COUNT];
 int textMenuSurfaceNo = 0;
 
-char playerListText[0x80][0x20];
+char playerListText[0x800][0x200];
 
 BitmapFont fontList[FONTLIST_COUNT];
 

@@ -25,6 +25,8 @@ void API_Discord_Init();
 void API_Discord_Update();
 
 void API_Discord_SetPresence(const char *text, int type);
+void API_Discord_ClearPresenceType(int type);
+void API_Discord_ClearAllPresence();
 void API_Discord_UpdatePresence();
 #endif
 

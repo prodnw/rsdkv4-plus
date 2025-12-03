@@ -9,6 +9,12 @@ bool engineDebugMode = false;
 #include <unistd.h>
 #endif
 
+static int connectedControllerCount = 0;
+
+void AddPlaytimeMilliseconds(unsigned int ms);
+unsigned int GetPlaytimeSeconds();
+extern unsigned long long totalPlaytimeMs;
+
 RetroEngine Engine = RetroEngine();
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -34,6 +40,9 @@ bool ProcessEvents()
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
     while (SDL_PollEvent(&Engine.sdlEvents)) {
+
+        UpdateCursorVisibility(&Engine.sdlEvents);
+
         // Main Events
         switch (Engine.sdlEvents.type) {
 #if RETRO_USING_SDL2
@@ -59,8 +68,24 @@ bool ProcessEvents()
                     case SDL_WINDOWEVENT_FOCUS_GAINED: Engine.hasFocus = true; break;
                 }
                 break;
-            case SDL_CONTROLLERDEVICEADDED: controllerInit(Engine.sdlEvents.cdevice.which); break;
-            case SDL_CONTROLLERDEVICEREMOVED: controllerClose(Engine.sdlEvents.cdevice.which); break;
+            case SDL_CONTROLLERDEVICEADDED:
+                controllerInit(Engine.sdlEvents.cdevice.which);
+
+                // fast update: increment connected count and notify script
+                ++connectedControllerCount;
+                scriptEng.checkResult = 0; // 0 = no disconnect (added)
+                PrintLog("Controller added, now %d connected", connectedControllerCount);
+                break;
+
+            case SDL_CONTROLLERDEVICEREMOVED:
+                controllerClose(Engine.sdlEvents.cdevice.which);
+                if (connectedControllerCount > 0)
+                    --connectedControllerCount;
+
+                // immediate notify to script that a disconnect happened
+                scriptEng.checkResult = 1; // 1 = disconnected
+                PrintLog("Controller removed, now %d connected", connectedControllerCount);
+                break;
             case SDL_APP_WILLENTERBACKGROUND:
                 if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
                     Engine.gameMode = ENGINE_INITPAUSE;
@@ -346,6 +371,16 @@ void RetroEngine::Init()
                 initialised = true;
                 running     = true;
 
+#if RETRO_USING_SDL2
+                // initialize connectedControllerCount once SDL is ready
+                connectedControllerCount = 0;
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i))
+                        ++connectedControllerCount;
+                }
+#endif
+
 #if !RETRO_USE_ORIGINAL_CODE
                 if ((startList_Game != 0xFF && startList_Game) || (startStage_Game != 0xFF && startStage_Game) || startPlayer != 0xFF) {
                     skipStart = true;
@@ -445,9 +480,13 @@ void RetroEngine::Init()
         gameType = GAME_SONICNEXUS;
     }
 
-    gameType = GAME_UNKNOWN;
     if (strstr(gameWindowText, "Sonic and the Duel of Fates")) {
         gameType = GAME_SONICDUELOFFATES;
+    }
+
+    gameType = GAME_UNKNOWN;
+    if (strstr(gameWindowText, "Sonic Essence")) {
+        gameType = GAME_SONICESSENCE;
     }
 
     // Feel free to insert your own games!
@@ -596,6 +635,8 @@ void RetroEngine::Run()
         Engine.deltaTime = 1.0 / 60;
 #endif
         running = ProcessEvents();
+        
+        AddPlaytimeMilliseconds((unsigned int)(Engine.deltaTime * 1000.0f));
 
         if (lastFPS != Engine.refreshRate) {
 		    targetFreq = SDL_GetPerformanceFrequency() / Engine.refreshRate;
@@ -659,6 +700,7 @@ void RetroEngine::Run()
         }
     }
 
+    WriteUserdata();
     ReleaseAudioDevice();
     StopVideoPlayback();
     ReleaseRenderDevice();
@@ -1051,7 +1093,9 @@ void RetroEngine::LoadXMLPlayers(TextMenu *menu)
                             if (nameAttr)
                                 plrName = GetXMLAttributeValueString(nameAttr);
 
-                            if (menu)
+                            if (playerCount >= PLAYER_COUNT)
+                                PrintLog("Failed to add dev menu character '%s' (max limit reached)", plrName);
+                            else if (menu)
                                 AddTextMenuEntry(menu, plrName);
                             else
                                 StrCopy(playerNames[playerCount++], plrName);
@@ -1239,6 +1283,13 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
         // Read Player Names
         byte plrCount = 0;
         FileRead(&plrCount, 1);
+#if RETRO_USE_MOD_LOADER
+        // Check for max player limit
+        if (plrCount >= PLAYER_COUNT) {
+            PrintLog("WARNING: GameConfig attempted to exceed the player limit, truncating to supported limit");
+            plrCount = PLAYER_COUNT;
+        }
+#endif
         for (byte p = 0; p < plrCount; ++p) {
             FileRead(&fileBuffer, 1);
             FileRead(&strBuffer, fileBuffer);
@@ -1364,8 +1415,6 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
-    AddNativeFunction("GetWindowBrightness", GetWindowBrightness);
-    AddNativeFunction("SetWindowBrightness", SetWindowBrightness);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);
@@ -1395,4 +1444,28 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
 
     return loaded;
+}
+
+static bool cursorHiddenByInput = false;
+
+void UpdateCursorVisibility(const SDL_Event* event)
+{
+    // Enable cursor if mouse moves or keyboard key is pressed
+    if (event->type == SDL_MOUSEMOTION || event->type == SDL_KEYDOWN) {
+        SDL_SetRelativeMouseMode(SDL_FALSE); // Cursor enabled (normal)
+        cursorHiddenByInput = false;
+        return;
+    }
+
+    // Disable cursor if controller input is pressed
+    if (event->type == SDL_CONTROLLERBUTTONDOWN) {
+        SDL_SetRelativeMouseMode(SDL_TRUE); // Cursor disabled and locked
+        cursorHiddenByInput = true;
+        return;
+    }
+
+    // Keep cursor disabled if it was disabled by input
+    if (cursorHiddenByInput) {
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+    }
 }

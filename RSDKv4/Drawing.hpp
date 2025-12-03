@@ -1,8 +1,8 @@
 #ifndef DRAWING_H
 #define DRAWING_H
 
-#define SURFACE_COUNT (32)
-#define GFXDATA_SIZE  (0x2400 * 0x2400)
+#define SURFACE_COUNT (64)
+#define GFXDATA_SIZE  (0x4000 * 0x4000)
 
 #if RETRO_REV03
 #define DRAWLAYER_COUNT (8)
@@ -112,7 +112,6 @@ void CopyFrameOverlay2x();
 
 void SetupViewport();
 void SetFullScreen(bool fs);
-void SetScreenBrightness(float brightness);
 
 // Layer Drawing
 void DrawObjectList(int layer);

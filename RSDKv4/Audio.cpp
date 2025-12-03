@@ -441,6 +441,9 @@ void ProcessAudioPlayback(void *userdata, Uint8 *stream, int len)
             if (sfx == NULL)
                 continue;
 
+            if (sfx->paused)
+                continue;
+
             if (sfx->sfxID < 0)
                 continue;
 
@@ -914,6 +917,57 @@ void PlayVoice(int sfx, bool loop)
     sfxInfo->loopSFX      = loop;
     sfxInfo->pan          = 0;
     sfxInfo->isVoice      = true;
+    UnlockAudioDevice();
+}
+void PauseSfx(int sfx)
+{
+    LockAudioDevice();
+
+    if (sfx < 0) {
+        // Pause all playing SFX
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            if (sfxChannels[i].sfxID >= 0)
+                sfxChannels[i].paused = true;
+        }
+    }
+    else {
+        // Pause specific SFX id (may be playing on multiple channels)
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            if (sfxChannels[i].sfxID == sfx)
+                sfxChannels[i].paused = true;
+        }
+    }
+
+    UnlockAudioDevice();
+}
+void ResumeSfx(int sfx)
+{
+    LockAudioDevice();
+
+    if (sfx < 0) {
+        // Resume all paused SFX
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            if (sfxChannels[i].sfxID >= 0)
+                sfxChannels[i].paused = false;
+        }
+    }
+    else {
+        // Resume specific SFX id
+        for (int i = 0; i < CHANNEL_COUNT; ++i) {
+            if (sfxChannels[i].sfxID == sfx)
+                sfxChannels[i].paused = false;
+        }
+    }
+
+    UnlockAudioDevice();
+}
+void PauseAnySfx()
+{
+    LockAudioDevice();
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        if (sfxChannels[i].sfxID >= 0)
+            sfxChannels[i].paused = true;
+    }
     UnlockAudioDevice();
 }
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)

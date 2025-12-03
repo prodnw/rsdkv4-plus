@@ -16,6 +16,7 @@ char networkGame[7] = "SONIC2";
 int networkPort     = 50;
 int dcError         = 0;
 float lastPing      = 0;
+float networkPing   = 0;
 
 bool waitingForPing = false;
 
@@ -154,6 +155,7 @@ private:
                 return;
             // it's ok to use preformace counter; we're in a different thread and slowdown is safe
             lastPing       = ((SDL_GetPerformanceCounter() - lastTime) * 1000.0 / SDL_GetPerformanceFrequency());
+            networkPing    = lastPing;
             lastTime       = SDL_GetPerformanceCounter();
             waitingForPing = false;
             if (!code) {

@@ -37,6 +37,39 @@ void API_Discord_SetPresence(const char *text, int type)
     }
 }
 
+void API_Discord_ClearPresenceType(int type)
+{
+    if (!__discord) return;
+
+    switch (type) {
+        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(""); break;
+        case PRESENCE_ACTIVITY_STATE:   __activity.SetState("");   break;
+
+        case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(""); break;
+        case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText("");  break;
+        case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(""); break;
+        case PRESENCE_ASSET_SMALLTEXT:  __assets.SetSmallText("");  break;
+
+        default: break;
+    }
+}
+
+void API_Discord_ClearAllPresence()
+{
+    if (!__discord) return;
+
+    __activity.SetDetails("");
+    __activity.SetState("");
+    __assets.SetLargeImage("");
+    __assets.SetLargeText("");
+    __assets.SetSmallImage("");
+    __assets.SetSmallText("");
+
+    // push update to Discord immediately
+    __activity.GetAssets()     = __assets;
+    __discord->ActivityManager().UpdateActivity(__activity, [](discord::Result) {});
+}
+
 void API_Discord_UpdatePresence()
 {
     if (__discord) {

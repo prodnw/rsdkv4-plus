@@ -291,6 +291,7 @@ enum RetroGameType {
     GAME_SONICCD = 4,
     GAME_SONICNEXUS = 5,
     GAME_SONICDUELOFFATES = 6,
+    GAME_SONICESSENCE = 7,
     // Feel free to insert your own games!
 };
 
@@ -537,4 +538,6 @@ public:
 };
 
 extern RetroEngine Engine;
+
+void UpdateCursorVisibility(const SDL_Event* event);
 #endif // !RETROENGINE_H

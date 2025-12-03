@@ -1,21 +1,29 @@
 #include "RetroEngine.hpp"
 #include <cmath>
 
+#include <SDL.h>
+#include <ctime>
+
 #if RETRO_USE_COMPILER
 #if RETRO_ACCEPT_OLD_SYNTAX
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (129)
+#define COMMON_SCRIPT_VAR_COUNT (131)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (128)
+#define COMMON_SCRIPT_VAR_COUNT (130)
 #endif
 #else
 #if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (42)
+#define COMMON_SCRIPT_VAR_COUNT (44)
 #else
-#define COMMON_SCRIPT_VAR_COUNT (41)
+#define COMMON_SCRIPT_VAR_COUNT (43)
 #endif
 #endif
 #endif
+
+#include "Userdata.hpp"
+#include "Video.hpp"
+
+extern float networkPing;
 
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
@@ -397,9 +405,8 @@ const char variableNames[][0x20] = {
     "engine.hapticsEnabled",
 #endif
     "game.checkForUpdates",
-
+    "game.networkPing",
 	"controller.vibrationEnabled",
-	"controller.vibrationIntensity",
 };
 #endif
 
@@ -522,8 +529,14 @@ const FunctionInfo functions[] = {
     // Sound FX
     FunctionInfo("PlaySfx", 2),
     FunctionInfo("StopSfx", 1),
+
+    // New
+    FunctionInfo("PauseSfx", 1),
+    FunctionInfo("ResumeSfx", 1),
     FunctionInfo("PlayVoice", 2),
     FunctionInfo("StopVoice", 1),
+
+    // Now old again
     FunctionInfo("SetSfxAttributes", 3),
 
     // More Collision Stuff
@@ -613,6 +626,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
     
+    // New functions start here
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
 
@@ -627,10 +641,23 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetPresenceSmallImage", 1),
     FunctionInfo("SetPresenceSmallText", 1),
     FunctionInfo("UpdatePresence", 0),
+    FunctionInfo("ClearPresence", 0),
+    FunctionInfo("ClearPresenceType", 1),
 
-	FunctionInfo("VibrateController", 2), // VibrateController(int duration, int ControllerID (0 = ALL))
-
-    FunctionInfo("CheckButtonPress", 0),
+    FunctionInfo("VibrateController", 5), // VibrateController(true/false, controller ID, intensity L, intensity R, intensity timer)
+    FunctionInfo("AutoDetectController", 0),
+    FunctionInfo("SetControllerLEDColour", 3),
+    FunctionInfo("CheckWindowFocus", 0),
+    FunctionInfo("GetSystemDateTime", 0),
+    FunctionInfo("CheckAnyButtonPressed", 0),
+    FunctionInfo("CheckControllerConnect", 0),
+    FunctionInfo("CheckControllerDisconnect", 0),
+    FunctionInfo("CheckMouseMoved", 0),
+    FunctionInfo("CheckMouseLeftPress", 0),
+    FunctionInfo("CheckMouseRightPress", 0),
+    FunctionInfo("GetPlaytimeHours", 1),
+    FunctionInfo("GetPlaytimeMinutes", 1),
+    FunctionInfo("GetPlaytimeSeconds", 1),
 };
 
 #if RETRO_USE_COMPILER
@@ -1094,11 +1121,9 @@ enum ScrVar {
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
 #endif
-    VAR_GAMECHECKFORUPDATES,
-
-	VAR_CONTROLLER_VIBRATIONENABLED,
-	VAR_CONTROLLER_VIBRATIONINTENSITY,
-
+    VAR_GAME_CHECKFORUPDATES,
+    VAR_GAME_NETWORKPING,
+    VAR_CONTROLLER_VIBRATIONENABLED,
     VAR_MAX_CNT
 };
 
@@ -1198,6 +1223,8 @@ enum ScrFunc {
     FUNC_NEXTVIDEOFRAME,
     FUNC_PLAYSFX,
     FUNC_STOPSFX,
+    FUNC_PAUSESFX,
+    FUNC_RESUMESFX,
     FUNC_PLAYVOICE,
     FUNC_STOPVOICE,
     FUNC_SETSFXATTRIBUTES,
@@ -1271,6 +1298,7 @@ enum ScrFunc {
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
     
+    // New functions start here
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
     
@@ -1282,10 +1310,23 @@ enum ScrFunc {
     FUNC_SET_PRESENCE_SMALLIMAGE,
     FUNC_SET_PRESENCE_SMALLTEXT,
     FUNC_UPDATE_PRESENCE,
+    FUNC_CLEAR_PRESENCE,
+    FUNC_CLEAR_PRESENCE_TYPE,
 
-	FUNC_VIBRATECONTROLLER,
-
-    FUNC_CHECKBUTTONPRESSED,
+    FUNC_VIBRATECONTROLLER,
+    FUNC_AUTODETECTCONTROLLER,
+    FUNC_SETCONTROLLERLEDCOLOUR,
+    FUNC_CHECKWINDOWFOCUS,
+    FUNC_GETSYSTEMDATETIME,
+    FUNC_CHECKANYBUTTONPRESSED,
+    FUNC_CHECKCONTROLLERCONNECT,
+    FUNC_CHECKCONTROLLERDISCONNECT,
+    FUNC_CHECKMOUSEMOVED,
+    FUNC_CHECKMOUSE1PRESS,
+    FUNC_CHECKMOUSE2PRESS,
+    FUNC_GETPLAYTIMEHOURS,
+    FUNC_GETPLAYTIMEMINUTES,
+    FUNC_GETPLAYTIMESECONDS,
 
     FUNC_MAX_CNT,
 };
@@ -3277,6 +3318,9 @@ void ParseScriptFile(char *scriptName, int scriptID)
 #if RETRO_USE_MOD_LOADER
                                 && FindStringToken(scriptText, "USE_MOD_LOADER", 1) == -1
 #endif
+#if RETRO_ACCEPT_OLD_SYNTAX
+                                && FindStringToken(scriptText, "USE_OLD_SYNTAX", 1) == -1
+#endif
                                 && FindStringToken(scriptText, "USE_V4_PLUS", 1) == -1
                             ) {
                                 parseMode = PARSEMODE_PLATFORMSKIP;
@@ -3614,6 +3658,171 @@ void ClearScriptData()
     }
 
     SetObjectTypeName("Blank Object", OBJ_TYPE_BLANKOBJECT);
+}
+
+void AutoDetectController()
+{
+    scriptEng.checkResult = 0; // Default: No device
+    bool detected = false;
+
+    int numJoysticks = SDL_NumJoysticks();
+    for (int i = 0; i < numJoysticks; ++i) {
+        const char* joyName = SDL_JoystickNameForIndex(i);
+        PrintLog("Joystick %d: %s", i, joyName ? joyName : "(null)");
+        if (SDL_IsGameController(i)) {
+            SDL_GameController* controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char* gcName = SDL_GameControllerName(controller);
+                PrintLog("GameController %d: %s", i, gcName ? gcName : "(null)");
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+
+    // Check for keyboard (always present on desktop)
+    const Uint8 *keyState = SDL_GetKeyboardState(NULL);
+    int numKeys = 0;
+    SDL_GetKeyboardState(&numKeys);
+    for (int i = 0; i < numKeys; ++i) {
+        if (keyState[i]) {
+            scriptEng.checkResult = 1; // Keyboard
+            PrintLog("Detected Input Device: Keyboard");
+            return;
+        }
+    }
+
+    // Check all controllers
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController *controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char *name = SDL_GameControllerName(controller);
+                if (name) {
+                    if (strstr(name, "Xbox 360")) {
+                        scriptEng.checkResult = 2; // Xbox 360
+                        PrintLog("Detected Input Device: Xbox 360 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Xbox") || strstr(name, "XInput")) {
+                        scriptEng.checkResult = 3; // Xbox One/Series
+                        PrintLog("Detected Input Device: Xbox One/Series Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PLAYSTATION(R)3") || strstr(name, "PS3") || strstr(name, "Sony PLAYSTATION(R)3 Controller")) {
+                        scriptEng.checkResult = 4; // PlayStation 3
+                        PrintLog("Detected Input Device: PlayStation 3 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PS4") || strstr(name, "DualShock 4") || strstr(name, "Wireless Controller") || strstr(name, "DualShock Wireless Controller")) {
+                        scriptEng.checkResult = 5; // PlayStation 4
+                        PrintLog("Detected Input Device: PlayStation 4 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PS5") || strstr(name, "DualSense") || (strstr(name, "Wireless Controller") && SDL_JoystickGetVendor(SDL_GameControllerGetJoystick(controller)) == 0x054C && SDL_JoystickGetProduct(SDL_GameControllerGetJoystick(controller)) == 0x0CE6)) {
+                        scriptEng.checkResult = 6; // PlayStation 5
+                        PrintLog("Detected Input Device: PlayStation 5 Controller (%s)", name);
+                    }
+                    else if (strstr(name, "PlayStation")) {
+                        scriptEng.checkResult = 4; // fallback to PS3
+                        PrintLog("Detected Input Device: PlayStation Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Nintendo") || strstr(name, "Switch") || strstr(name, "Joy-Con") || strstr(name, "Pro Controller")) {
+                        scriptEng.checkResult = 7; // Nintendo
+                        PrintLog("Detected Input Device: Nintendo Controller (%s)", name);
+                    }
+                    else if (strstr(name, "Steam Deck")) {
+                        scriptEng.checkResult = 8; // Steam Deck
+                        PrintLog("Detected Input Device: Steam Deck Controller (%s)", name);
+                    }
+                    else {
+                        scriptEng.checkResult = 9; // Generic/Other
+                        PrintLog("Detected Input Device: Generic/Other Controller (%s)", name);
+                    }
+                }
+                SDL_GameControllerClose(controller);
+                return;
+
+                // Holy shit PS5 controllers are picky
+                SDL_Joystick* joy = SDL_GameControllerGetJoystick(controller);
+                Uint16 vendor = SDL_JoystickGetVendor(joy);
+                Uint16 product = SDL_JoystickGetProduct(joy);
+                if (vendor == 0x054C && (product == 0x0CE6 || product == 0x0DF2)) {
+                    scriptEng.checkResult = 6;
+                    PrintLog("Detected Input Device: PlayStation 5 Controller (%s)", name);
+                }
+            }
+        }
+    }
+
+    if (!detected) {
+        PrintLog("No input device detected, defaulting to no input device");
+    }
+}
+
+// Set the LED color of the first connected PlayStation controller
+void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b)
+{
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController *controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                const char* name = SDL_GameControllerName(controller);
+                if (name && (strstr(name, "PlayStation") || strstr(name, "DualShock") || strstr(name, "DualSense") || strstr(name, "Wireless Controller"))) {
+                    if (SDL_GameControllerSetLED(controller, r, g, b) == 0) {
+                        PrintLog("Set LED color for controller %d to (%d, %d, %d)", i, r, g, b);
+                    } else {
+                        PrintLog("Controller %d does not support RGB LED", i);
+                    }
+                } else {
+                    PrintLog("Controller %d is not a PlayStation controller, skipping LED set", i);
+                }
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+}
+
+// Checks if any key or controller button is pressed
+void CheckAnyButtonPressed()
+{
+    scriptEng.checkResult = 0;
+
+    // Check keyboard
+    const Uint8* keyState = SDL_GetKeyboardState(NULL);
+    for (int scancode = SDL_SCANCODE_UNKNOWN + 1; scancode < SDL_NUM_SCANCODES; ++scancode) {
+        if (keyState[scancode]) {
+            scriptEng.checkResult = 1;
+            return;
+        }
+    }
+
+    // Check controllers
+    int numControllers = SDL_NumJoysticks();
+    for (int i = 0; i < numControllers; ++i) {
+        if (SDL_IsGameController(i)) {
+            SDL_GameController* controller = SDL_GameControllerOpen(i);
+            if (controller) {
+                for (int button = SDL_CONTROLLER_BUTTON_A; button < SDL_CONTROLLER_BUTTON_MAX; ++button) {
+                    if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)button)) {
+                        scriptEng.checkResult = 1;
+                        SDL_GameControllerClose(controller);
+                        return;
+                    }
+                }
+                SDL_GameControllerClose(controller);
+            }
+        }
+    }
+}
+
+unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions (reset on full engine reset)
+
+void AddPlaytimeMilliseconds(unsigned int ms)
+{
+    totalPlaytimeMs += ms;
+}
+
+unsigned int GetPlaytimeSeconds()
+{
+    return (unsigned int)(totalPlaytimeMs / 1000ULL);
 }
 
 void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
@@ -4436,11 +4645,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
-                    case VAR_GAMECHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
-					// arrayVal is offset by 1 to make sure 1 means the first controller, like other input variables
-					// You have been warned!!
-					case VAR_CONTROLLER_VIBRATIONENABLED:   if (arrayVal > 0) {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} break;
-					case VAR_CONTROLLER_VIBRATIONINTENSITY: if (arrayVal > 0) {scriptEng.operands[i] =  VibrationIntensity[arrayVal - 1];} break;
+                    case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
+                    case VAR_GAME_NETWORKPING: scriptEng.operands[i] = networkPing; break;
+					case VAR_CONTROLLER_VIBRATIONENABLED:
+                        if (arrayVal > 0) 
+                            {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} 
+                        break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -5560,6 +5770,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 StopSfx(scriptEng.operands[0]);
                 break;
+            case FUNC_PAUSESFX:
+                opcodeSize = 0;
+                PauseSfx(scriptEng.operands[0]);
+                break;
+            case FUNC_RESUMESFX:
+                opcodeSize = 0;
+                ResumeSfx(scriptEng.operands[0]);
+                break;
             case FUNC_PLAYVOICE:
                 opcodeSize = 0;
                 PlayVoice(scriptEng.operands[0], scriptEng.operands[1]);
@@ -5854,6 +6072,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #else
                 LoadTextFile(menu, scriptText, false);
 #endif
+                PrintLog("Using MENU_%d to load '%s'", scriptEng.operands[0], scriptText);
                 break;
             }
             case FUNC_GETTEXTINFO: {
@@ -6229,6 +6448,29 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            case FUNC_CLEAR_PRESENCE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_ClearAllPresence();
+#endif
+                break;
+            }
+
+            case FUNC_CLEAR_PRESENCE_TYPE: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                // value = presence type
+                // 0 - details
+                // 1 - state
+                // 2 - large image
+                // 3 - large text
+                // 4 - small image
+                // 5 - small text
+                API_Discord_ClearPresenceType(scriptEng.operands[0]);
+#endif
+                break;
+            }
+
             case FUNC_VIBRATECONTROLLER: {
                 opcodeSize = 0;
                 // idk if its possible to optimise this so it only runs the loop if (operands[1] == 0 || operands[1] > INPUT_COUNT)
@@ -6242,8 +6484,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 								if (controller) {
 									SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
 									if (SDL_JoystickHasRumble(joystick))
-										SDL_JoystickRumble(joystick, (VibrationIntensity[i] + 1) * 0x5000, (VibrationIntensity[i] + 1) * 0x5000,
-																													scriptEng.operands[0] * 10);
+										SDL_JoystickRumble(joystick, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3] * 10);
 									SDL_GameControllerClose(controller);
 								}
 							}
@@ -6255,8 +6496,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 							if (controller) {
 								SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
 								if (SDL_JoystickHasRumble(joystick))
-									SDL_JoystickRumble(joystick, (VibrationIntensity[i] + 1) * 0x5000, (VibrationIntensity[i] + 1) * 0x5000,
-																												scriptEng.operands[0] * 10);
+									SDL_JoystickRumble(joystick, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3] * 10);
 								SDL_GameControllerClose(controller);
 							}
 						}
@@ -6265,9 +6505,160 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_CHECKBUTTONPRESSED: {
+            case FUNC_AUTODETECTCONTROLLER: {
                 opcodeSize = 0;
-                // idk yet
+                AutoDetectController();
+                break;
+            }
+
+            case FUNC_SETCONTROLLERLEDCOLOUR: {
+                opcodeSize = 0;
+                SetControllerLEDColour((Uint8)scriptEng.operands[0], (Uint8)scriptEng.operands[1], (Uint8)scriptEng.operands[2]);
+                break;
+            }
+
+            case FUNC_CHECKWINDOWFOCUS: {
+                opcodeSize = 0;
+#if RETRO_USING_SDL2
+                Uint32 flags = SDL_GetWindowFlags(Engine.window);
+                // SDL_WINDOW_INPUT_FOCUS means the window has keyboard focus
+                scriptEng.checkResult = (flags & SDL_WINDOW_INPUT_FOCUS) ? 0 : 1;
+#else
+                scriptEng.checkResult = 0; // Always focused if not using SDL2
+#endif
+                break;
+            }
+
+            case FUNC_GETSYSTEMDATETIME: {
+                opcodeSize = 0;
+                time_t now = time(NULL);
+                struct tm *tm_now = localtime(&now);
+
+                scriptEng.temp[0] = tm_now->tm_year + 1900; // Year
+                scriptEng.temp[1] = tm_now->tm_mon + 1;     // Month (1-12)
+                scriptEng.temp[2] = tm_now->tm_mday;        // Day (1-31)
+                scriptEng.temp[3] = tm_now->tm_hour;        // Hour (0-23)
+                scriptEng.temp[4] = tm_now->tm_min;         // Minute (0-59)
+                scriptEng.temp[5] = tm_now->tm_sec;         // Second (0-59)
+
+                PrintLog(
+                    "System DateTime: %04d-%02d-%02d %02d:%02d:%02d",
+                    scriptEng.temp[0],
+                    scriptEng.temp[1],
+                    scriptEng.temp[2],
+                    scriptEng.temp[3],
+                    scriptEng.temp[4],
+                    scriptEng.temp[5]
+                );
+                break;
+            }
+
+            case FUNC_CHECKANYBUTTONPRESSED: {
+                opcodeSize = 0;
+                CheckAnyButtonPressed();
+                break;
+            }
+
+            case FUNC_CHECKCONTROLLERCONNECT: {
+                opcodeSize = 0;
+                scriptEng.checkResult = 0;
+
+                static int prevControllerCount = -1;
+                int currentControllerCount     = 0;
+
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i))
+                        ++currentControllerCount;
+                }
+
+                // On first call, initialize previous count and do not signal a new connection.
+                if (prevControllerCount == -1) {
+                    prevControllerCount = currentControllerCount;
+                    return;
+                }
+
+                if (currentControllerCount > prevControllerCount) {
+                    PrintLog("Controller connected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+                    scriptEng.checkResult = 1;
+                }
+                else {
+                    scriptEng.checkResult = 0;
+                }
+
+                prevControllerCount = currentControllerCount;
+                break;
+            }
+
+            case FUNC_CHECKCONTROLLERDISCONNECT: {
+                opcodeSize = 0;
+                static int prevControllerCount = 0;
+                int currentControllerCount = 0;
+
+                // Count currently connected controllers without opening them (much faster)
+                int numJoysticks = SDL_NumJoysticks();
+                for (int i = 0; i < numJoysticks; ++i) {
+                    if (SDL_IsGameController(i)) {
+                        ++currentControllerCount;
+                    }
+                }
+
+                // Compare with previous count
+                if (currentControllerCount < prevControllerCount) {
+                    PrintLog("Controller disconnected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+                    scriptEng.checkResult = 1; // 1 = disconnected
+                } else {
+                    scriptEng.checkResult = 0; // 0 = no disconnect
+                }
+
+                prevControllerCount = currentControllerCount;
+                break;
+            }
+
+            case FUNC_CHECKMOUSEMOVED: {
+                opcodeSize = 0;
+                static int lastMouseX = -1;
+                static int lastMouseY = -1;
+                int mouseX, mouseY;
+
+                SDL_GetMouseState(&mouseX, &mouseY);
+                if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
+                    scriptEng.checkResult = 1; // Mouse moved
+                } else {
+                    scriptEng.checkResult = 0; // Not moved or first check
+                }
+                lastMouseX = mouseX;
+                lastMouseY = mouseY;
+                opcodeSize = 0;
+                break;
+            }
+
+            case FUNC_CHECKMOUSE1PRESS: {
+                opcodeSize = 0;
+                int mouseState = SDL_GetMouseState(NULL, NULL);
+                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
+                break;
+            }
+
+            case FUNC_CHECKMOUSE2PRESS: {
+                opcodeSize = 0;
+                int mouseState = SDL_GetMouseState(NULL, NULL);
+                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
+                break;
+            }
+
+            case FUNC_GETPLAYTIMEHOURS: {
+                scriptEng.operands[0] = GetPlaytimeSeconds() / 3600;
+                break;
+            }
+
+            case FUNC_GETPLAYTIMEMINUTES: {
+                scriptEng.operands[0] = (GetPlaytimeSeconds() % 3600) / 60;
+                break;
+            }
+            
+            case FUNC_GETPLAYTIMESECONDS: {
+                scriptEng.operands[0] = GetPlaytimeSeconds() % 60;
                 break;
             }
         }
@@ -6998,11 +7389,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
-                    case VAR_GAMECHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
-					// arrayVal is offset by 1 to make sure 1 means the first controller, like other input variables
-					// You have been warned!!
-					case VAR_CONTROLLER_VIBRATIONENABLED:   if (arrayVal > 0) {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} break;
-					case VAR_CONTROLLER_VIBRATIONINTENSITY: if (arrayVal > 0)  {VibrationIntensity[arrayVal - 1] = scriptEng.operands[i];} break;
+                    case VAR_GAME_CHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
+                    case VAR_GAME_NETWORKPING: networkPing = scriptEng.operands[i]; break;
+                    case VAR_CONTROLLER_VIBRATIONENABLED:   
+                        if (arrayVal > 0) 
+                            {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} 
+                        break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

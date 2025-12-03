@@ -457,6 +457,10 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICDUELOFFATES;
     }
 
+    if (strstr(Engine.gameWindowText, "Sonic Essence")) {
+        Engine.gameType = GAME_SONICESSENCE;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;

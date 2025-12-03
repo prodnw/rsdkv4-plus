@@ -10,7 +10,6 @@ struct MemoryStruct {
 };
 #endif
 
-
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
 char globalVariableNames[GLOBALVAR_COUNT][0x200];
@@ -59,6 +58,10 @@ int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
 bool ControllerVibration[DEFAULT_INPUT_COUNT];
 int VibrationIntensity[DEFAULT_INPUT_COUNT]; // 0 = Low, 1 = Medium, 2 = High
+
+extern void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b);
+
+extern unsigned long long totalPlaytimeMs;
 
 bool useSGame = false;
 
@@ -313,7 +316,6 @@ void InitUserdata()
 	        Engine.refreshRate = 60;
         ini.SetInteger("Window", "DimLimit", Engine.dimLimit = 300);
         Engine.dimLimit *= Engine.refreshRate;
-        ini.SetBool("Window", "Brightness", Engine.brightness = 1);
 
         ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
         ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
@@ -378,7 +380,6 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
 			
 			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
-			ini.SetInteger(inputBuffer, "VibrationIntensity", VibrationIntensity[i] = 1);
 		}
 #endif
 
@@ -441,7 +442,6 @@ void InitUserdata()
 			ini.SetFloat(inputBuffer, "RTriggerDeadzone", RTRIGGER_DEADZONE[i] = 0.3);
 			
 			ini.SetBool(inputBuffer, "ControllerVibration", ControllerVibration[i] = true);
-			ini.SetInteger(inputBuffer, "VibrationIntensity", VibrationIntensity[i] = 1);
 		}
 #endif
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
@@ -536,8 +536,6 @@ void InitUserdata()
             Engine.dimLimit = 300; // 5 mins
         if (Engine.dimLimit >= 0)
             Engine.dimLimit *= Engine.refreshRate;
-        if (!ini.GetInteger("Window", "Brightness", &Engine.brightness))
-            Engine.brightness = 1;
 
         float bv = 0, sv = 0, vv = 0;
         if (!ini.GetFloat("Audio", "BGMVolume", &bv))
@@ -672,8 +670,6 @@ void InitUserdata()
 			
 			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
 				ControllerVibration[i] = true;
-			if (!ini.GetInteger(inputBuffer, "VibrationIntensity", &VibrationIntensity[i]))
-				VibrationIntensity[i] = 1;
 		}
 #endif
 
@@ -783,8 +779,6 @@ void InitUserdata()
 			
 			if (!ini.GetBool(inputBuffer, "ControllerVibration", &ControllerVibration[i]))
 				ControllerVibration[i] = true;
-			if (!ini.GetInteger(inputBuffer, "VibrationIntensity", &VibrationIntensity[i]))
-				VibrationIntensity[i] = 1;
 		}
 #endif
 		
@@ -916,8 +910,6 @@ void WriteSettings()
     ini.SetInteger("Window", "RefreshRate", Engine.refreshRate);
     ini.SetComment("Window", "DLComment", "Determines the dim timer in seconds, set to -1 to disable dimming");
     ini.SetInteger("Window", "DimLimit", Engine.dimLimit >= 0 ? Engine.dimLimit / Engine.refreshRate : -1);
-    ini.SetComment("Window", "BNComment", "Determines how bright the screen will be");
-    ini.SetInteger("Window", "Brightness", Engine.brightness);
 
     ini.SetFloat("Audio", "BGMVolume", bgmVolume / (float)MAX_VOLUME);
     ini.SetFloat("Audio", "SFXVolume", sfxVolume / (float)MAX_VOLUME);
@@ -985,9 +977,6 @@ void WriteSettings()
 		
 		ini.SetComment(buf[0], "VibrationComment", "When enabled, your controller will vibrate when applicable");
 		ini.SetBool(buf[0], "ControllerVibration", ControllerVibration[i]);
-		ini.SetComment(buf[0], "VibrationIntensityComment",
-								"Changes the intensity of controller vibration if vibration is enabled. (0 = low, 1 = medium, 2 = high)");
-		ini.SetInteger(buf[0], "VibrationIntensity", VibrationIntensity[i]);
 	}
 	
 	ini.SetComment("Controller ID Mappings", "ICMappingsComment",
@@ -1060,6 +1049,11 @@ void ReadUserdata()
             leaderboards[l].score = 0x7FFFFFF;
     }
 
+    unsigned long long filePlaytime = 0;
+    if (fRead(&filePlaytime, sizeof(filePlaytime), 1, userFile) == 1) {
+        totalPlaytimeMs = filePlaytime;
+    }
+
     fClose(userFile);
 
     if (Engine.onlineActive) {
@@ -1104,6 +1098,8 @@ void WriteUserdata()
 
     for (int a = 0; a < ACHIEVEMENT_COUNT; ++a) fWrite(&achievements[a].status, 4, 1, userFile);
     for (int l = 0; l < LEADERBOARD_COUNT; ++l) fWrite(&leaderboards[l].score, 4, 1, userFile);
+
+    fWrite(&totalPlaytimeMs, sizeof(totalPlaytimeMs), 1, userFile);
 
     fClose(userFile);
 
@@ -1508,7 +1504,12 @@ void NotifyCallback(int *callback, int *param1, int *param2, int *param3)
 }
 #endif
 
-void ExitGame() { Engine.running = false; }
+void ExitGame() 
+{
+    WriteUserdata();
+    Engine.running = false; 
+    SetControllerLEDColour(0, 0, 255);
+}
 
 void FileExists(int *unused, const char *filePath)
 {
@@ -1527,7 +1528,6 @@ void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
 void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
-void GetWindowBrightness() { scriptEng.checkResult = Engine.brightness; }
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1589,14 +1589,6 @@ void SetFrameRate(int *enabled, int *unused)
     if (Engine.refreshRate > 60)
         Engine.refreshRate = 60;
 	//ApplyWindowChanges();
-}
-
-void SetWindowBrightness(int *brightness, int *unused)
-{
-    if (!brightness)
-        return;
-
-    Engine.brightness = *brightness;
 }
 
 void ApplyWindowChanges()
