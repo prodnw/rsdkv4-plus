@@ -625,12 +625,14 @@ void RetroEngine::Run()
 
     while (running) {
 #if !RETRO_USE_ORIGINAL_CODE
-        if (!vsync) {
+		//there is no reason for vertical sync to skip the frame limit
+		//it still syncs to the screen
+        //if (!vsync) {
             curTicks = SDL_GetPerformanceCounter();
             if (curTicks < prevTicks + targetFreq)
                 continue;
             prevTicks = curTicks;
-        }
+        //}
 
         Engine.deltaTime = 1.0 / 60;
 #endif
