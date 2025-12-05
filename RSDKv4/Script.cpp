@@ -398,6 +398,16 @@ const char variableNames[][0x20] = {
     "camera.xpos",
     "camera.ypos",
     "camera.adjustY",
+    
+    "camera.direction",
+    "camera.drawLayer0Direction",
+    "camera.drawLayer1Direction",
+    "camera.drawLayer2Direction",
+    "camera.drawLayer3Direction",
+    "camera.drawLayer4Direction",
+    "camera.drawLayer5Direction",
+    "camera.drawLayer6Direction",
+    "camera.drawLayer7Direction",
 
 // Haptics
 #if RETRO_USE_HAPTICS
@@ -1113,6 +1123,16 @@ enum ScrVar {
     VAR_CAMERAXPOS,
     VAR_CAMERAYPOS,
     VAR_CAMERAADJUSTY,
+    
+    VAR_CAMERA_DIRECTION,
+    VAR_CAMERA_DRAWLAYER0DIRECTION,
+    VAR_CAMERA_DRAWLAYER1DIRECTION,
+    VAR_CAMERA_DRAWLAYER2DIRECTION,
+    VAR_CAMERA_DRAWLAYER3DIRECTION,
+    VAR_CAMERA_DRAWLAYER4DIRECTION,
+    VAR_CAMERA_DRAWLAYER5DIRECTION,
+    VAR_CAMERA_DRAWLAYER6DIRECTION,
+    VAR_CAMERA_DRAWLAYER7DIRECTION,
 
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
@@ -4635,6 +4655,27 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                             scriptEng.operands[i] = 0;
                         break;
 
+                    case VAR_CAMERA_DIRECTION:
+                        if (arrayVal == 0)
+                            scriptEng.operands[i] = screenDirection;
+                        else
+                            scriptEng.operands[i] = 0;
+                        break;
+                    // Optimisation by merging them all maybe
+                    case VAR_CAMERA_DRAWLAYER0DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER1DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER2DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER3DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER4DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER5DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER6DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER7DIRECTION:
+                        if (arrayVal == 0 && arrayVal < DRAWLAYER_COUNT)
+                            scriptEng.operands[i] = drawLayerDirection[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION];
+                        else
+                            scriptEng.operands[i] = FLIP_NONE;
+                        break;
+
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
@@ -7337,7 +7378,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINEDEVICETYPE: break;
 #endif
 
-#if RETRO_REV03
                     // Origins Extras
                     // Due to using regular v4, these don't support array values like origins expects, so its always screen[0]
                     case VAR_SCREENCURRENTID: break;
@@ -7365,8 +7405,23 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         if (arrayVal == 0)
                             cameraAdjustY = scriptEng.operands[i];
                         break;
-#endif
 
+                    case VAR_CAMERA_DIRECTION:
+                        if (arrayVal == 0)
+                            screenDirection = scriptEng.operands[i];
+                        break;
+                    // Optimisation by merging them all maybe
+                    case VAR_CAMERA_DRAWLAYER0DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER1DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER2DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER3DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER4DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER5DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER6DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER7DIRECTION:
+                        if (arrayVal == 0 && arrayVal < DRAWLAYER_COUNT)
+                            drawLayerDirection[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION] = scriptEng.operands[i];
+                        break;
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif

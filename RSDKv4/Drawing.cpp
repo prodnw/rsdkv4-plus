@@ -26,6 +26,8 @@ float touchWidthF  = SCREEN_XSIZE;
 float touchHeightF = SCREEN_YSIZE;
 
 DrawListEntry drawListEntries[DRAWLAYER_COUNT];
+byte drawLayerDirection[DRAWLAYER_COUNT];
+byte screenDirection;
 
 int gfxDataPosition = 0;
 GFXSurface gfxSurface[SURFACE_COUNT];
@@ -271,8 +273,10 @@ int InitRenderDevice()
 
 #if RETRO_SOFTWARE_RENDER
     Engine.frameBuffer   = new ushort[GFX_LINESIZE * SCREEN_YSIZE];
+    Engine.flipBuffer    = new ushort[GFX_LINESIZE * SCREEN_YSIZE];
     Engine.frameBuffer2x = new ushort[GFX_LINESIZE_DOUBLE * (SCREEN_YSIZE * 2)];
     memset(Engine.frameBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(ushort));
+    memset(Engine.flipBuffer, 0, (GFX_LINESIZE * SCREEN_YSIZE) * sizeof(ushort));
     memset(Engine.frameBuffer2x, 0, GFX_LINESIZE_DOUBLE * (SCREEN_YSIZE * 2) * sizeof(ushort));
 #endif
     Engine.texBuffer = new uint[GFX_LINESIZE * SCREEN_YSIZE];
@@ -1120,8 +1124,57 @@ void SetFullScreen(bool fs)
     Engine.isFullScreen = fs;
 }
 
+// If youre wondering how this works...
+// It flips the screen before a draw layer, then flips it again after
+// so everything else stays normal except for that singular draw layer
+void FlipFrameBuffer(byte direction)
+{
+    if (direction == FLIP_NONE)
+        return;
+    
+    int size = GFX_LINESIZE * SCREEN_YSIZE;
+    int i;
+    
+    switch (direction) {
+    case FLIP_X:
+        for (int y = 0; y < SCREEN_YSIZE; ++y) {
+            for (int x = 0; x < GFX_LINESIZE; ++x) {
+                i = y * GFX_LINESIZE + x;
+                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[y * GFX_LINESIZE + (GFX_LINESIZE - 9 - x)], sizeof(ushort));
+            }
+        }
+        break;
+
+    case FLIP_Y:
+        for (int y = 0; y < SCREEN_YSIZE; ++y) {
+            for (int x = 0; x < GFX_LINESIZE; ++x) {
+                i = y * GFX_LINESIZE + x;
+                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[(SCREEN_YSIZE - 1 - y) * GFX_LINESIZE + (i % GFX_LINESIZE)], sizeof(ushort));
+            }
+        }
+        break;
+
+    case FLIP_XY:
+        for (int y = 0; y < SCREEN_YSIZE; ++y) {
+            for (int x = 0; x < GFX_LINESIZE; ++x) {
+                i = y * GFX_LINESIZE + x;
+                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[size - 9 - i], sizeof(ushort));
+            }
+        }
+        break;
+    }
+    
+    memcpy(Engine.frameBuffer, Engine.flipBuffer, size * sizeof(ushort));
+}
+
 void DrawObjectList(int Layer)
 {
+    // only flip if we need to!!
+    // if the previous draw layer is flipped, dont flip again!!
+    // this saves ram usage!!
+    if (Layer == 0 || (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer]))
+        FlipFrameBuffer(drawLayerDirection[Layer]);
+    
     int size = drawListEntries[Layer].listSize;
     for (int i = 0; i < size; ++i) {
         objectEntityPos = drawListEntries[Layer].entityRefs[i];
@@ -1131,9 +1184,17 @@ void DrawObjectList(int Layer)
                 ProcessScript(objectScriptList[type].eventDraw.scriptCodePtr, objectScriptList[type].eventDraw.jumpTablePtr, EVENT_DRAW);
         }
     }
+    
+    // only flip again if we need to!!
+    // if the next draw layer is flipped, dont flip again!!
+    // this saves more ram usage!!
+    if (Layer == DRAWLAYER_COUNT - 1 || (Layer < DRAWLAYER_COUNT - 1 && drawLayerDirection[Layer + 1] != drawLayerDirection[Layer]))
+        FlipFrameBuffer(drawLayerDirection[Layer]);
 }
 void DrawStageGFX()
 {
+    FlipFrameBuffer(screenDirection);
+
     waterDrawPos = waterLevel - yScrollOffset;
 
 #if RETRO_SOFTWARE_RENDER
@@ -1406,6 +1467,8 @@ void DrawStageGFX()
     if (!drawStageGFXHQ)
         DrawDebugOverlays();
 #endif
+
+    FlipFrameBuffer(screenDirection);
 }
 
 #if !RETRO_USE_ORIGINAL_CODE
