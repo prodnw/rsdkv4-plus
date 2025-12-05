@@ -710,6 +710,8 @@ void LoadStageFiles(void)
         }
 
         if (LoadFile("Data/Game/GameConfig.bin", &info)) {
+            byte globalObjectCount = 0;
+            
             FileRead(&fileBuffer, 1);
             FileRead(&strBuffer, fileBuffer);
             FileRead(&fileBuffer, 1);
@@ -722,7 +724,6 @@ void LoadStageFiles(void)
             }
 
 			if (loadGlobalScripts) {
-				byte globalObjectCount = 0;
 				FileRead(&globalObjectCount, 1);
 				for (byte i = 0; i < globalObjectCount; ++i) {
 					FileRead(&fileBuffer2, 1);
@@ -787,7 +788,6 @@ void LoadStageFiles(void)
 #endif
 
 #if RETRO_USE_MOD_LOADER && RETRO_USE_COMPILER
-            byte globalObjectCount = 0;
             globalObjCount = globalObjectCount;
             for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
                 SetObjectTypeName(modTypeNames[i], scriptID);
