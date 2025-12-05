@@ -674,12 +674,12 @@ void RetroEngine::Run()
 
     while (running) {
 #if !RETRO_USE_ORIGINAL_CODE
-        if (!vsync) {
+        //if (!vsync) {
             curTicks = SDL_GetPerformanceCounter();
             if (curTicks < prevTicks + targetFreq)
                 continue;
             prevTicks = curTicks;
-        }
+        //}
 
         Engine.deltaTime = 1.0 / 60;
 #endif
