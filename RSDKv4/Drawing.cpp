@@ -1140,7 +1140,7 @@ void FlipFrameBuffer(byte direction)
         for (int y = 0; y < SCREEN_YSIZE; ++y) {
             for (int x = 0; x < GFX_LINESIZE; ++x) {
                 i = y * GFX_LINESIZE + x;
-                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[y * GFX_LINESIZE + (GFX_LINESIZE - 9 - x)], sizeof(ushort));
+                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[y * GFX_LINESIZE + (GFX_LINESIZE - 7 - x)], sizeof(ushort));
             }
         }
         break;
@@ -1158,7 +1158,7 @@ void FlipFrameBuffer(byte direction)
         for (int y = 0; y < SCREEN_YSIZE; ++y) {
             for (int x = 0; x < GFX_LINESIZE; ++x) {
                 i = y * GFX_LINESIZE + x;
-                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[size - 9 - i], sizeof(ushort));
+                memcpy(&Engine.flipBuffer[i], &Engine.frameBuffer[size - 7 - i], sizeof(ushort));
             }
         }
         break;
