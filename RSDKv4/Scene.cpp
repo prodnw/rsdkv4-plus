@@ -350,6 +350,7 @@ void ProcessStage(void)
             gfxVertexSizeOpaque = 0;
 #endif
 
+            FlipFrameBuffer(screenDirection);
             DrawObjectList(0);
             DrawObjectList(1);
             DrawObjectList(2);
@@ -364,6 +365,7 @@ void ProcessStage(void)
                 DrawObjectList(7);
 #endif
             DrawObjectList(6);
+            FlipFrameBuffer(screenDirection);
 
 #if !RETRO_USE_ORIGINAL_CODE
             DrawDebugOverlays();
@@ -525,6 +527,7 @@ void ProcessStage(void)
 
                 keyPress[0].C = false;
                 ProcessPausedObjects();
+                FlipFrameBuffer(screenDirection);
                 DrawObjectList(0);
                 DrawObjectList(1);
                 DrawObjectList(2);
@@ -539,6 +542,7 @@ void ProcessStage(void)
                     DrawObjectList(7);
 #endif
                 DrawObjectList(6);
+                FlipFrameBuffer(screenDirection);
 
 #if !RETRO_USE_ORIGINAL_CODE
                 DrawDebugOverlays();

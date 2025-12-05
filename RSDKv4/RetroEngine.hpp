@@ -482,6 +482,7 @@ public:
 
 #if RETRO_SOFTWARE_RENDER
     ushort *frameBuffer   = nullptr;
+    ushort *flipBuffer    = nullptr;
     ushort *frameBuffer2x = nullptr;
 #endif
     uint *texBuffer = nullptr;

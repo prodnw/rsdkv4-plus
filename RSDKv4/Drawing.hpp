@@ -73,6 +73,8 @@ extern float touchWidthF;
 extern float touchHeightF;
 
 extern DrawListEntry drawListEntries[DRAWLAYER_COUNT];
+extern byte drawLayerDirection[DRAWLAYER_COUNT];
+extern byte screenDirection;
 
 extern int gfxDataPosition;
 extern GFXSurface gfxSurface[SURFACE_COUNT];
@@ -101,6 +103,9 @@ inline void ClearGraphicsData()
 {
     for (int i = 0; i < SURFACE_COUNT; ++i) MEM_ZERO(gfxSurface[i]);
     gfxDataPosition = 0;
+    
+    for (int i = 0; i < DRAWLAYER_COUNT; ++i) drawLayerDirection[i] = FLIP_NONE;
+    screenDirection = FLIP_NONE;
 }
 void ClearScreen(byte index);
 void SetScreenDimensions(int width, int height);
@@ -114,6 +119,7 @@ void SetupViewport();
 void SetFullScreen(bool fs);
 
 // Layer Drawing
+void FlipFrameBuffer(byte direction);
 void DrawObjectList(int layer);
 void DrawStageGFX();
 #if !RETRO_USE_ORIGINAL_CODE
