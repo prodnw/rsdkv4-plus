@@ -1172,7 +1172,7 @@ void DrawObjectList(int Layer)
     // only flip if we need to!!
     // if the previous draw layer is flipped, dont flip again!!
     // this saves ram usage!!
-    if (Layer == 0 || (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer]))
+    if (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer])
         FlipFrameBuffer(drawLayerDirection[Layer]);
     
     int size = drawListEntries[Layer].listSize;
