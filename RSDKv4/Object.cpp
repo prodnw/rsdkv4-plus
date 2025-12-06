@@ -352,11 +352,22 @@ void ProcessObjectControl(Entity *entity)
 {
 	if (entity->controlMode < DEFAULT_INPUT_COUNT && entity->controlMode >= 0) {
 		int deviceID = entity->controlMode;
-		entity->up   = keyDown[deviceID].up;
-		entity->down = keyDown[deviceID].down;
+		if (entity->keyFlip == FLIP_Y || entity->keyFlip == FLIP_XY) {
+			entity->up   = keyDown[deviceID].down;
+			entity->down = keyDown[deviceID].up;
+		} else {
+			entity->up   = keyDown[deviceID].up;
+			entity->down = keyDown[deviceID].down;
+		}
+		
 		if (!keyDown[deviceID].left || !keyDown[deviceID].right) {
-			entity->left  = keyDown[deviceID].left;
-			entity->right = keyDown[deviceID].right;
+			if (entity->keyFlip == FLIP_X || entity->keyFlip == FLIP_XY) {
+				entity->left  = keyDown[deviceID].right;
+				entity->right = keyDown[deviceID].left;
+			} else {
+				entity->left  = keyDown[deviceID].left;
+				entity->right = keyDown[deviceID].right;
+			}
 		}
 		else {
 			entity->left  = false;
