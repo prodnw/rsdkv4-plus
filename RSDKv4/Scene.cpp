@@ -350,6 +350,7 @@ void ProcessStage(void)
             gfxVertexSizeOpaque = 0;
 #endif
 
+            FlipFrameBuffer(screenDirection);
             DrawObjectList(0);
             DrawObjectList(1);
             DrawObjectList(2);
@@ -526,6 +527,7 @@ void ProcessStage(void)
 
                 keyPress[0].C = false;
                 ProcessPausedObjects();
+                FlipFrameBuffer(screenDirection);
                 DrawObjectList(0);
                 DrawObjectList(1);
                 DrawObjectList(2);
