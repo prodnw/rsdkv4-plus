@@ -5,12 +5,42 @@
 discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
+uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
 
 void API_Discord_Init()
 {
     PrintLog("Initializing Discord API");
-
+    API_Discord_SetAppID();
     discord::Core::Create(API_DISCORD_CLIENT_ID, DiscordCreateFlags_NoRequireDiscord, &__discord);
+}
+
+void API_Discord_SetAppID() {
+    switch(Engine.gameType) {
+        case GAME_SONIC1:
+            API_DISCORD_CLIENT_ID = 1375908654053593238; // Sonic 1 ID
+            break;
+        case GAME_SONIC2:
+            API_DISCORD_CLIENT_ID = 1375909546874114209; // Sonic 2 ID
+            break;
+        case GAME_SONIC3:
+            API_DISCORD_CLIENT_ID = 1375912145161683024; // Sonic 3 ID
+            break;
+        case GAME_SONICCD:
+            API_DISCORD_CLIENT_ID = 1375916146154410145; // Sonic CD ID
+            break;
+        case GAME_SONICNEXUS:
+            API_DISCORD_CLIENT_ID = 1375918952357826662; // Sonic Nexus ID
+            break;
+        case GAME_SONICDUELOFFATES:
+            API_DISCORD_CLIENT_ID = 1375919192959746128; // Duel of Fates ID
+            break;
+        case GAME_SONICESSENCE:
+            API_DISCORD_CLIENT_ID = 1383571039681777765; // Essence ID
+            break;
+        default:
+            API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to V4+ ID
+            break;
+    }
 }
 
 void API_Discord_Update() // used in ProcessStage

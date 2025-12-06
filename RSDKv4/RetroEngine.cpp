@@ -452,6 +452,7 @@ void RetroEngine::Init()
         }
     }
 
+    gameType = GAME_UNKNOWN;
     if (strstr(gameWindowText, "Sonic 1") || forceSonic1) {
         gameType = GAME_SONIC1;
     }
@@ -484,7 +485,6 @@ void RetroEngine::Init()
         gameType = GAME_SONICDUELOFFATES;
     }
 
-    gameType = GAME_UNKNOWN;
     if (strstr(gameWindowText, "Sonic Essence")) {
         gameType = GAME_SONICESSENCE;
     }
