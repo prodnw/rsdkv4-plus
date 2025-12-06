@@ -143,6 +143,7 @@ const char variableNames[][0x20] = {
     "object.right",
     "object.jumpPress",
     "object.jumpHold",
+    "object.keyFlip",
     "object.scrollTracking",
     "object.floorSensorL",
     "object.floorSensorC",
@@ -888,6 +889,7 @@ enum ScrVar {
     VAR_OBJECTRIGHT,
     VAR_OBJECTJUMPPRESS,
     VAR_OBJECTJUMPHOLD,
+    VAR_OBJECTKEYFLIP,
     VAR_OBJECTSCROLLTRACKING,
     VAR_OBJECTFLOORSENSORL,
     VAR_OBJECTFLOORSENSORC,
@@ -4089,6 +4091,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = objectEntityList[arrayVal].jumpHold;
                         break;
                     }
+                    case VAR_OBJECTKEYFLIP: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].keyFlip;
+                        break;
+                    }
                     case VAR_OBJECTSCROLLTRACKING: {
                         scriptEng.operands[i] = objectEntityList[arrayVal].scrollTracking;
                         break;
@@ -6923,6 +6929,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     }
                     case VAR_OBJECTJUMPHOLD: {
                         objectEntityList[arrayVal].jumpHold = scriptEng.operands[i];
+                        break;
+                    }
+                    case VAR_OBJECTKEYFLIP: {
+                        objectEntityList[arrayVal].keyFlip = scriptEng.operands[i];
                         break;
                     }
                     case VAR_OBJECTSCROLLTRACKING: {
