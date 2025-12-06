@@ -92,20 +92,40 @@ if(RETRO_MOD_LOADER)
 endif()
 
 if(RETRO_USE_STEAM)
+	if(RETRO_ARCH STREQUAL "64")
+		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/win64")
+		
+		find_library(STEAM_API_LIB
+			NAMES steam_api64
+			PATHS "${STEAMWORKS_REDIST_BIN}"
 
-	set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin/win64")
+			NO_DEFAULT_PATH
+		)
+	elseif(RETRO_ARCH STREQUAL "32")
+		set(STEAMWORKS_REDIST_BIN "${STEAMWORKS_SDK_DIR}/redistributable_bin")
+		
+		find_library(STEAM_API_LIB
+			NAMES steam_api
+			PATHS "${STEAMWORKS_REDIST_BIN}"
 
-	find_library(STEAM_API_LIB
-		NAMES steam_api64
-		PATHS "${STEAMWORKS_REDIST_BIN}"
+			NO_DEFAULT_PATH
+		)
+	endif()
 
-		NO_DEFAULT_PATH
-	)
-
-	# there should be an error for the above if this isnt found - but for now,
+    if(NOT STEAM_API_LIB)
+        message(FATAL_ERROR "Steam API library not found in ${STEAMWORKS_REDIST_BIN}")
+    endif()
 
 	target_link_libraries(RetroEngine ${STEAM_API_LIB})
+endif()
 
+# TODO: borrowing this from S2M
+if(RETRO_USE_DISCORD)
+    if(RETRO_ARCH STREQUAL "64")
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86_64/discord_game_sdk.dll.lib )
+    elseif(RETRO_ARCH STREQUAL "32")
+        target_link_libraries(RetroEngine ${DISCORD_SDK_DIR}/lib/x86/discord_game_sdk.dll.lib )
+    endif()
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
