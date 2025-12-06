@@ -507,8 +507,7 @@ void RetroEngine::Init()
     if (strstr(gameWindowText, "Sonic CD Infinite")) {
         gameType = GAME_SONICCDINFINITE;
     }
-
-    gameType = GAME_UNKNOWN;
+    
     if (strstr(gameWindowText, "Sonic CD Timeless")) {
         gameType = GAME_SONICCDINFINITE;
     }

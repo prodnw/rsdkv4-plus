@@ -6,7 +6,7 @@
 
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
-#define API_DISCORD_CLIENT_ID (1375919192959746128)
+extern uint64_t API_DISCORD_CLIENT_ID;
 
 extern discord::Core *__discord;
 extern discord::Activity __activity;
@@ -22,6 +22,7 @@ enum API_Discord_PresenceTypes {
 };
 
 void API_Discord_Init();
+void API_Discord_SetAppID();
 void API_Discord_Update();
 
 void API_Discord_SetPresence(const char *text, int type);
