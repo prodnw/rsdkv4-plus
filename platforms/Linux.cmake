@@ -95,26 +95,43 @@ if(RETRO_USE_STEAM)
 		)
 	endif()
 
-    if(NOT STEAM_API_LIB)
-        message(FATAL_ERROR "Steam API library not found in ${STEAMWORKS_REDIST_BIN}")
+	if(NOT STEAM_API_LIB)
+		message(FATAL_ERROR "Steam API library not found in ${STEAMWORKS_REDIST_BIN}")
 	else()
 		message("found Steam API")
-    endif()
+	endif()
 
 	target_link_libraries(RetroEngine ${STEAM_API_LIB})
 endif()
 
 # TODO: borrowing this from S2M
-# TODO: for some reason you gotta manually add the "lib" prefix to "libdiscord_game_sdk.so"
-#		might be able to use "set_target_properties(discor PROPERTIES PREFIX "")", "CMAKE_STATIC_LIBRARY_PREFIX", or "CMAKE_SHARED_LIBRARY_PREFIX"
 if(RETRO_USE_DISCORD)
+	set(CMAKE_STATIC_LIBRARY_PREFIX "")
+
 	if(RETRO_ARCH STREQUAL "64")
 		set(DISCORD_REDIST_BIN "${DISCORD_SDK_DIR}/lib/x86_64")
 	elseif(RETRO_ARCH STREQUAL "32") # There are no 32 bit linux libraries yet-
 										# (although the SDK got archived so I doubt there ever will be)
-		message(WARNING "Discord SDK libraries for 32bit Linux may not exist (yet)")
+		message(WARNING "Discord SDK libraries for 32bit Linux may not exist")
 		set(DISCORD_REDIST_BIN "${DISCORD_SDK_DIR}/lib/x86")
 	endif()
-
-	target_link_libraries(RetroEngine ${DISCORD_REDIST_BIN}/libdiscord_game_sdk.so)
+	
+# TODO: for some reason you gotta manually add the "lib" prefix to "libdiscord_game_sdk.so"
+#		might be able to use "set_target_properties(discor PROPERTIES PREFIX "")", "CMAKE_STATIC_LIBRARY_PREFIX", or "CMAKE_SHARED_LIBRARY_PREFIX"
+#		but for now ill just make it do it automatically
+	if(EXISTS "${DISCORD_REDIST_BIN}/libdiscord_game_sdk.so")
+		message("Discord Game SDK already has lib prefix")
+	else()
+		if(EXISTS "${DISCORD_REDIST_BIN}/discord_game_sdk.so")
+			configure_file(
+			  "${DISCORD_REDIST_BIN}/discord_game_sdk.so"
+			  "${DISCORD_REDIST_BIN}/libdiscord_game_sdk.so"
+			  COPYONLY
+			)
+		else()
+			message(FATAL_ERROR "Discord Game SDK library not found in ${DISCORD_REDIST_BIN}")
+		endif()
+	endif()
+	
+	target_link_libraries(RetroEngine "${DISCORD_REDIST_BIN}/libdiscord_game_sdk.so")
 endif()
