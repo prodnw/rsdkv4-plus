@@ -1124,6 +1124,9 @@ void SetFullScreen(bool fs)
     Engine.isFullScreen = fs;
 }
 
+// If youre wondering how this works...
+// It flips the screen before a draw layer, then flips it again after
+// so everything else stays normal except for that singular draw layer
 void FlipFrameBuffer(byte direction)
 {
     if (direction == FLIP_NONE)
@@ -1166,7 +1169,10 @@ void FlipFrameBuffer(byte direction)
 
 void DrawObjectList(int Layer)
 {
-    if (Layer == 0 || (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer]))
+    // only flip if we need to!!
+    // if the previous draw layer is flipped, dont flip again!!
+    // this saves ram usage!!
+    if (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer])
         FlipFrameBuffer(drawLayerDirection[Layer]);
     
     int size = drawListEntries[Layer].listSize;
@@ -1179,6 +1185,9 @@ void DrawObjectList(int Layer)
         }
     }
     
+    // only flip again if we need to!!
+    // if the next draw layer is flipped, dont flip again!!
+    // this saves more ram usage!!
     if (Layer == DRAWLAYER_COUNT - 1 || (Layer < DRAWLAYER_COUNT - 1 && drawLayerDirection[Layer + 1] != drawLayerDirection[Layer]))
         FlipFrameBuffer(drawLayerDirection[Layer]);
 }
@@ -1456,7 +1465,7 @@ void DrawStageGFX()
     if (!drawStageGFXHQ)
         DrawDebugOverlays();
 #endif
-    
+
     FlipFrameBuffer(screenDirection);
 }
 
