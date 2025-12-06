@@ -1193,8 +1193,6 @@ void DrawObjectList(int Layer)
 }
 void DrawStageGFX()
 {
-    FlipFrameBuffer(screenDirection);
-
     waterDrawPos = waterLevel - yScrollOffset;
 
 #if RETRO_SOFTWARE_RENDER
