@@ -1,9 +1,15 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
+#if RETRO_VANILLA_LIKE
+#define SCRIPTCODE_COUNT (0x40000)
+#define JUMPTABLE_COUNT  (0x4000)
+#define FUNCTION_COUNT   (0x200)
+#else
 #define SCRIPTCODE_COUNT (0x400000)
 #define JUMPTABLE_COUNT  (0x40000)
 #define FUNCTION_COUNT   (0x2000)
+#endif
 
 #define JUMPSTACK_COUNT (0x400)
 #define FUNCSTACK_COUNT (0x400)
@@ -19,7 +25,11 @@ struct ScriptFunction {
 
     byte access;
 #if RETRO_USE_COMPILER
+#if RETRO_VANILLA_LIKE
     char name[0x40];
+#else
+    char name[0x20];
+#endif
 #endif
     ScriptPtr ptr;
 };

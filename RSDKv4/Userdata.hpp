@@ -1,7 +1,11 @@
 #ifndef USERDATA_H
 #define USERDATA_H
 
+#if RETRO_VANILLA_LIKE
+#define GLOBALVAR_COUNT (0x100)
+#else
 #define GLOBALVAR_COUNT (0x800)
+#endif
 
 #define ACHIEVEMENT_COUNT (0x40)
 #define LEADERBOARD_COUNT (0x80)
@@ -85,9 +89,17 @@ extern int nativeFunctionCount;
 
 extern int globalVariablesCount;
 extern int globalVariables[GLOBALVAR_COUNT];
+#if RETRO_VANILLA_LIKE
+extern char globalVariableNames[GLOBALVAR_COUNT][0x20];
+#else
 extern char globalVariableNames[GLOBALVAR_COUNT][0x200];
+#endif
 
+#if RETRO_VANILLA_LIKE
+extern char gamePath[0x100];
+#else
 extern char gamePath[0x200];
+#endif
 extern int saveRAM[SAVEDATA_SIZE];
 extern Achievement achievements[ACHIEVEMENT_COUNT];
 extern int achievementCount;
@@ -96,7 +108,11 @@ extern LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 extern MultiplayerData multiplayerDataIN;
 extern MultiplayerData multiplayerDataOUT;
 
+#if RETRO_VANILLA_LIKE
+extern int matchValueData[0x100];
+#else
 extern int matchValueData[0x200];
+#endif
 extern byte matchValueReadPos;
 extern byte matchValueWritePos;
 

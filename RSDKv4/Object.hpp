@@ -3,7 +3,11 @@
 
 #define NATIVEENTITY_COUNT (0x100)
 
+#if RETRO_VANILLA_LIKE
+#define ENTITY_COUNT     (0x400)
+#else
 #define ENTITY_COUNT     (0x1000)
+#endif
 #define TEMPENTITY_START (ENTITY_COUNT - 0x80)
 #define OBJECT_COUNT     (0x100)
 #define TYPEGROUP_COUNT  (0x103)

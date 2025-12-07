@@ -1,10 +1,15 @@
 #ifndef STRING_H
 #define STRING_H
 
+#if RETRO_VANILLA_LIKE
+#define STRSTORAGE_SIZE (1000)
+#define STRING_SIZE     (0x400)
+#define CREDITS_LIST_COUNT (0x200)
+#else
 #define STRSTORAGE_SIZE (4000)
 #define STRING_SIZE     (0x1000)
-
 #define CREDITS_LIST_COUNT (0x1000)
+#endif
 
 enum TextAlignments { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
 

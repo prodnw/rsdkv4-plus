@@ -472,6 +472,22 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICESSENCE;
     }
 
+    if (strstr(Engine.gameWindowText, "Sonic 1 Forever")) {
+        Engine.gameType = GAME_SONIC1FOREVER;
+    }
+
+    if (strstr(Engine.gameWindowText, "Sonic 2 Absolute")) {
+        Engine.gameType = GAME_SONIC2ABSOLUTE;
+    }
+
+    if (strstr(Engine.gameWindowText, "Sonic CD Infinite")) {
+        Engine.gameType = GAME_SONICCDINFINITE;
+    }
+
+    if (strstr(Engine.gameWindowText, "Sonic CD Timeless")) {
+        Engine.gameType = GAME_SONICCDINFINITE;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;

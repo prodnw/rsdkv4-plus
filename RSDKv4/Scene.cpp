@@ -177,6 +177,7 @@ void ProcessStage(void)
                 case GAME_SONIC1:
                 case GAME_SONIC2:
                 case GAME_SONIC3:
+                // Forever and Absolute has its own Amy, so....
                     if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Amy without DLC.
                         if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
                             playerListPos = 0;
@@ -186,6 +187,7 @@ void ProcessStage(void)
                             playerListPos = 0;
                     }
                 break;
+
                 case GAME_SONICCD:
                     if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
@@ -199,6 +201,16 @@ void ProcessStage(void)
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                            playerListPos = 0;
+                    }
+
+                case GAME_SONICCDINFINITE:
+                    if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
+                        if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
+                            playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                            playerListPos = 0;
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
                     }
                 break;
@@ -228,6 +240,15 @@ void ProcessStage(void)
                     else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                         playerListPos = 0;
                     else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        playerListPos = 0;
+                    break;
+
+                case GAME_SONICCDINFINITE: // prevent players from using Knuckles without DLC
+                    if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
+                        playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
+                        playerListPos = 0;
+                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                         playerListPos = 0;
                     break;
             }

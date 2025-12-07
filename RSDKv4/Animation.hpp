@@ -3,7 +3,11 @@
 
 #define ANIFILE_COUNT     (0x100)
 #define ANIMATION_COUNT   (0x400)
+#if RETRO_VANILLA_LIKE
+#define SPRITEFRAME_COUNT (0x1000)
+#else
 #define SPRITEFRAME_COUNT (0x2400)
+#endif
 
 #define HITBOX_COUNT     (0x20)
 #define HITBOX_DIR_COUNT (0x8)

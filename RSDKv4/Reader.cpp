@@ -3,7 +3,11 @@
 
 RSDKContainer rsdkContainer;
 
+#if RETRO_VANILLA_LIKE
+char fileName[0x100];
+#else
 char fileName[0x500];
+#endif
 byte fileBuffer[0x2000];
 int fileSize          = 0;
 int vFileSize         = 0;

@@ -12,12 +12,20 @@ struct MemoryStruct {
 
 int globalVariablesCount;
 int globalVariables[GLOBALVAR_COUNT];
+#if RETRO_VANILLA_LIKE
+char globalVariableNames[GLOBALVAR_COUNT][0x20];
+#else
 char globalVariableNames[GLOBALVAR_COUNT][0x200];
+#endif
 
 void *nativeFunction[NATIIVEFUNCTION_COUNT];
 int nativeFunctionCount = 0;
 
+#if RETRO_VANILLA_LIKE
+char gamePath[0x100];
+#else
 char gamePath[0x200];
+#endif
 int saveRAM[SAVEDATA_SIZE];
 Achievement achievements[ACHIEVEMENT_COUNT];
 int achievementCount = 0;
@@ -26,7 +34,11 @@ LeaderboardEntry leaderboards[LEADERBOARD_COUNT];
 
 MultiplayerData multiplayerDataIN  = MultiplayerData();
 MultiplayerData multiplayerDataOUT = MultiplayerData();
+#if RETRO_VANILLA_LIKE
+int matchValueData[0x100];
+#else
 int matchValueData[0x200];
+#endif
 byte matchValueReadPos  = 0;
 byte matchValueWritePos = 0;
 

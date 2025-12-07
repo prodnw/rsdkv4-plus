@@ -3,7 +3,11 @@
 TextMenu gameMenu[TEXTMENU_COUNT];
 int textMenuSurfaceNo = 0;
 
+#if RETRO_VANILLA_LIKE
+char playerListText[0x80][0x20];
+#else
 char playerListText[0x800][0x200];
+#endif
 
 BitmapFont fontList[FONTLIST_COUNT];
 

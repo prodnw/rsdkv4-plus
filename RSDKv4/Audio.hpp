@@ -2,17 +2,32 @@
 #define AUDIO_H
 
 #define TRACK_COUNT (0x10)
+
+#if RETRO_VANILLA_LIKE
+#define SFX_COUNT   (0x100)
+#if !RETRO_USE_ORIGINAL_CODE
+#define CHANNEL_COUNT (0x10) // 4 in the original, 16 for convenience
+#else
+#define CHANNEL_COUNT (0x6)
+#endif
+#else
 #define SFX_COUNT   (0x400)
 #if !RETRO_USE_ORIGINAL_CODE
 #define CHANNEL_COUNT (0x40) // 4 in the original, 16 for convenience, 64 for awesomeness
 #else
 #define CHANNEL_COUNT (0x6)
 #endif
+#endif
 
 #define MAX_VOLUME (100)
 
+#if RETRO_VANILLA_LIKE
+#define MUSBUFFER_SIZE   (0x200000)
+#define STREAMFILE_COUNT (2)
+#else
 #define MUSBUFFER_SIZE   (0x2000000)
 #define STREAMFILE_COUNT (3)
+#endif
 
 #define MIX_BUFFER_SAMPLES (256)
 

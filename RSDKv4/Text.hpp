@@ -1,8 +1,14 @@
 #ifndef TEXTSYSTEM_H
 #define TEXTSYSTEM_H
 
+#if RETRO_VANILLA_LIKE
+#define TEXTDATA_COUNT  (0x2800)
+#define TEXTENTRY_COUNT (0x200)
+#else
 #define TEXTDATA_COUNT  (0x6400)
 #define TEXTENTRY_COUNT (0x1000)
+#endif
+
 #define TEXTMENU_COUNT  (0x5)
 
 #define FONTLIST_CHAR_COUNT (0x1000)
@@ -69,7 +75,11 @@ enum TextMenuAlignments {
 extern TextMenu gameMenu[TEXTMENU_COUNT];
 extern int textMenuSurfaceNo;
 
+#if RETRO_VANILLA_LIKE
+extern char playerListText[0x80][0x20];
+#else
 extern char playerListText[0x800][0x200];
+#endif
 
 extern BitmapFont fontList[FONTLIST_COUNT];
 
