@@ -423,7 +423,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="RSDKv4 Decomp Icon.ico">
+    <Image Include="$(RetroIconName)">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
