@@ -26,6 +26,7 @@ struct ModInfo {
     std::string savePath;
     bool forceSonic1;
     bool active;
+    std::string discordGameClientID;
 };
 
 extern std::vector<ModInfo> modList;
@@ -34,6 +35,7 @@ extern int activeMod;
 extern char modsPath[0x100];
 
 extern bool redirectSave;
+extern std::string discordGameClientID;
 
 extern char modTypeNames[OBJECT_COUNT][0x40];
 extern char modScriptPaths[OBJECT_COUNT][0x40];

@@ -14,6 +14,7 @@ int activeMod = -1;
 char modsPath[0x100];
 
 bool redirectSave = false;
+std::string discordGameClientID;
 
 char modTypeNames[OBJECT_COUNT][0x40];
 char modScriptPaths[OBJECT_COUNT][0x40];
@@ -150,12 +151,13 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         return false;
 
     info->fileMap.clear();
-    info->name    = "";
-    info->desc    = "";
-    info->author  = "";
-    info->version = "";
-    info->folder  = "";
-    info->active  = false;
+    info->name                = "";
+    info->desc                = "";
+    info->author              = "";
+    info->version             = "";
+    info->folder              = "";
+    info->discordGameClientID = "";
+    info->active              = false;
 
     const std::string modDir = modsPath + "/" + folder;
 
@@ -164,11 +166,12 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         fClose(f);
         IniParser modSettings((modDir + "/mod.ini").c_str(), false);
 
-        info->name    = "Unnamed Mod";
-        info->desc    = "";
-        info->author  = "Unknown Author";
-        info->version = "1.0.0";
-        info->folder  = folder;
+        info->name                = "Unnamed Mod";
+        info->desc                = "";
+        info->author              = "Unknown Author";
+        info->version             = "1.0.0";
+        info->folder              = folder;
+        info->discordGameClientID = "";
 
         char infoBuf[0x100];
         // Name
@@ -223,6 +226,14 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         modSettings.GetBool("", "ForceSonic1", &info->forceSonic1);
         if (info->forceSonic1 && info->active)
             Engine.forceSonic1 = true;
+
+        // Discord GameAPI App ID
+        StrCopy(infoBuf, "");
+        modSettings.GetString("", "DiscordGameClientID", infoBuf);
+        if (!StrComp(infoBuf, "")) {
+            discordGameClientID = infoBuf;
+            info->discordGameClientID = infoBuf;
+        }
 
         return true;
     }

@@ -15,6 +15,13 @@ void API_Discord_Init()
 }
 
 void API_Discord_SetAppID() {
+#if RETRO_USE_MOD_LOADER
+    if (discordGameClientID[0]) {
+        API_DISCORD_CLIENT_ID = std::stoull(discordGameClientID);
+        return;
+    }
+#endif
+    
     switch(Engine.gameType) {
         case GAME_SONIC1:
             API_DISCORD_CLIENT_ID = 1375908654053593238; // Sonic 1 ID
