@@ -63,6 +63,7 @@ extern int foreachStackPos;
 
 extern ScriptEngine scriptEng;
 extern char scriptText[0x4000];
+extern char temporar[0x4010];
 
 bool ConvertStringToInteger(const char *text, int *value);
 

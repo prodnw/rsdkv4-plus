@@ -644,9 +644,9 @@ const FunctionInfo functions[] = {
     // ProcessScript instead
     FunctionInfo("SetPresenceDetails", 1),
     FunctionInfo("SetPresenceState", 1),
-    FunctionInfo("SetPresenceLargeImage", 1),
+    FunctionInfo("SetPresenceLargeImage", 2), // SetPresenceLargeImage(image link/name, isLink)
     FunctionInfo("SetPresenceLargeText", 1),
-    FunctionInfo("SetPresenceSmallImage", 1),
+    FunctionInfo("SetPresenceSmallImage", 2),
     FunctionInfo("SetPresenceSmallText", 1),
     FunctionInfo("UpdatePresence", 0),
     FunctionInfo("ClearPresence", 0),
@@ -1369,6 +1369,7 @@ int foreachStackPos   = 0;
 
 ScriptEngine scriptEng = ScriptEngine();
 char scriptText[0x4000];
+char temporar[0x4010];
 
 #if RETRO_USE_COMPILER
 void CheckAliasText(char *text)
@@ -6402,19 +6403,17 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
-				char temporarChar[0x4000];
-				sprintf(temporarChar, "https://%s", scriptText);
-				PrintLog("Checking version: %s", temporarChar);
-				if(CheckUpdates(temporarChar) >= 0) // fancy
-					PrintLog("Successfully loaded website!!: %s", temporarChar);
+				sprintf(temporar, "https://%s", scriptText);
+				PrintLog("Checking version: %s", temporar);
+				if(CheckUpdates(temporar) >= 0) // fancy
+					PrintLog("Successfully loaded website!!: %s", temporar);
 				else
-					PrintLog("Unsuccessfully loaded website: %s", temporarChar);
+					PrintLog("Unsuccessfully loaded website: %s", temporar);
                 break;
             }
 
             case FUNC_LOADWEBSITE: {
             	opcodeSize = 0;
-				char temporar[0x4000];
 				sprintf(temporar, "https://%s", scriptText);
 				PrintLog("Loading website: %s", temporar);
 				if(SDL_OpenURL(temporar)) // fancy
@@ -6443,7 +6442,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SET_PRESENCE_LARGEIMAGE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
-                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_LARGEIMAGE);
+                if (scriptEng.operands[1])
+                    sprintf(temporar, "https://%s", scriptText);
+                else
+                    sprintf(temporar, "%s", scriptText);
+                
+                API_Discord_SetPresence(temporar, PRESENCE_ASSET_LARGEIMAGE);
 #endif
                 break;
             }
@@ -6459,7 +6463,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SET_PRESENCE_SMALLIMAGE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
-                API_Discord_SetPresence(scriptText, PRESENCE_ASSET_SMALLIMAGE);
+                if (scriptEng.operands[1])
+                    sprintf(temporar, "https://%s", scriptText);
+                else
+                    sprintf(temporar, "%s", scriptText);
+                
+                API_Discord_SetPresence(temporar, PRESENCE_ASSET_SMALLIMAGE);
 #endif
                 break;
             }
