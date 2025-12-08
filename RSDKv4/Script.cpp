@@ -418,6 +418,17 @@ const char variableNames[][0x20] = {
     "game.checkForUpdates",
     "game.networkPing",
 	"controller.vibrationEnabled",
+    "tempStr0",
+    "tempStr1",
+    "tempStr2",
+    "tempStr3",
+    "tempStr4",
+    "tempStr5",
+    "tempStr6",
+    "tempStr7",
+    "tempStr8",
+    "tempStr9",
+    "tempStr10",
 };
 #endif
 
@@ -640,7 +651,7 @@ const FunctionInfo functions[] = {
     // New functions start here
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
-
+    
     // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
     // This ensures that these functions remain "callable" via script, instead of
     // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
@@ -669,6 +680,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("GetPlaytimeHours", 1),
     FunctionInfo("GetPlaytimeMinutes", 1),
     FunctionInfo("GetPlaytimeSeconds", 1),
+    FunctionInfo("IntToStr", 3),
+    FunctionInfo("StrLength", 2),
 };
 
 #if RETRO_USE_COMPILER
@@ -1146,6 +1159,17 @@ enum ScrVar {
     VAR_GAME_CHECKFORUPDATES,
     VAR_GAME_NETWORKPING,
     VAR_CONTROLLER_VIBRATIONENABLED,
+	VAR_TEMPSTR0,
+	VAR_TEMPSTR1,
+	VAR_TEMPSTR2,
+	VAR_TEMPSTR3,
+	VAR_TEMPSTR4,
+	VAR_TEMPSTR5,
+	VAR_TEMPSTR6,
+	VAR_TEMPSTR7,
+	VAR_TEMPSTR8,
+	VAR_TEMPSTR9,
+	VAR_TEMPSTR10,
     VAR_MAX_CNT
 };
 
@@ -1349,8 +1373,9 @@ enum ScrFunc {
     FUNC_GETPLAYTIMEHOURS,
     FUNC_GETPLAYTIMEMINUTES,
     FUNC_GETPLAYTIMESECONDS,
-
-    FUNC_MAX_CNT,
+    FUNC_INTTOSTR,
+    FUNC_STRLENGTH,
+    FUNC_MAX_CNT
 };
 
 ObjectScript objectScriptList[OBJECT_COUNT];
@@ -3908,8 +3933,24 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				}
 #endif
 
-                // Variables
+                // String Variables
                 switch (scriptCode[scriptCodePtr++]) {
+                    default: break;
+                    case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
+                    case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
+                    case VAR_TEMPSTR2:  StrCopy(scriptText, scriptEng.tempStr[2]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[2]);  break;
+                    case VAR_TEMPSTR3:  StrCopy(scriptText, scriptEng.tempStr[3]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[3]);  break;
+                    case VAR_TEMPSTR4:  StrCopy(scriptText, scriptEng.tempStr[4]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[4]);  break;
+                    case VAR_TEMPSTR5:  StrCopy(scriptText, scriptEng.tempStr[5]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[5]);  break;
+                    case VAR_TEMPSTR6:  StrCopy(scriptText, scriptEng.tempStr[6]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[6]);  break;
+                    case VAR_TEMPSTR7:  StrCopy(scriptText, scriptEng.tempStr[7]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[7]);  break;
+                    case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
+                    case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
+                    case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
+                }
+
+                // Variables
+                switch (scriptCode[scriptCodePtr]) {
                     default: break;
                     case VAR_TEMP0: scriptEng.operands[i] = scriptEng.temp[0]; break;
                     case VAR_TEMP1: scriptEng.operands[i] = scriptEng.temp[1]; break;
@@ -4567,7 +4608,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_INPUTPRESSBUTTONZ: scriptEng.operands[i] = keyPress[inputCheck].Z; break;
                     case VAR_INPUTPRESSBUTTONL: scriptEng.operands[i] = keyPress[inputCheck].L; break;
                     case VAR_INPUTPRESSBUTTONR: scriptEng.operands[i] = keyPress[inputCheck].R; break;
-					case VAR_INPUTPRESSSTART: scriptEng.operands[i] = keyPress[inputCheck].start; break;
+                    case VAR_INPUTPRESSSTART: scriptEng.operands[i] = keyPress[inputCheck].start; break;
                     case VAR_INPUTPRESSSELECT: scriptEng.operands[i] = keyPress[inputCheck].select; break;
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
@@ -4695,7 +4736,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                     case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
                     case VAR_GAME_NETWORKPING: scriptEng.operands[i] = networkPing; break;
-					case VAR_CONTROLLER_VIBRATIONENABLED:
+                    case VAR_CONTROLLER_VIBRATIONENABLED:
                         if (arrayVal > 0) 
                             {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} 
                         break;
@@ -4720,6 +4761,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         default: break;
                     }
                 }
+                StrCopy(scriptEng.operandStr[i], scriptText); //Set the string operand
                 scriptCodePtr++;
             }
         }
@@ -4727,6 +4769,30 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
         ObjectScript *scriptInfo = &objectScriptList[objectEntityList[objectEntityPos].type];
         Entity *entity           = &objectEntityList[objectEntityPos];
         SpriteFrame *spriteFrame = nullptr;
+
+        // String Variable Functions
+        switch (opcode) {
+            default: break;
+            case FUNC_EQUAL: StrCopy(scriptEng.operandStr[0], scriptEng.operandStr[1]); break; //string = string
+            case FUNC_ADD: StrAdd(scriptEng.operandStr[0], scriptEng.operandStr[1]); break; //string += string
+            case FUNC_SUB: { //string -= int letterCountRemoved
+                if (StrLength(scriptEng.operandStr[0]) > scriptEng.operands[1] && scriptEng.operands[1] > 0) //you cant have a negative string length!!
+                    scriptEng.operandStr[0][StrLength(scriptEng.operandStr[0]) - scriptEng.operands[1]] = '\0';
+                else
+                    scriptEng.operandStr[0][0] = '\0'; //Null-terminate the start of the string
+                break;
+            }
+            case FUNC_INTTOSTR: { //IntToStr(string store, int numToConvert, int conversionType)
+                switch (scriptEng.operands[2]) {
+                    default: break;
+                    case 0: sprintf(scriptEng.operandStr[0], "%d", scriptEng.operands[1]); break; //Decimal
+                    case 1: sprintf(scriptEng.operandStr[0], "%x", scriptEng.operands[1]); break; //Lowercase hex
+                    case 2: sprintf(scriptEng.operandStr[0], "%X", scriptEng.operands[1]); break; //Uppercase HEX
+                }
+                break;
+            }
+            case FUNC_STRLENGTH: scriptEng.operands[0] = StrLength(scriptText); break; //StrLength(int store, string lengthOf)
+        }
 
         // Functions
         switch (opcode) {
@@ -6765,8 +6831,24 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				}
 #endif
 
-                // Variables
+                // String Variables
                 switch (scriptCode[scriptCodePtr++]) {
+                    default: break;
+                    case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR1:  StrCopy(scriptEng.tempStr[1],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR2:  StrCopy(scriptEng.tempStr[2],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR3:  StrCopy(scriptEng.tempStr[3],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR4:  StrCopy(scriptEng.tempStr[4],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR5:  StrCopy(scriptEng.tempStr[5],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR6:  StrCopy(scriptEng.tempStr[6],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR7:  StrCopy(scriptEng.tempStr[7],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]);
+                    case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]);
+                }
+
+                // Variables
+                switch (scriptCode[scriptCodePtr]) {
                     default: break;
                     case VAR_TEMP0: scriptEng.temp[0] = scriptEng.operands[i]; break;
                     case VAR_TEMP1: scriptEng.temp[1] = scriptEng.operands[i]; break;
@@ -7339,7 +7421,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_INPUTPRESSBUTTONZ: keyPress[inputCheck].Z = scriptEng.operands[i]; break;
                     case VAR_INPUTPRESSBUTTONL: keyPress[inputCheck].L = scriptEng.operands[i]; break;
                     case VAR_INPUTPRESSBUTTONR: keyPress[inputCheck].R = scriptEng.operands[i]; break;
-					case VAR_INPUTPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
+                    case VAR_INPUTPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
                     case VAR_INPUTPRESSSELECT: keyPress[inputCheck].select = scriptEng.operands[i]; break;
 #endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;

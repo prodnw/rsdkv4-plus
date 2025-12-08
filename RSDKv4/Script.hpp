@@ -49,6 +49,8 @@ struct ScriptEngine {
     int temp[11];
     int arrayPosition[9];
     int checkResult;
+    char operandStr[0x10][0x4000];
+    char tempStr[11][0x4000];
 };
 
 enum ScriptSubs { EVENT_MAIN = 0, EVENT_DRAW = 1, EVENT_SETUP = 2 };
