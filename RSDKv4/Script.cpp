@@ -680,6 +680,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("GetPlaytimeHours", 1),
     FunctionInfo("GetPlaytimeMinutes", 1),
     FunctionInfo("GetPlaytimeSeconds", 1),
+    
     FunctionInfo("IntToStr", 3),
     FunctionInfo("StrLength", 2),
 };
@@ -3933,24 +3934,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				}
 #endif
 
-                // String Variables
-                switch (scriptCode[scriptCodePtr++]) {
-                    default: break;
-                    case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
-                    case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
-                    case VAR_TEMPSTR2:  StrCopy(scriptText, scriptEng.tempStr[2]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[2]);  break;
-                    case VAR_TEMPSTR3:  StrCopy(scriptText, scriptEng.tempStr[3]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[3]);  break;
-                    case VAR_TEMPSTR4:  StrCopy(scriptText, scriptEng.tempStr[4]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[4]);  break;
-                    case VAR_TEMPSTR5:  StrCopy(scriptText, scriptEng.tempStr[5]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[5]);  break;
-                    case VAR_TEMPSTR6:  StrCopy(scriptText, scriptEng.tempStr[6]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[6]);  break;
-                    case VAR_TEMPSTR7:  StrCopy(scriptText, scriptEng.tempStr[7]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[7]);  break;
-                    case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
-                    case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
-                    case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
-                }
-
                 // Variables
-                switch (scriptCode[scriptCodePtr]) {
+                switch (scriptCode[scriptCodePtr++]) {
                     default: break;
                     case VAR_TEMP0: scriptEng.operands[i] = scriptEng.temp[0]; break;
                     case VAR_TEMP1: scriptEng.operands[i] = scriptEng.temp[1]; break;
@@ -4740,6 +4725,17 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         if (arrayVal > 0) 
                             {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} 
                         break;
+                    case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
+                    case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
+                    case VAR_TEMPSTR2:  StrCopy(scriptText, scriptEng.tempStr[2]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[2]);  break;
+                    case VAR_TEMPSTR3:  StrCopy(scriptText, scriptEng.tempStr[3]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[3]);  break;
+                    case VAR_TEMPSTR4:  StrCopy(scriptText, scriptEng.tempStr[4]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[4]);  break;
+                    case VAR_TEMPSTR5:  StrCopy(scriptText, scriptEng.tempStr[5]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[5]);  break;
+                    case VAR_TEMPSTR6:  StrCopy(scriptText, scriptEng.tempStr[6]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[6]);  break;
+                    case VAR_TEMPSTR7:  StrCopy(scriptText, scriptEng.tempStr[7]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[7]);  break;
+                    case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
+                    case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
+                    case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6831,24 +6827,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				}
 #endif
 
-                // String Variables
-                switch (scriptCode[scriptCodePtr++]) {
-                    default: break;
-                    case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR1:  StrCopy(scriptEng.tempStr[1],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR2:  StrCopy(scriptEng.tempStr[2],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR3:  StrCopy(scriptEng.tempStr[3],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR4:  StrCopy(scriptEng.tempStr[4],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR5:  StrCopy(scriptEng.tempStr[5],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR6:  StrCopy(scriptEng.tempStr[6],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR7:  StrCopy(scriptEng.tempStr[7],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]);
-                    case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]);
-                }
-
                 // Variables
-                switch (scriptCode[scriptCodePtr]) {
+                switch (scriptCode[scriptCodePtr++]) {
                     default: break;
                     case VAR_TEMP0: scriptEng.temp[0] = scriptEng.operands[i]; break;
                     case VAR_TEMP1: scriptEng.temp[1] = scriptEng.operands[i]; break;
@@ -7552,6 +7532,17 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         if (arrayVal > 0) 
                             {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} 
                         break;
+                    case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR1:  StrCopy(scriptEng.tempStr[1],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR2:  StrCopy(scriptEng.tempStr[2],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR3:  StrCopy(scriptEng.tempStr[3],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR4:  StrCopy(scriptEng.tempStr[4],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR5:  StrCopy(scriptEng.tempStr[5],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR6:  StrCopy(scriptEng.tempStr[6],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR7:  StrCopy(scriptEng.tempStr[7],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]); break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
