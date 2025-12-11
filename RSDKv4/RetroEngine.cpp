@@ -1405,7 +1405,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
     }
 
-#if RETRO_REV03 && RETRO_USE_STEAMWORKS
+#if RETRO_USE_STEAMWORKS
     if (SteamAPI_Init()) {
         bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
         SetGlobalVariableByName("game.hasPlusDLC", installed);
@@ -1413,7 +1413,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     else {
         SetGlobalVariableByName("game.hasPlusDLC", false);
     }
-#elif RSDK_AUTOBUILD
+#else
     SetGlobalVariableByName("game.hasPlusDLC", !RSDK_AUTOBUILD);
 #endif
 

@@ -164,7 +164,8 @@ void ProcessStage(void)
             stageMinutes                 = 0;
             stageMode                    = STAGEMODE_NORMAL;
 
-#if !RSDK_AUTOBUILD && RETRO_USE_STEAMWORKS // Now it works with various games. TODO: update this if it needs to, but it should be fine?
+#if RSDK_AUTOBUILD // Now it works with various games. TODO: update this if it needs to, but it should be fine?
+#if RETRO_USE_STEAMWORKS
             if (SteamAPI_Init()) {
                 bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
                 SetGlobalVariableByName("game.hasPlusDLC", installed);
@@ -173,23 +174,22 @@ void ProcessStage(void)
                 SetGlobalVariableByName("game.hasPlusDLC", false);
             }
 
-            switch (Engine.gameType) {
-                case GAME_SONIC1:
-                case GAME_SONIC2:
-                case GAME_SONIC3:
-                // Forever and Absolute has its own Amy, so....
-                    if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Amy without DLC.
+            if (GetGlobalVariableByName("game.hasPlusDLC") == false) {
+#endif
+                switch (Engine.gameType) {
+                    // Forever and Absolute has their own Amy, so....
+                    case GAME_SONIC1:
+                    case GAME_SONIC2:
+                    case GAME_SONIC3: // prevent players from using Amy without DLC.
                         if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
-                    }
-                break;
+                        break;
 
-                case GAME_SONICCD:
-                    if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
+                    case GAME_SONICCD: // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
@@ -202,56 +202,20 @@ void ProcessStage(void)
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
-                    }
+                        break;
 
-                case GAME_SONICCDINFINITE:
-                    if (GetGlobalVariableByName("game.hasPlusDLC") == false) { // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
+                    case GAME_SONICCDINFINITE: // prevent players from using Knuckles without DLC
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
                             playerListPos = 0;
-                    }
-                break;
+                        break;
+                }
+#if RETRO_USE_STEAMWORKS
             }
-#elif RSDK_AUTOBUILD
-            switch (Engine.gameType) {
-                case GAME_SONIC1:
-                case GAME_SONIC2:
-                case GAME_SONIC3: // prevent players from using Amy without DLC.
-                    if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
-                        playerListPos = 0;
-                    break;
-
-                case GAME_SONICCD: // prevent players from using Knuckles or Amy without DLC, like OG Sonic CD would.
-                    if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
-                        playerListPos = 0;
-                    break;
-
-                case GAME_SONICCDINFINITE: // prevent players from using Knuckles without DLC
-                    if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
-                        playerListPos = 0;
-                    else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
-                        playerListPos = 0;
-                    break;
-            }
+#endif
 #endif
 
 
