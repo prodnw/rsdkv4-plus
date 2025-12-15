@@ -4,43 +4,101 @@ A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (20
 
 This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones
 
-# **LIST OF THE NEW FEATURES & CHANGES**
+# **LIST OF THE NEW FEATURES & CHANGES (A MORE DETAILED CHANGELOG WILL BE PROVIDED SOON)**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](#compiling))
-  * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own [Discord Application](https://discord.com/developers/applications) and add your own art. The new functions include:
+  * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own [Discord Application](https://discord.com/developers/applications) and add your own art. For the images, links also works. The new functions include:
     * SetPresenceState("yourtexthere")
     * SetPresenceDetails("yourtexthere")
-    * SetPresenceLargeImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
+    * SetPresenceLargeImage("yourimagenamehere", isLink) - Text has to be the same name as the asset, the *false* or *true* determines if the image is a link or not.
     * SetPresenceLargeText("yourtexthere")
-    * SetPresenceSmallImage("yourimagenamehere") - TEXT HAS TO BE THE SAME NAME AS ART ASSET
+    * SetPresenceSmallImage("yourimagenamehere", isLink) - Text has to be the same name as the asset, the *false* or *true* determines if the image is a link or not.
     * SetPresenceSmallText("yourtexthere")
-    * UpdatePresence()
+    * UpdatePresence() - Sends over the updates to Discord.
+    * ClearPresence() - Clears everything from your current activity.
+    * ClearPresenceType() - Clears a specific type of activity.
  * Video Player has been ported over from CD, allowing any video to be played. (Videos must be in .ogv, and placed in "Data/Videos")
  * Compatibility with mods / projects that run on the older syntax.
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects
- * New fade function - "SetClassicFade" - This fades the screen exactly like SetScreenFade except it is more in-line with the genesis games
- * New FX command - "FX_ALL" - This allows one single drawn sprite to use all effects at once, these include ink effects, alpha, rotation, flipping, and (to be fixed) scaling
- * New temp values - temp8, temp9, temp10
  * New functions
-    * "CheckUpdates" - Checks whether your game needs an update
-    * "LoadWebsite" - Opens up any web link into your browser (please don't abuse this...)
+    * PauseSfx(SfxName) - Pauses the defined SFX.
+    * ResumeSFX(SfxName) - Resumes the defined SFX.
+    * SetClassicFade(r, g, b, alpha) - Works exactly like SetScreenFade but the fading itself is more like the Classics.
+    * CheckUpdates("GitHubPageLink") - Checks whether your game needs an update.
+    * LoadWebsite("WebsiteLink") - Opens up any web link into your browser (please don't abuse this...)
+    * VibrateController(true/false, controller ID, intensity L, intensity R, intensity timer) - Determines whether or not the controller should vibrate.
+    * AutoDetectController() - Detects what controller you're using and stores the returned value in the checkResult.
+      * CheckResult 0 - No device.
+      * CheckResult 1 - Keyboard.
+      * CheckResult 2 - Xbox 360
+      * CheckResult 3 - Xbox One/Series
+      * CheckResult 4 - PS3
+      * CheckResult 5 - PS4
+      * CheckResult 6 - PS5
+      * CheckResult 7 - Nintendo Switch (Any Controller)
+      * CheckResult 8 - Steam Deck
+      * CheckResult 9 - Other
+    * SetControllerLEDColour(r, g, b) - (PLAYSTATION CONTROLLERS ONLY) Changes the colour of the LED on a controller.
+    * CheckWindowFocus() - Checks if the window has lost focus or not.
+      * CheckResult 0 - Focussed.
+      * CheckResult 1 - Not focussed.
+    * GetSystemDateTime() - Gets the time from your system clock and stores them in temporary values.
+      * temp0 - Year
+      * temp1 - Month
+      * temp2 - Day
+      * temp3 - Hour
+      * temp4 - Minute
+      * temp5 - Seconds
+    * CheckAnyButtonPressed() - Stores any button you've just pressed, whether on keyboard or controller (recorded in SDL2 keycodes.)
+    * CheckControllerConnect() - Checks whether a controller has been connected.
+    * CheckControllerDisconnect() - Checks whether a controller has been disconnected.
+    * CheckMouseMoved() - Checks whether the cursor has been moved anytime.
+    * CheckMouseLeftPress() - Checks whether the left mouse button has been pressed.
+    * CheckMouseRightPress() - Checks whether the right mouse button has been pressed.
+    * GetPlaytimeHours() - Gets the playtime in hours.
+    * GetPlaytimeMinutes() - Gets the playtime in minutes.
+    * GetPlaytimeSeconds() - Gets the playtime in seconds.
     * Native Functions (used via "CallNativeFunction"/"2"/"4" - be sure to add these as values in GameConfig.bin/Game.xml!)
-      * "GetModID" - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for having better mod compatibility with other mods)
-    * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw
+      * GetModID("ModName) - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for having better mod compatibility with other mods.)
+  * New variables
+    * "engine.platformID" - Restored back into v4 and stores the platform you're currently playing on.
+    * "temp8"
+    * "temp9"
+    * "temp10"
+    * "game.checkForUpdates" - Links with CheckUpdates in the settings.ini, and allows for update checking.
+    * "game.networkPing" - Returns the amount of time it takes to update when using network features.
+    * "controller.vibrationEnabled" - Links with ControllerVibration in the settings.ini, and allows a controller to vibrate.
+  * New aliases
+    * "FX_HSCALE" - Horizontal scaling of a sprite.
+    * "FX_VSCALE" - Vertical scaling of a sprite.
+    * "FX_ALL" - New FX command for DrawSpriteFX, and allows for every effect to be used at once.
+    * "MENU_3"
+    * "MENU_4"
+    * "RETRO_WIN" - Used for engine.platformID
+    * "RETRO_OSX" - Used for engine.platformID
+    * "RETRO_XBOX_360" - Used for engine.platformID
+    * "RETRO_PS3" - Used for engine.platformID
+    * "RETRO_iOS" - Used for engine.platformID
+    * "RETRO_ANDROID" - Used for engine.platformID
+    * "RETRO_WP7" - Used for engine.platformID
+    * "RETRO_UWP" - Used for engine.platformID
+    * "RETRO_LINUX" - Used for engine.platformID
+    * "RETRO_SWITCH" - Used for engine.platformID
+  * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw.
 
 # Fork Credits
- * ProdNW - Code porting, other minor edits
+ * ProdNW - Code porting, new functions, other fixes
  * Jd - Video Player, SteamAPI, Discord RPC
- * Elspeth - Graphical FX additions, script parsing additions
+ * Elspeth - Graphical FX additions, script parsing additions, other fixes
  * LittlePlanetCD - Code optimizations
- * EggBanana - New functions listed above
+ * EggBanana - New functions, other fixes
  * SDG - Controller Vibration
  * Geared - Other misc. stuff
+ * Skyward - Other misc. stuff
 
 # To-Dos:
 - [ ] Fix Extended Camera
-- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, Local 2PVS, PNG Images, and more)
-
+- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, PNG Images, and more)
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
@@ -155,6 +213,8 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_CURL`: Adds support for cURL, which is used for loading websites, defaults to `off`.
 - `RETRO_UPDATE_CHECKER`: Adds support for the update checker, which is used for checking updates, defaults to `on` if not on Android, forces `RETRO_USE_CURL` to be set to `on`.
 - `RETRO_ACCEPT_OLD_SYNTAX`: Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
+- `RETRO_ICON_NAME`: Sets the icon for the built executable to use, defaults to `RSDKv4 Decomp Icon.ico`.
+- `RETRO_VANILLA_LIKE`: Brings back the original limitations of RSDKv4, while keeping new the features, defaults to `off`.
 
 ## Unofficial Branches
 Follow the installation instructions in the readme of each branch.
