@@ -58,8 +58,6 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * GetPlaytimeHours() - Gets the playtime in hours.
     * GetPlaytimeMinutes() - Gets the playtime in minutes.
     * GetPlaytimeSeconds() - Gets the playtime in seconds.
-    * Native Functions (used via "CallNativeFunction"/"2"/"4" - be sure to add these as values in GameConfig.bin/Game.xml!)
-      * GetModID("ModName) - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for having better mod compatibility with other mods.)
   * New variables
     * "engine.platformID" - Restored back into v4 and stores the platform you're currently playing on.
     * "temp8"
@@ -84,6 +82,8 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * "RETRO_UWP" - Used for engine.platformID
     * "RETRO_LINUX" - Used for engine.platformID
     * "RETRO_SWITCH" - Used for engine.platformID
+  * New native functions (used via "CallNativeFunction"/"2"/"4" - be sure to add these as values in GameConfig.bin/Game.xml!)
+    * GetModID("ModName") - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for checking if another mod is enabled, allowing for improved compatibility.)
   * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw.
 
 # Fork Credits
