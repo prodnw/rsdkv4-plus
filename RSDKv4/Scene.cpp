@@ -757,10 +757,12 @@ void LoadStageFiles(void)
             for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
                 SetObjectTypeName(modTypeNames[i], scriptID);
 
-                GetFileInfo(&infoStore);
+                //SetFileInfo here was causing a crash when XML mods were mixed with non XML mods
+                //so GET IT THE FUCK OUTTA HERE
+                //GetFileInfo(&infoStore);
                 CloseFile();
                 ParseScriptFile(modScriptPaths[i], scriptID++);
-                SetFileInfo(&infoStore);
+                //SetFileInfo(&infoStore);
                 if (Engine.gameMode == ENGINE_SCRIPTERROR)
                     return;
             }

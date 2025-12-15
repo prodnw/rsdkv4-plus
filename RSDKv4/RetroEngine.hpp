@@ -53,6 +53,7 @@ typedef unsigned int uint;
 // Custom Platforms start here
 #define RETRO_UWP   (7)
 #define RETRO_LINUX (8)
+#define RETRO_SWITCH (9)
 
 // Platform types (Game manages platform-specific code such as HUD position using this rather than the above)
 #define RETRO_STANDARD (0)
@@ -83,6 +84,9 @@ typedef unsigned int uint;
 #define RETRO_PLATFORM   (RETRO_OSX)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
+#elif defined __SWITCH__
+#define RETRO_PLATFORM   (RETRO_SWITCH)
+#define RETRO_DEVICETYPE (RETRO_STANDARD)
 #elif defined __ANDROID__
 #define RETRO_PLATFORM   (RETRO_ANDROID)
 #define RETRO_DEVICETYPE (RETRO_MOBILE)
@@ -110,7 +114,7 @@ typedef unsigned int uint;
 #endif
 
 #if RETRO_PLATFORM == RETRO_WIN || RETRO_PLATFORM == RETRO_OSX || RETRO_PLATFORM == RETRO_LINUX || RETRO_PLATFORM == RETRO_UWP                       \
-    || RETRO_PLATFORM == RETRO_ANDROID
+    || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH
 #ifdef RETRO_USE_SDL2
 #define RETRO_USING_SDL1 (0)
 #define RETRO_USING_SDL2 (1)
@@ -123,12 +127,22 @@ typedef unsigned int uint;
 #define RETRO_USING_SDL2 (0)
 #endif
 
-#if RETRO_PLATFORM == RETRO_iOS || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_WP7
-#define RETRO_GAMEPLATFORM (RETRO_MOBILE)
-#elif RETRO_PLATFORM == RETRO_UWP
-#define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
+// NOTE: This is only used for rev00 stuff, it was removed in rev01 and later builds
+#if RETRO_PLATFORM <= RETRO_WP7
+#define RETRO_GAMEPLATFORMID (RETRO_PLATFORM)
 #else
-#define RETRO_GAMEPLATFORM (RETRO_STANDARD)
+
+// use *this* macro to determine what platform the game thinks its running on (since only the first 7 platforms are supported natively by scripts)
+#if RETRO_PLATFORM == RETRO_LINUX
+#define RETRO_GAMEPLATFORMID (RETRO_WIN)
+#elif RETRO_PLATFORM == RETRO_UWP
+#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
+#elif RETRO_PLATFORM == RETRO_SWITCH
+#define RETRO_GAMEPLATFORMID (RETRO_MOBILE)
+#else
+#error Unspecified RETRO_GAMEPLATFORMID
+#endif
+
 #endif
 
 #define RETRO_SW_RENDER (0)
@@ -142,12 +156,14 @@ typedef unsigned int uint;
 #define RETRO_RENDERTYPE (RETRO_SW_RENDER)
 #endif
 
-#ifndef RETRO_USING_OPENGL
+#if RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH
 #define RETRO_USING_OPENGL (1)
+#else
+#define RETRO_USING_OPENGL (0)
 #endif
 
 #define RETRO_SOFTWARE_RENDER (RETRO_RENDERTYPE == RETRO_SW_RENDER)
-//#define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
+#define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
 
 #if RETRO_USING_OPENGL
 #if RETRO_PLATFORM == RETRO_ANDROID
@@ -197,9 +213,13 @@ typedef unsigned int uint;
 #define GL_FRAMEBUFFER         GL_FRAMEBUFFER_EXT
 #define GL_COLOR_ATTACHMENT0   GL_COLOR_ATTACHMENT0_EXT
 #define GL_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING_EXT
+#elif RETRO_PLATFORM == RETRO_SWITCH
+#include <GLES/gl.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <glad/glad.h>  // OpenGL loader
 #else
 #include <GL/glew.h>
-#endif
 #endif
 
 #define RETRO_USE_HAPTICS (1)

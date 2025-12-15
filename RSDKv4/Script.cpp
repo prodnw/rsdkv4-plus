@@ -727,12 +727,6 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_XBOX", "2"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_PSN", "3"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_IOS", "4"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_ANDROID", "5"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_NINTENDO", "6"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "DEVICE_STEAM", "7"),
 #if !RETRO_REV00
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
 #endif
@@ -821,6 +815,16 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_3DSKY", "4"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "GROUP_ALL", "0"),
 #endif
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_WIN", "0"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_OSX", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_XBOX_360", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_PS3", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_iOS", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_ANDROID", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_WP7", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_UWP", "7"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_LINUX", "8"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_SWITCH", "9")
 };
 // clang-format on
 
@@ -1127,9 +1131,7 @@ enum ScrVar {
     VAR_ENGINESFXVOLUME,
     VAR_ENGINEVOICEVOLUME,
     VAR_ENGINEBGMVOLUME,
-#if RETRO_REV00
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
-#endif
     VAR_ENGINETRIALMODE,
 #if !RETRO_REV00
     VAR_ENGINEDEVICETYPE, // v4-style device type aka Standard/Mobile/Etc
@@ -4647,9 +4649,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
                     case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
-#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
-#endif
                     case VAR_ENGINETRIALMODE: scriptEng.operands[i] = Engine.trialMode; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = RETRO_DEVICETYPE; break;
@@ -7470,9 +7470,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         bgmVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
-#if RETRO_REV00
                     case VAR_ENGINEPLATFORMID: break;
-#endif
                     case VAR_ENGINETRIALMODE: Engine.trialMode = scriptEng.operands[i]; break;
 #if !RETRO_REV00
                     case VAR_ENGINEDEVICETYPE: break;
