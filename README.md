@@ -95,6 +95,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * SDG - Controller Vibration
  * Geared - Other misc. stuff
  * Skyward - Other misc. stuff
+ * AlyStyle - v4+ Icon
 
 # To-Dos:
 - [ ] Fix Extended Camera
