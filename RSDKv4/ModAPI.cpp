@@ -491,7 +491,7 @@ void RefreshEngine()
     // Feel free to insert your own games!
 
     achievementCount = 0;
-    if (Engine.gameType == GAME_SONIC1) {
+    if (Engine.gameType == GAME_SONIC1 || Engine.gameType == GAME_SONIC1FOREVER) {
         AddAchievement("Ramp Ring Acrobatics",
                        "Without touching the ground,\rcollect all the rings in a\rtrapezoid formation in Green\rHill Zone Act 1");
         AddAchievement("Blast Processing", "Clear Green Hill Zone Act 1\rin under 30 seconds");
@@ -506,7 +506,7 @@ void RefreshEngine()
         AddAchievement("One For the Road", "As a parting gift, land a\rfinal hit on Dr. Eggman's\rescaping Egg Mobile");
         AddAchievement("Beat The Clock", "Clear the Time Attack\rmode in less than 45\rminutes");
     }
-    else if (Engine.gameType == GAME_SONIC2) {
+    else if (Engine.gameType == GAME_SONIC2 || Engine.gameType == GAME_SONIC2ABSOLUTE) {
         AddAchievement("Quick Run", "Complete Emerald Hill\rZone Act 1 in under 35\rseconds");
         AddAchievement("100% Chemical Free", "Complete Chemical Plant\rwithout going underwater");
         AddAchievement("Early Bird Special", "Collect all the Chaos\rEmeralds before Chemical\rPlant");
