@@ -472,6 +472,22 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICESSENCE;
     }
 
+    if (strstr(Engine.gameWindowText, "Sonic 1 Forever")) {
+        Engine.gameType = GAME_SONIC1FOREVER;
+    }
+
+    if (strstr(Engine.gameWindowText, "Sonic 2 Absolute")) {
+        Engine.gameType = GAME_SONIC2ABSOLUTE;
+    }
+
+    if (strstr(Engine.gameWindowText, "Sonic CD Infinite")) {
+        Engine.gameType = GAME_SONICCDINFINITE;
+    }
+    
+    if (strstr(Engine.gameWindowText, "Sonic CD Timeless")) {
+        Engine.gameType = GAME_SONICCDINFINITE;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;
@@ -504,6 +520,31 @@ void RefreshEngine()
         AddAchievement("Scrambled Egg", "Defeat Dr. Eggman's Boss\rAttack mode in under 7\rminutes");
         AddAchievement("Beat the Clock", "Complete the Time Attack\rmode in less than 45\rminutes");
     }
+
+#if RETRO_USE_STEAMWORKS
+    SteamErrMsg errMsg;
+    PrintLog("Initializing steam...");
+
+    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
+        // running = false;
+    }
+
+    if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK)
+        PrintLog("Failed to init Steam.  %s", errMsg);
+
+    if (!SteamAPI_Init()) {
+        PrintLog("Failed to init Steam. See previous error.");
+    }
+    else {
+        PrintLog("Do we have Sonic Origins Plus?");
+
+        bool installed = SteamApps()->BIsDlcInstalled(2343200);
+        if (installed)
+            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
+        else
+            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
+    }
+#endif
 
     SaveMods();
 
