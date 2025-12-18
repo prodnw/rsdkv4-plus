@@ -1449,8 +1449,10 @@ void CheckAliasText(char *text)
 
 #if !RETRO_USE_ORIGINAL_CODE
         for (int v = 0; v < scriptValueListCount; ++v) {
-            if (StrComp(scriptValueList[v].name, variable->name))
-                PrintLog("WARNING: Variable Name '%s' has already been used!", variable->name);
+            if (StrComp(scriptValueList[v].name, variable->name)) {
+                PrintLog("WARNING: Variable Name '%s' has already been used! Ignoring...", variable->name);
+                return;
+            }
         }
 #endif
 
@@ -1500,8 +1502,10 @@ void CheckAliasText(char *text)
 
 #if !RETRO_USE_ORIGINAL_CODE
         for (int v = 0; v < scriptValueListCount; ++v) {
-            if (StrComp(scriptValueList[v].name, variable->name))
-                PrintLog("WARNING: Variable Name '%s' has already been used!", variable->name);
+            if (StrComp(scriptValueList[v].name, variable->name)) {
+                PrintLog("WARNING: Variable Name '%s' has already been used! Ignoring...", variable->name);
+                return;
+            }
         }
 #endif
 
@@ -1562,8 +1566,10 @@ void CheckStaticText(char *text)
 
 #if !RETRO_USE_ORIGINAL_CODE
         for (int v = 0; v < scriptValueListCount; ++v) {
-            if (StrComp(scriptValueList[v].name, variable->name))
-                PrintLog("WARNING: Variable Name '%s' has already been used!", variable->name);
+            if (StrComp(scriptValueList[v].name, variable->name)) {
+                PrintLog("WARNING: Variable Name '%s' has already been used! Ignoring...", variable->name);
+                return;
+            }
         }
 #endif
 
@@ -1621,8 +1627,10 @@ void CheckStaticText(char *text)
 
 #if !RETRO_USE_ORIGINAL_CODE
         for (int v = 0; v < scriptValueListCount; ++v) {
-            if (StrComp(scriptValueList[v].name, variable->name))
-                PrintLog("WARNING: Variable Name '%s' has already been used!", variable->name);
+            if (StrComp(scriptValueList[v].name, variable->name)) {
+                PrintLog("WARNING: Variable Name '%s' has already been used! Ignoring...", variable->name);
+                return;
+            }
         }
 #endif
 
