@@ -210,9 +210,7 @@ typedef unsigned int uint;
 #define RETRO_USE_HAPTICS (1)
 
 // use *this* macro to determine what platform the game thinks its running on
-#if RETRO_PLATFORM == RETRO_UWP
-#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId()) //is this even a real function??
-#elif RETRO_PLATFORM < RETRO_PLATCNT
+#if RETRO_PLATFORM < RETRO_PLATCNT
 #define RETRO_GAMEPLATFORMID (RETRO_PLATFORM)
 #else
 #error Unspecified RETRO_GAMEPLATFORMID
