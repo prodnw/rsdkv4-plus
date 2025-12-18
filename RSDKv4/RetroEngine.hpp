@@ -51,9 +51,10 @@ typedef unsigned int uint;
 #define RETRO_ANDROID  (5)
 #define RETRO_WP7      (6)
 // Custom Platforms start here
-#define RETRO_UWP   (7)
-#define RETRO_LINUX (8)
-#define RETRO_SWITCH (9)
+#define RETRO_UWP      (7)
+#define RETRO_LINUX    (8)
+#define RETRO_SWITCH   (9)
+#define RETRO_PLATCNT (10)
 
 // Platform types (Game manages platform-specific code such as HUD position using this rather than the above)
 #define RETRO_STANDARD (0)
@@ -127,10 +128,8 @@ typedef unsigned int uint;
 #define RETRO_USING_SDL2 (0)
 #endif
 
-#if RETRO_PLATFORM == RETRO_iOS || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_WP7
+#if RETRO_PLATFORM == RETRO_iOS || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_WP7 || RETRO_MOBILE
 #define RETRO_GAMEPLATFORM (RETRO_MOBILE)
-#elif RETRO_PLATFORM == RETRO_SWITCH
-#define RETRO_GAMEPLATFORMID (RETRO_MOBILE)
 #elif RETRO_PLATFORM == RETRO_UWP
 #define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
 #else
@@ -210,20 +209,13 @@ typedef unsigned int uint;
 
 #define RETRO_USE_HAPTICS (1)
 
-// NOTE: This is only used for rev00 stuff, it was removed in rev01 and later builds
-#if RETRO_PLATFORM <= RETRO_WP7
+// use *this* macro to determine what platform the game thinks its running on
+#if RETRO_PLATFORM == RETRO_UWP
+#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
+#elif RETRO_PLATFORM < RETRO_PLATCNT
 #define RETRO_GAMEPLATFORMID (RETRO_PLATFORM)
 #else
-
-// use *this* macro to determine what platform the game thinks its running on (since only the first 7 platforms are supported natively by scripts)
-#if RETRO_PLATFORM == RETRO_LINUX
-#define RETRO_GAMEPLATFORMID (RETRO_WIN)
-#elif RETRO_PLATFORM == RETRO_UWP
-#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
-#else
 #error Unspecified RETRO_GAMEPLATFORMID
-#endif
-
 #endif
 
 // Determines which revision to use (see defines below for specifics). Datafiles from REV00 and REV01 builds will not work on later revisions and vice versa.
