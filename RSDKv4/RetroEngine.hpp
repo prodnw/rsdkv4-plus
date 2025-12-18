@@ -128,7 +128,7 @@ typedef unsigned int uint;
 #define RETRO_USING_SDL2 (0)
 #endif
 
-#if RETRO_PLATFORM == RETRO_iOS || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_WP7 || RETRO_MOBILE
+#if RETRO_PLATFORM == RETRO_iOS || RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_WP7 || RETRO_PLATFORM == RETRO_SWITCH
 #define RETRO_GAMEPLATFORM (RETRO_MOBILE)
 #elif RETRO_PLATFORM == RETRO_UWP
 #define RETRO_GAMEPLATFORM (UAP_GetRetroGamePlatform())
@@ -211,7 +211,7 @@ typedef unsigned int uint;
 
 // use *this* macro to determine what platform the game thinks its running on
 #if RETRO_PLATFORM == RETRO_UWP
-#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
+#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId()) //is this even a real function??
 #elif RETRO_PLATFORM < RETRO_PLATCNT
 #define RETRO_GAMEPLATFORMID (RETRO_PLATFORM)
 #else
@@ -365,6 +365,8 @@ class RetroEngine
 public:
     RetroEngine()
     {
+        gamePlatformID = RETRO_GAMEPLATFORMID;
+        
         if (RETRO_GAMEPLATFORM == RETRO_STANDARD) {
             gamePlatform   = "STANDARD";
             gameDeviceType = RETRO_STANDARD;
@@ -395,6 +397,7 @@ public:
 #if RETRO_REV00
     int message = 0;
 #endif
+    int gamePlatformID    = RETRO_WIN;
     int gameDeviceType    = RETRO_STANDARD;
     int globalBoxRegion   = REGION_JP;
     bool nativeMenuFadeIn = false;

@@ -132,6 +132,8 @@ extern int disableFocusPause_Config;
 extern int CheckForthemUpdates;
 extern bool ControllerVibration[DEFAULT_INPUT_COUNT];
 extern int VibrationIntensity[DEFAULT_INPUT_COUNT];
+extern int forcePlatform;
+extern int forceDeviceType;
 
 inline int GetGlobalVariableByName(const char *name)
 {

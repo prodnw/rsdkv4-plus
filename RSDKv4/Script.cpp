@@ -4646,10 +4646,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
                     case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
-                    case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = RETRO_GAMEPLATFORMID; break;
+                    case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = Engine.gamePlatformID; break;
                     case VAR_ENGINETRIALMODE: scriptEng.operands[i] = Engine.trialMode; break;
 #if !RETRO_REV00
-                    case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = RETRO_DEVICETYPE; break;
+                    case VAR_ENGINEDEVICETYPE: scriptEng.operands[i] = Engine.gameDeviceType; break;
 #endif
 
                     // Origins Extras

@@ -77,6 +77,8 @@ int disableFocusPause_Config = 3;
 int CheckForthemUpdates      = true;
 bool ControllerVibration[DEFAULT_INPUT_COUNT];
 int VibrationIntensity[DEFAULT_INPUT_COUNT]; // 0 = Low, 1 = Medium, 2 = High
+int forcePlatform            = -1;
+int forceDeviceType          = -1;
 
 extern void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b);
 
@@ -316,6 +318,8 @@ void InitUserdata()
         ini.SetInteger("Game", "DisableFocusPause", disableFocusPause = 3);
         disableFocusPause_Config = disableFocusPause;
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
+        ini.SetInteger("Game", "ForcePlatform", forcePlatform = -1);
+        ini.SetInteger("Game", "ForceDeviceType", forceDeviceType = -1);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -526,6 +530,16 @@ void InitUserdata()
         disableFocusPause_Config = disableFocusPause;
         if (!ini.GetInteger("Game", "CheckForUpdates", &CheckForthemUpdates))
             CheckForthemUpdates = true;
+        if (!ini.GetInteger("Game", "ForcePlatform", &forcePlatform))
+            forcePlatform = -1;
+        Engine.gamePlatformID = forcePlatform == -1 ? Engine.gamePlatformID : forcePlatform;
+
+        if (!ini.GetInteger("Game", "ForceDeviceType", &forceDeviceType))
+            forceDeviceType = -1;
+        Engine.gamePlatform = forceDeviceType == -1 ? Engine.gamePlatform : (forceDeviceType ? "MOBILE" : "STANDARD");
+        Engine.gameDeviceType = forceDeviceType == -1 ? Engine.gameDeviceType : (forceDeviceType ? RETRO_MOBILE : RETRO_STANDARD);
+        PrintLog("forceDeviceType == %d", forceDeviceType);
+        PrintLog("Engine.gameDeviceType == %d", Engine.gameDeviceType);
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -904,6 +918,12 @@ void WriteSettings()
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
     ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
+    ini.SetComment("Game", "ForcePlatformComment",
+                   "Forces the platform used in scripts, set to -1 to use the current platform.\n; "
+                   "Check the platform aliases for a full list (https://github.com/prodnw/rsdkv4-plus/blob/main/RSDKv4/RetroEngine.hpp#L46).");
+    ini.SetInteger("Game", "ForcePlatform", forcePlatform);
+    ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts (-1 = use the current platform type, 0 = Standalone, 1 = Mobile)");
+    ini.SetInteger("Game", "ForceDeviceType", forceDeviceType);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
