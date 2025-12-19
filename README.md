@@ -98,8 +98,9 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * AlyStyle - v4+ Icon
 
 # To-Dos:
-- [ ] Fix Extended Camera
-- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, PNG Images, and more)
+- [ ] Port plenty of features from previous RSDK versions that aren't in v4 as well.
+- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, PNG Images, and more.)
+- [ ] Continue adding a ton of QoL features along with fixing any normal v4 bugs.
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
