@@ -1867,176 +1867,78 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
     }
     cameraXPos = targetX - target->lookPosX;
 
-    if (!target->scrollTracking) {
-        if (cameraLockedY) {
-            cameraYPos = targetY;
-            if (cameraYPos < curYBoundary1 + SCREEN_SCROLL_UP) {
-                cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
+    int yPosDif = 0;
+    if (target->scrollTracking) {
+        if (targetY <= cameraYPos) {
+            yPosDif = (targetY - cameraYPos) + 32;
+            if (yPosDif <= 0) {
+                if (yPosDif <= -17)
+                    yPosDif = -16;
             }
+            else
+                yPosDif = 0;
         }
-        else if (targetY > cameraYPos) {
-            int dif = targetY - cameraYPos;
-            if (targetY - cameraYPos < 0) {
-                cameraLockedY = true;
-                if (cameraYPos < curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
+        else {
+            yPosDif = (targetY - cameraYPos) - 32;
+            if (yPosDif >= 0) {
+                if (yPosDif >= 17)
+                    yPosDif = 16;
+            }
+            else
+                yPosDif = 0;
+        }
+        cameraLockedY = false;
+    }
+    else if (cameraLockedY) {
+        yPosDif    = 0;
+        cameraYPos = targetY;
+    }
+    else if (targetY <= cameraYPos) {
+        yPosDif = targetY - cameraYPos;
+        if (targetY - cameraYPos <= 0) {
+            if (yPosDif >= -32 && abs(target->yvel) <= 0x60000) {
+                if (yPosDif < -6) {
+                    yPosDif = -6;
                 }
             }
-            else {
-                if (dif > 32 || abs(target->yvel) > 0x60000) {
-                    if (dif > 16) {
-                        dif = 16;
-                        if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                            cameraYPos += dif;
-                        }
-                        else {
-                            cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                        }
-                    }
-                    else {
-                        cameraLockedY = true;
-                        if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                            cameraYPos += dif;
-                        }
-                        else {
-                            cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                        }
-                    }
-                }
-                else if (dif > 6) {
-                    dif = 6;
-                    if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                        cameraYPos += dif;
-                    }
-                    else {
-                        cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                    }
-                }
-                else {
-                    cameraLockedY = true;
-                    if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                        cameraYPos += dif;
-                    }
-                    else {
-                        cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                    }
-                }
+            else if (yPosDif < -16) {
+                yPosDif = -16;
             }
         }
         else {
-            int dif = targetY - cameraYPos;
-            if (targetY - cameraYPos <= 0) {
-                if (dif < -32 || abs(target->yvel) > 0x60000) {
-                    if (dif < -16) {
-                        dif = -16;
-                        if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                            cameraYPos += dif;
-                        }
-                        else {
-                            cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                        }
-                    }
-                    else {
-                        cameraLockedY = true;
-                        if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                            cameraYPos += dif;
-                        }
-                        else {
-                            cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                        }
-                    }
-                }
-                else if (dif < -6) {
-                    dif = -6;
-                    if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                        cameraYPos += dif;
-                    }
-                    else {
-                        cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                    }
-                }
-            }
-            else {
-                dif = 0;
-                if (abs(target->yvel) > 0x60000) {
-                    cameraLockedY = true;
-                    if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                        cameraYPos += dif;
-                    }
-                    else {
-                        cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                    }
-                }
-                else {
-                    cameraLockedY = true;
-                    if (cameraYPos + dif >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                        cameraYPos += dif;
-                    }
-                    else {
-                        cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                    }
-                }
-            }
+            yPosDif       = 0;
+            cameraLockedY = true;
         }
     }
     else {
-        int dif  = targetY - cameraYPos;
-        int difY = 0;
-        if (targetY > cameraYPos) {
-            difY = dif - 32;
-            if (difY >= 0) {
-                if (difY >= 17)
-                    difY = 16;
-
-                cameraLockedY = false;
-                if (cameraYPos + difY >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos += difY;
-                }
-                else {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                }
+        yPosDif = targetY - cameraYPos;
+        if (targetY - cameraYPos < 0) {
+            yPosDif       = 0;
+            cameraLockedY = true;
+        }
+        else if (yPosDif > 32 || abs(target->yvel) > 0x60000) {
+            if (yPosDif > 16) {
+                yPosDif = 16;
             }
             else {
-                cameraLockedY = false;
-                if (cameraYPos < curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                }
+                cameraLockedY = true;
             }
         }
         else {
-            difY = dif + 32;
-            if (difY > 0) {
-                difY = 0;
-
-                cameraLockedY = false;
-                if (cameraYPos < curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                }
-            }
-            else if (difY <= -17) {
-                difY = -16;
-
-                cameraLockedY = false;
-                if (cameraYPos + difY >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos += difY;
-                }
-                else {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                }
+            if (yPosDif <= 6) {
+                cameraLockedY = true;
             }
             else {
-                cameraLockedY = false;
-                if (cameraYPos + difY >= curYBoundary1 + SCREEN_SCROLL_UP) {
-                    cameraYPos += difY;
-                }
-                else {
-                    cameraYPos = curYBoundary1 + SCREEN_SCROLL_UP;
-                }
+                yPosDif = 6;
             }
         }
     }
 
-    if (cameraYPos >= curYBoundary2 - SCREEN_SCROLL_DOWN - 1) {
+    int newCamY = cameraYPos + yPosDif;
+    if (newCamY <= curYBoundary1 + (SCREEN_SCROLL_UP - 1))
+        newCamY = curYBoundary1 + SCREEN_SCROLL_UP;
+    cameraYPos = newCamY;
+    if (curYBoundary2 - (SCREEN_SCROLL_DOWN - 1) <= newCamY) {
         cameraYPos = curYBoundary2 - SCREEN_SCROLL_DOWN;
     }
 
