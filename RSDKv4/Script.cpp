@@ -4,20 +4,21 @@
 #include <SDL.h>
 #include <ctime>
 
+// doing this so it's easier, for me at least :)
 #if RETRO_USE_COMPILER
-#if RETRO_ACCEPT_OLD_SYNTAX
-#if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (128)
-#else
-#define COMMON_SCRIPT_VAR_COUNT (127)
-#endif
-#else
-#if !RETRO_REV00
-#define COMMON_SCRIPT_VAR_COUNT (41)
-#else
-#define COMMON_SCRIPT_VAR_COUNT (40)
-#endif
-#endif
+    #if RETRO_ACCEPT_OLD_SYNTAX
+        #if !RETRO_REV00
+            #define COMMON_SCRIPT_VAR_COUNT (131)
+        #else
+            #define COMMON_SCRIPT_VAR_COUNT (130)
+        #endif
+    #else
+        #if !RETRO_REV00
+            #define COMMON_SCRIPT_VAR_COUNT (44)
+        #else
+            #define COMMON_SCRIPT_VAR_COUNT (43)
+        #endif
+    #endif
 #endif
 
 #include "Userdata.hpp"
