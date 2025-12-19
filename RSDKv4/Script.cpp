@@ -115,6 +115,8 @@ const char variableNames[][0x20] = {
     "object.state",
     "object.rotation",
     "object.scale",
+    "object.yscale",
+    "object.scaleMode",
     "object.priority",
     "object.drawOrder",
     "object.direction",
@@ -879,6 +881,8 @@ enum ScrVar {
     VAR_OBJECTSTATE,
     VAR_OBJECTROTATION,
     VAR_OBJECTSCALE,
+    VAR_OBJECTYSCALE,
+    VAR_OBJECTSCALEMODE,
     VAR_OBJECTPRIORITY,
     VAR_OBJECTDRAWORDER,
     VAR_OBJECTDIRECTION,
@@ -4019,6 +4023,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = objectEntityList[arrayVal].scale;
                         break;
                     }
+                    case VAR_OBJECTYSCALE: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].yscale;
+                        break;
+                    }
+                    case VAR_OBJECTSCALEMODE: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].scaleMode;
+                        break;
+                    }
                     case VAR_OBJECTPRIORITY: {
                         scriptEng.operands[i] = objectEntityList[arrayVal].priority;
                         break;
@@ -4771,6 +4783,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
         Entity *entity           = &objectEntityList[objectEntityPos];
         SpriteFrame *spriteFrame = nullptr;
 
+        // sort out scale modes here since funcs hate me
+        int entityScaleX = entity->scale;
+        int entityScaleY = entity->scale;
+        if (entity->scaleMode == 1)
+            entityScaleY = entity->yscale;
+
         // String Variable Functions
         switch (opcode) {
             default: break;
@@ -5511,11 +5529,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_DRAWSPRITEFX:
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
+                
                 switch (scriptEng.operands[1]) {
                     case FX_SCALE:
                         DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                         (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entity->scale,
-                                         entity->scale, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+                                         (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entityScaleX,
+                                         entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
                                          scriptInfo->spriteSheetID);
                         break;
                     case FX_ROTATE:
@@ -5528,7 +5547,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         DrawSpriteRotozoom(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
                                            (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-                                           entity->scale, scriptInfo->spriteSheetID);
+                                           entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
                         break;
                     case FX_INK:
                         switch (entity->inkEffect) {
@@ -5566,13 +5585,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         if (entity->inkEffect == INK_ALPHA) {
                             DrawScaledTintMask(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
                                                (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
-                                               entity->scale, entity->scale, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
+                                               entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
                                                spriteFrame->sprY, scriptInfo->spriteSheetID);
                         }
                         else {
                             DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                             (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entity->scale,
-                                             entity->scale, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+                                             (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entityScaleX,
+                                             entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
                                              scriptInfo->spriteSheetID);
                         }
                         break;
@@ -5608,17 +5627,18 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                             DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
                                            (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-                                           entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
+                                           entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
                         break;
                 }
                 break;
             case FUNC_DRAWSPRITESCREENFX:
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
+                
                 switch (scriptEng.operands[1]) {
                     case FX_SCALE:
                         DrawSpriteScaled(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX, -spriteFrame->pivotY,
-                                         entity->scale, entity->scale, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+                                         entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
                                          scriptInfo->spriteSheetID);
                         break;
                     case FX_ROTATE:
@@ -5629,7 +5649,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case FX_ROTOZOOM:
                         DrawSpriteRotozoom(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
                                            -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
-                                           entity->rotation, entity->scale, scriptInfo->spriteSheetID);
+                                           entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
                         break;
                     case FX_INK:
                         switch (entity->inkEffect) {
@@ -5662,12 +5682,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case FX_TINT:
                         if (entity->inkEffect == INK_ALPHA) {
                             DrawScaledTintMask(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
-                                               -spriteFrame->pivotY, entity->scale, entity->scale, spriteFrame->width, spriteFrame->height,
+                                               -spriteFrame->pivotY, entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height,
                                                spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                         }
                         else {
                             DrawSpriteScaled(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
-                                             -spriteFrame->pivotY, entity->scale, entity->scale, spriteFrame->width, spriteFrame->height,
+                                             -spriteFrame->pivotY, entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height,
                                              spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                         }
                         break;
@@ -5700,7 +5720,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					default: //use for stacked flags that don't use all
                         DrawSpriteAllFX(entity->direction, scriptEng.operands[2], scriptEng.operands[3], -spriteFrame->pivotX,
                                         -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
-                                        entity->rotation, entity->scale, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
+                                        entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha,
+                                        entity->inkEffect, scriptEng.operands[1]);
                     break;
                 }
                 break;
@@ -6908,6 +6929,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     }
                     case VAR_OBJECTSCALE: {
                         objectEntityList[arrayVal].scale = scriptEng.operands[i];
+                        break;
+                    }
+                    case VAR_OBJECTYSCALE: {
+                        objectEntityList[arrayVal].yscale = scriptEng.operands[i];
+                        break;
+                    }
+                    case VAR_OBJECTSCALEMODE: {
+                        objectEntityList[arrayVal].scaleMode = scriptEng.operands[i];
                         break;
                     }
                     case VAR_OBJECTPRIORITY: {

@@ -503,7 +503,7 @@ void Draw3DScene(int spriteSheetID)
                             break;
                         case D_ROTOZOOM:
                             DrawSpriteRotozoom(vertexBuffer[face->b].v, xpos, ypos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY,
-                                               frame->width, frame->height, vertexBuffer[face->c].v, vertexBuffer[face->c].u,
+                                               frame->width, frame->height, vertexBuffer[face->c].v, vertexBuffer[face->c].u, vertexBuffer[face->c].u,
                                                scriptInfo->spriteSheetID);
                             break;
                     }

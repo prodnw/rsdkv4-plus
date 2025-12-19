@@ -3990,13 +3990,15 @@ void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX
 #endif
 }
 
-void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
-                        int sheetID)
+void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation,
+                        int scaleX, int scaleY, int sheetID)
 {
 #if RETRO_SOFTWARE_RENDER
-    if (scale == 0)
+    if (scaleX == 0 || scaleY == 0)
         return;
 
+	int hscale = scaleX;
+	int vscale = scaleY;
     int sprXPos    = (pivotX + sprX) << 9;
     int sprYPos    = (pivotY + sprY) << 9;
     int fullwidth  = width + sprX;
@@ -4006,38 +4008,43 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
         angle += 0x200;
     if (angle)
         angle = 0x200 - angle;
-    int sine   = scale * sin512LookupTable[angle] >> 9;
-    int cosine = scale * cos512LookupTable[angle] >> 9;
+    int sine   = hscale * sin512LookupTable[angle] >> 9;
+    int cosine = hscale * cos512LookupTable[angle] >> 9;
+    int vsine   = vscale * sin512LookupTable[angle] >> 9;
+    int vcosine = vscale * cos512LookupTable[angle] >> 9;
     int xPositions[4];
     int yPositions[4];
 
     if (direction == FLIP_X) {
-        xPositions[0] = XPos + ((sine * (-pivotY - 2) + cosine * (pivotX + 2)) >> 9);
-        yPositions[0] = YPos + ((cosine * (-pivotY - 2) - sine * (pivotX + 2)) >> 9);
-        xPositions[1] = XPos + ((sine * (-pivotY - 2) + cosine * (pivotX - width - 2)) >> 9);
-        yPositions[1] = YPos + ((cosine * (-pivotY - 2) - sine * (pivotX - width - 2)) >> 9);
-        xPositions[2] = XPos + ((sine * (height - pivotY + 2) + cosine * (pivotX + 2)) >> 9);
-        yPositions[2] = YPos + ((cosine * (height - pivotY + 2) - sine * (pivotX + 2)) >> 9);
+        xPositions[0] = XPos + ((vsine * (-pivotY - 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (-pivotY - 2) - sine * (pivotX + 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (-pivotY - 2) + cosine * (pivotX - width - 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (-pivotY - 2) - sine * (pivotX - width - 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (height - pivotY + 2) + cosine * (pivotX + 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (height - pivotY + 2) - sine * (pivotX + 2)) >> 9);
         int a         = pivotX - width - 2;
         int b         = height - pivotY + 2;
-        xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
-        yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
     }
     else {
-        xPositions[0] = XPos + ((sine * (-pivotY - 2) + cosine * (-pivotX - 2)) >> 9);
-        yPositions[0] = YPos + ((cosine * (-pivotY - 2) - sine * (-pivotX - 2)) >> 9);
-        xPositions[1] = XPos + ((sine * (-pivotY - 2) + cosine * (width - pivotX + 2)) >> 9);
-        yPositions[1] = YPos + ((cosine * (-pivotY - 2) - sine * (width - pivotX + 2)) >> 9);
-        xPositions[2] = XPos + ((sine * (height - pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
-        yPositions[2] = YPos + ((cosine * (height - pivotY + 2) - sine * (-pivotX - 2)) >> 9);
+        xPositions[0] = XPos + ((vsine * (-pivotY - 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[0] = YPos + ((vcosine * (-pivotY - 2) - sine * (-pivotX - 2)) >> 9);
+        xPositions[1] = XPos + ((vsine * (-pivotY - 2) + cosine * (width - pivotX + 2)) >> 9);
+        yPositions[1] = YPos + ((vcosine * (-pivotY - 2) - sine * (width - pivotX + 2)) >> 9);
+        xPositions[2] = XPos + ((vsine * (height - pivotY + 2) + cosine * (-pivotX - 2)) >> 9);
+        yPositions[2] = YPos + ((vcosine * (height - pivotY + 2) - sine * (-pivotX - 2)) >> 9);
         int a         = width - pivotX + 2;
         int b         = height - pivotY + 2;
-        xPositions[3] = XPos + ((sine * b + cosine * a) >> 9);
-        yPositions[3] = YPos + ((cosine * b - sine * a) >> 9);
+        xPositions[3] = XPos + ((vsine * b + cosine * a) >> 9);
+        yPositions[3] = YPos + ((vcosine * b - sine * a) >> 9);
     }
-    int truescale = (signed int)(float)((float)(512.0 / (float)scale) * 512.0);
+    int truescale = (signed int)(float)((float)(512.0 / (float)hscale) * 512.0);
     sine          = truescale * sin512LookupTable[angle] >> 9;
     cosine        = truescale * cos512LookupTable[angle] >> 9;
+    truescale = (signed int)(float)((float)(512.0 / (float)vscale) * 512.0);
+    vsine          = truescale * sin512LookupTable[angle] >> 9;
+    vcosine        = truescale * cos512LookupTable[angle] >> 9;
 
     int left = GFX_LINESIZE;
     for (int i = 0; i < 4; ++i) {
@@ -4088,12 +4095,12 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
     int shiftheight = (sprY << 9) - 1;
     fullheight <<= 9;
     byte *gfxData = &graphicData[surface->dataPosition];
-    if (cosine < 0 || sine < 0)
-        sprYPos += sine + cosine;
+    if (vcosine < 0 || vsine < 0)
+        sprYPos += vsine + vcosine;
 
     if (direction == FLIP_X) {
         int drawX = sprXPos - (cosine * startX - sine * startY) - (truescale >> 1);
-        int drawY = cosine * startY + sprYPos + sine * startX;
+        int drawY = vcosine * startY + sprYPos + vsine * startX;
         while (maxY--) {
             activePalette   = fullPalette[*lineBuffer];
             activePalette32 = fullPalette32[*lineBuffer];
@@ -4109,16 +4116,16 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
                 }
                 ++frameBufferPtr;
                 finalX -= cosine;
-                finalY += sine;
+                finalY += vsine;
             }
             drawX += sine;
-            drawY += cosine;
+            drawY += vcosine;
             frameBufferPtr += pitch;
         }
     }
     else {
         int drawX = sprXPos + cosine * startX - sine * startY;
-        int drawY = cosine * startY + sprYPos + sine * startX;
+        int drawY = vcosine * startY + sprYPos + vsine * startX;
         while (maxY--) {
             activePalette   = fullPalette[*lineBuffer];
             activePalette32 = fullPalette32[*lineBuffer];
@@ -4134,23 +4141,23 @@ void DrawSpriteRotozoom(int direction, int XPos, int YPos, int pivotX, int pivot
                 }
                 ++frameBufferPtr;
                 finalX += cosine;
-                finalY += sine;
+                finalY += vsine;
             }
             drawX -= sine;
-            drawY += cosine;
+            drawY += vcosine;
             frameBufferPtr += pitch;
         }
     }
 #endif
 }
 
-void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation, int scale,
-                        int sheetID, int alpha, int ink, int flags)
+void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, int sprX, int sprY, int width, int height, int rotation,
+                     int scaleX, int scaleY, int sheetID, int alpha, int ink, int flags)
 {
 #if RETRO_SOFTWARE_RENDER
 	//check flags
-	int hscale = scale;
-	int vscale = scale;
+	int hscale = scaleX;
+	int vscale = scaleY;
 	if ((flags & FX_INK) == 0)
 		ink = INK_NONE;
 	if ((flags & FX_HSCALE) == 0)
@@ -4168,7 +4175,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
 	if (alpha > 0xFF)
         alpha = 0xFF;
 	
-    if (scale == 0)
+    if (scaleX == 0 || scaleY == 0)
         return;
 
     int sprXPos    = (pivotX + sprX) << 9;
@@ -4818,24 +4825,29 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
     SpriteFrame *frame         = &animFrames[sprAnim->frameListOffset + entity->frame];
     int rotation               = 0;
 
+    int entityScaleX = entity->scale;
+    int entityScaleY = entity->scale;
+    if (entity->scaleMode == 1)
+        entityScaleY = entity->yscale;
+
     switch (sprAnim->rotationStyle) {
         case ROTSTYLE_NONE:
 			DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 0, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL - FX_ROTATE);
+							 0, entityScaleX, entityScaleY, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL - FX_ROTATE);
             break;
 
         case ROTSTYLE_FULL:
 			DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 entity->rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+							 entity->rotation, entityScaleX, entityScaleY, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
             break;
 
         case ROTSTYLE_45DEG:
             if (entity->rotation >= 0x100)
                 DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 0x200 - ((0x214 - entity->rotation) >> 6 << 6), entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+							 0x200 - ((0x214 - entity->rotation) >> 6 << 6), entityScaleX, entityScaleY, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
 			else
                 DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 (entity->rotation + 20) >> 6 << 6, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+							 (entity->rotation + 20) >> 6 << 6, entityScaleX, entityScaleY, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
 			break;
 
         case ROTSTYLE_STATICFRAMES: {
@@ -4899,10 +4911,10 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
 
             frame = &animFrames[sprAnim->frameListOffset + frameID];
             DrawSpriteAllFX(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width, frame->height,
-							 rotation, entity->scale, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
+							 rotation, entityScaleX, entityScaleY, frame->sheetID, entity->alpha, entity->inkEffect, FX_ALL);
             // DrawSpriteRotozoom(entity->direction, XPos, YPos, -frame->pivotX, -frame->pivotY, frame->sprX, frame->sprY, frame->width,
             // frame->height,
-            //                  rotation, entity->scale, frame->sheetID);
+            //                  rotation, entityScaleX, entityScaleY, frame->sheetID);
             break;
         }
 
