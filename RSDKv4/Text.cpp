@@ -97,7 +97,10 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
 {
     FileInfo info;
     byte fileBuffer = 0;
-    if (LoadFile(filePath, &info)) {
+    char fullPath[256];
+    StrCopy(fullPath, "Data/Strings/");
+    StrAdd(fullPath, filePath);
+    if (LoadFile(fullPath, &info)) {
         menu->textDataPos                = 0;
         menu->rowCount                   = 0;
         menu->entryStart[menu->rowCount] = menu->textDataPos;
