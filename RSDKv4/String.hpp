@@ -368,6 +368,10 @@ inline void ReadStringLineUnicode(ushort *text)
                 return;
             }
         }
+
+        if (lineEnding) {
+            return;
+        }
     }
 }
 
