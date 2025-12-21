@@ -285,7 +285,7 @@ void InitUserdata()
 
         ini.SetBool("Dev", "DevMenu", Engine.devMenu = false);
         ini.SetBool("Dev", "EngineDebugMode", engineDebugMode = false);
-        ini.SetBool("Dev", "TxtScripts", forceUseScripts = false);
+        ini.SetBool("Dev", "TxtScripts", forceUseScripts = true);
         forceUseScripts_Config = forceUseScripts;
         ini.SetInteger("Dev", "StartingCategory", Engine.startList = 255);
         ini.SetInteger("Dev", "StartingScene", Engine.startStage = 255);
@@ -483,7 +483,7 @@ void InitUserdata()
         if (!ini.GetBool("Dev", "EngineDebugMode", &engineDebugMode))
             engineDebugMode = false;
         if (!ini.GetBool("Dev", "TxtScripts", &forceUseScripts))
-            forceUseScripts = false;
+            forceUseScripts = true;
         forceUseScripts_Config = forceUseScripts;
         if (!ini.GetInteger("Dev", "StartingCategory", &Engine.startList))
             Engine.startList = 255;
