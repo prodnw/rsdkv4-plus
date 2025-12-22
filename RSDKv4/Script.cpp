@@ -7,18 +7,13 @@
 // doing this so it's easier, for me at least :)
 #if RETRO_USE_COMPILER
     #if RETRO_ACCEPT_OLD_SYNTAX
-        #if !RETRO_REV00
-            #define COMMON_SCRIPT_VAR_COUNT (137)
-        #else
-            #define COMMON_SCRIPT_VAR_COUNT (136)
-        #endif
+        #define OLD_SYNTAX_SCRIPT_VAR_COUNT (93)
     #else
-        #if !RETRO_REV00
-            #define COMMON_SCRIPT_VAR_COUNT (50)
-        #else
-            #define COMMON_SCRIPT_VAR_COUNT (49)
-        #endif
+        #define OLD_SYNTAX_SCRIPT_VAR_COUNT (0)
     #endif
+    
+    // Aliases & Old Syntax Aliases
+    #define COMMON_SCRIPT_VAR_COUNT (50 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -732,9 +727,7 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
-#if !RETRO_REV00
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
-#endif
 	//missing aliases for old syntax
 #if RETRO_ACCEPT_OLD_SYNTAX
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
