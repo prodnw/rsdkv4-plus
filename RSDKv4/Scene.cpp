@@ -198,18 +198,22 @@ void ProcessStage(void)
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_AMY_TAILS"))
                             playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES")
+                                 && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        else if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY")
+                                 && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
                         break;
-
+                        
                     case GAME_SONICCDINFINITE: // prevent players from using Knuckles without DLC
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
                             playerListPos = 0;
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
                             playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && (GetGlobalVariableByName("stage.player2Enabled")))
+                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES")
+                                 && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
                         break;
                 }
