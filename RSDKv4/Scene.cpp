@@ -392,7 +392,6 @@ void ProcessStage(void)
             DrawStageGFX();
             break;
 
-#if !RETRO_REV00
         case STAGEMODE_2P:
             drawStageGFXHQ = false;
             if (fadeMode > 0)
@@ -439,7 +438,53 @@ void ProcessStage(void)
             ProcessParallaxAutoScroll();
             DrawStageGFX();
             break;
-#endif
+
+        case STAGEMODE_SPLITSCREEN:
+            drawStageGFXHQ = false;
+            if (fadeMode > 0)
+                fadeMode = 0;
+
+            lastXSize = -1;
+            lastYSize = -1;
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
+
+            if (timeEnabled) {
+                if (++frameCounter == 60) {
+                    frameCounter = 0;
+                    if (++stageSeconds > 59) {
+                        stageSeconds = 0;
+                        ++stageMinutes;
+                    }
+                }
+                stageMilliseconds = 100 * frameCounter / 60;
+            }
+            else {
+                frameCounter = 60 * stageMilliseconds / 100;
+            }
+
+            // Update
+            ProcessSplitscreenObjects();
+
+            if (cameraTarget > -1) {
+                if (cameraEnabled == 1) {
+                    switch (cameraStyle) {
+                        case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
+                        case CAMERASTYLE_EXTENDED:
+                        case CAMERASTYLE_EXTENDED_OFFSET_L:
+                        case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
+                        case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
+                        default: break;
+                    }
+                }
+                else {
+                    SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
+                }
+            }
+
+            ProcessParallaxAutoScroll();
+            DrawStageGFX();
+            break;
 
         case STAGEMODE_NORMAL_STEP:
             drawStageGFXHQ = false;
@@ -583,7 +628,6 @@ void ProcessStage(void)
             }
             break;
 
-#if !RETRO_REV00
         case STAGEMODE_2P_STEP:
             drawStageGFXHQ = false;
             if (fadeMode > 0)
@@ -638,7 +682,61 @@ void ProcessStage(void)
                 ResumeSound();
             }
             break;
-#endif
+
+        case STAGEMODE_SPLITSCREEN_STEP:
+            drawStageGFXHQ = false;
+            if (fadeMode > 0)
+                fadeMode = 0;
+
+            lastXSize = -1;
+            lastYSize = -1;
+            CheckKeyDown(keyDown);
+            CheckKeyPress(keyPress);
+            if (keyPress[0].C) {
+                keyPress[0].C = false;
+
+                if (timeEnabled) {
+                    if (++frameCounter == 60) {
+                        frameCounter = 0;
+                        if (++stageSeconds > 59) {
+                            stageSeconds = 0;
+                            ++stageMinutes;
+                        }
+                    }
+                    stageMilliseconds = 100 * frameCounter / 60;
+                }
+                else {
+                    frameCounter = 60 * stageMilliseconds / 100;
+                }
+
+                // Update
+                ProcessSplitscreenObjects();
+
+                if (cameraTarget > -1) {
+                    if (cameraEnabled == 1) {
+                        switch (cameraStyle) {
+                            case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
+                            case CAMERASTYLE_EXTENDED:
+                            case CAMERASTYLE_EXTENDED_OFFSET_L:
+                            case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
+                            case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
+                            default: break;
+                        }
+                    }
+                    else {
+                        SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
+                    }
+                }
+
+                DrawStageGFX();
+                ProcessParallaxAutoScroll();
+            }
+
+            if (pauseEnabled && keyPress[0].start) {
+                stageMode = STAGEMODE_SPLITSCREEN;
+                ResumeSound();
+            }
+            break;
     }
 }
 

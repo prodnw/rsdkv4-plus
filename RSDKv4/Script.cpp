@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (50 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (56 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -721,13 +721,19 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MAT_TEMP", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_LEFT", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FACING_RIGHT", "0"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_RUNNING", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_SPLITSCREEN", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_RUNNING_STEP", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED_STEP", "7"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN_STEP", "8"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE_STEP", "9"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_SPLITSCREEN_STEP", "10"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
 	//missing aliases for old syntax
 #if RETRO_ACCEPT_OLD_SYNTAX
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
@@ -4226,7 +4232,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         break;
                     }
                     case VAR_OBJECTOUTOFBOUNDS: {
-#if !RETRO_REV00
                         int boundX1_2P = -(0x200 << 16);
                         int boundX2_2P = (0x200 << 16);
                         int boundX3_2P = -(0x180 << 16);
@@ -4299,17 +4304,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 scriptEng.operands[i] = x <= boundL || x >= boundR || y <= boundT || y >= boundB;
                             }
                         }
-#else
-                        int x = objectEntityList[arrayVal].xpos >> 16;
-                        int y = objectEntityList[arrayVal].ypos >> 16;
-
-                        int boundL = xScrollOffset - OBJECT_BORDER_X1;
-                        int boundR = xScrollOffset + OBJECT_BORDER_X2;
-                        int boundT = yScrollOffset - OBJECT_BORDER_Y1;
-                        int boundB = yScrollOffset + OBJECT_BORDER_Y2;
-
-                        scriptEng.operands[i] = x <= boundL || x >= boundR || y <= boundT || y >= boundB;
-#endif
                         break;
                     }
                     case VAR_OBJECTSPRITESHEET: {
