@@ -201,7 +201,6 @@ void ProcessStage(void)
                         else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES")
                                  && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_AMY") && (GetGlobalVariableByName("stage.player2Enabled")))
                         else if (GetGlobalVariableByName("PLAYER_AMY") && playerListPos == GetGlobalVariableByName("PLAYER_AMY")
                                  && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
