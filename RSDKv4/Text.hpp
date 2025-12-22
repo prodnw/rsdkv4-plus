@@ -9,7 +9,7 @@
 #define TEXTENTRY_COUNT (0x2000)
 #endif
 
-#define TEXTMENU_COUNT  (4)
+#define TEXTMENU_COUNT  (0x4)
 
 #define FONTLIST_CHAR_COUNT (0x1000)
 #define FONTLIST_COUNT      (0x4)
