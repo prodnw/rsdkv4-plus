@@ -329,7 +329,7 @@ inline void ReadStringLine(char *text)
 
 inline void ReadStringLineUnicode(ushort *text) 
 {
-    bool lineEnding;
+    bool lineEnding = false;
     ushort curChar = 0;
     byte fileBuffer[2];
 

@@ -4,7 +4,7 @@
 #define NATIVEENTITY_COUNT (0x100)
 
 #if RETRO_VANILLA_LIKE
-#define ENTITY_COUNT     (0x400)
+#define ENTITY_COUNT     (0x4A0)
 #else
 #define ENTITY_COUNT     (0x1000)
 #endif
