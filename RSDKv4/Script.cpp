@@ -8,15 +8,15 @@
 #if RETRO_USE_COMPILER
     #if RETRO_ACCEPT_OLD_SYNTAX
         #if !RETRO_REV00
-            #define COMMON_SCRIPT_VAR_COUNT (131)
+            #define COMMON_SCRIPT_VAR_COUNT (137)
         #else
-            #define COMMON_SCRIPT_VAR_COUNT (130)
+            #define COMMON_SCRIPT_VAR_COUNT (136)
         #endif
     #else
         #if !RETRO_REV00
-            #define COMMON_SCRIPT_VAR_COUNT (44)
+            #define COMMON_SCRIPT_VAR_COUNT (50)
         #else
-            #define COMMON_SCRIPT_VAR_COUNT (43)
+            #define COMMON_SCRIPT_VAR_COUNT (49)
         #endif
     #endif
 #endif
@@ -430,6 +430,12 @@ const char variableNames[][0x20] = {
     "tempStr8",
     "tempStr9",
     "tempStr10",
+    "system.timeYear",
+    "system.timeMonth",
+    "system.timeDay",
+    "system.timeHour",
+    "system.timeMinute",
+    "system.timeSecond",
 };
 #endif
 
@@ -671,7 +677,6 @@ const FunctionInfo functions[] = {
     FunctionInfo("AutoDetectController", 0),
     FunctionInfo("SetControllerLEDColour", 3),
     FunctionInfo("CheckWindowFocus", 0),
-    FunctionInfo("GetSystemDateTime", 0),
     FunctionInfo("CheckAnyButtonPressed", 0),
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
@@ -1175,6 +1180,12 @@ enum ScrVar {
 	VAR_TEMPSTR8,
 	VAR_TEMPSTR9,
 	VAR_TEMPSTR10,
+    VAR_SYSTEM_TIMEYEAR,
+    VAR_SYSTEM_TIMEMONTH,
+    VAR_SYSTEM_TIMEDAY,
+    VAR_SYSTEM_TIMEHOUR,
+    VAR_SYSTEM_TIMEMINUTE,
+    VAR_SYSTEM_TIMESECOND,
     VAR_MAX_CNT
 };
 
@@ -1368,7 +1379,6 @@ enum ScrFunc {
     FUNC_AUTODETECTCONTROLLER,
     FUNC_SETCONTROLLERLEDCOLOUR,
     FUNC_CHECKWINDOWFOCUS,
-    FUNC_GETSYSTEMDATETIME,
     FUNC_CHECKANYBUTTONPRESSED,
     FUNC_CHECKCONTROLLERCONNECT,
     FUNC_CHECKCONTROLLERDISCONNECT,
@@ -4750,6 +4760,42 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
                     case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
                     case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
+                    case VAR_SYSTEM_TIMEYEAR: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_year + 1900;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMEMONTH: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_mon + 1;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMEDAY: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_mday;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMEHOUR: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_hour;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMEMINUTE: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_min;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMESECOND: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_sec;
+                        break;
+                    }
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6670,30 +6716,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_GETSYSTEMDATETIME: {
-                opcodeSize = 0;
-                time_t now = time(NULL);
-                struct tm *tm_now = localtime(&now);
-
-                scriptEng.temp[0] = tm_now->tm_year + 1900; // Year
-                scriptEng.temp[1] = tm_now->tm_mon + 1;     // Month (1-12)
-                scriptEng.temp[2] = tm_now->tm_mday;        // Day (1-31)
-                scriptEng.temp[3] = tm_now->tm_hour;        // Hour (0-23)
-                scriptEng.temp[4] = tm_now->tm_min;         // Minute (0-59)
-                scriptEng.temp[5] = tm_now->tm_sec;         // Second (0-59)
-
-                PrintLog(
-                    "System DateTime: %04d-%02d-%02d %02d:%02d:%02d",
-                    scriptEng.temp[0],
-                    scriptEng.temp[1],
-                    scriptEng.temp[2],
-                    scriptEng.temp[3],
-                    scriptEng.temp[4],
-                    scriptEng.temp[5]
-                );
-                break;
-            }
-
             case FUNC_CHECKANYBUTTONPRESSED: {
                 opcodeSize = 0;
                 CheckAnyButtonPressed();
@@ -7572,6 +7594,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]); break;
                     case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]); break;
                     case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]); break;
+                    case VAR_SYSTEM_TIMEYEAR: break;
+                    case VAR_SYSTEM_TIMEMONTH: break;
+                    case VAR_SYSTEM_TIMEDAY: break;
+                    case VAR_SYSTEM_TIMEHOUR: break;
+                    case VAR_SYSTEM_TIMEMINUTE: break;
+                    case VAR_SYSTEM_TIMESECOND: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

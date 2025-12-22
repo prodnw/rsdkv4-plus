@@ -42,13 +42,6 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * CheckWindowFocus() - Checks if the window has lost focus or not.
       * CheckResult 0 - Focussed.
       * CheckResult 1 - Not focussed.
-    * GetSystemDateTime() - Gets the time from your system clock and stores them in temporary values.
-      * temp0 - Year
-      * temp1 - Month
-      * temp2 - Day
-      * temp3 - Hour
-      * temp4 - Minute
-      * temp5 - Seconds
     * CheckAnyButtonPressed() - Stores any button you've just pressed, whether on keyboard or controller (recorded in SDL2 keycodes.)
     * CheckControllerConnect() - Checks whether a controller has been connected.
     * CheckControllerDisconnect() - Checks whether a controller has been disconnected.
@@ -66,6 +59,13 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * "game.checkForUpdates" - Links with CheckUpdates in the settings.ini, and allows for update checking.
     * "game.networkPing" - Returns the amount of time it takes to update when using network features.
     * "controller.vibrationEnabled" - Links with ControllerVibration in the settings.ini, and allows a controller to vibrate.
+    * "tempStr0/1/2/3/4/5/6/7/8/9/10" - Temporary values that hold text.
+    * "system.timeYear" - Grabs the year value from your system clock.
+    * "system.timeMonth" - Grabs the month value from your system clock.
+    * "system.timeDay" - Grabs the day value from your system clock.
+    * "system.timeHour" - Grabs the hour value from your system clock.
+    * "system.timeMinute" - Grabs the minute value from your system clock.
+    * "system.timeSecond" - Grabs the seconds value from your system clock.
   * New aliases
     * "FX_HSCALE" - Horizontal scaling of a sprite.
     * "FX_VSCALE" - Vertical scaling of a sprite.
