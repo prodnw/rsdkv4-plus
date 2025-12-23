@@ -44,6 +44,9 @@ void API_Discord_SetAppID() {
         case GAME_SONICESSENCE:
             API_DISCORD_CLIENT_ID = 1383571039681777765; // Essence ID
             break;
+        case GAME_PROJECT_SAP:
+            API_DISCORD_CLIENT_ID = 1453058404892283130; // Essence ID
+            break;
         default:
             API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to V4+ ID
             break;

@@ -488,6 +488,10 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICCDINFINITE;
     }
 
+    if (strstr(Engine.gameWindowText, "Project SAP")) {
+        Engine.gameType = GAME_PROJECT_SAP;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;

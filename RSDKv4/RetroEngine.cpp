@@ -513,6 +513,10 @@ void RetroEngine::Init()
         gameType = GAME_SONICCDINFINITE;
     }
 
+    if (strstr(gameWindowText, "Project SAP")) {
+        gameType = GAME_PROJECT_SAP;
+    }
+
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE

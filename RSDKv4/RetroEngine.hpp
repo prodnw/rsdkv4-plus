@@ -291,6 +291,7 @@ enum RetroGameType {
     GAME_SONIC1FOREVER = 8,
     GAME_SONIC2ABSOLUTE = 9,
     GAME_SONICCDINFINITE = 10,
+    GAME_PROJECT_SAP = 11,
     // Feel free to insert your own games!
 };
 
