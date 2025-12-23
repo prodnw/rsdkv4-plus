@@ -756,7 +756,9 @@ void LoadStageFiles(void)
     char strBuffer[0x100];
 
     StopAllSfx();
-    if (!CheckCurrentStageFolder(stageListPosition)) {
+    //if (!CheckCurrentStageFolder(stageListPosition)) {
+	//Nope. When I say LoadStage() you Load the fuckin Stage() ya piece o' shit.
+	if (true) {
         PrintLog("Loading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
         ReleaseStageSfx();
         ClearScriptData();
