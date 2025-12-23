@@ -45,7 +45,7 @@ void API_Discord_SetAppID() {
             API_DISCORD_CLIENT_ID = 1383571039681777765; // Essence ID
             break;
         case GAME_PROJECT_SAP:
-            API_DISCORD_CLIENT_ID = 1453058404892283130; // Essence ID
+            API_DISCORD_CLIENT_ID = 1453058404892283130; // Project SAP ID
             break;
         default:
             API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to V4+ ID
