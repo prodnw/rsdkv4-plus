@@ -7385,7 +7385,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TOUCHSCREENYPOS: break;
                     case VAR_MUSICVOLUME: SetMusicVolume(scriptEng.operands[i]); break;
                     case VAR_MUSICCURRENTTRACK: break;
-                    case VAR_MUSICPOSITION: break;
+                    case VAR_MUSICPOSITION: musicPosition = scriptEng.operands[i]; break;
                     case VAR_KEYDOWNUP: keyDown[inputCheck].up = scriptEng.operands[i]; break;
                     case VAR_KEYDOWNDOWN: keyDown[inputCheck].down = scriptEng.operands[i]; break;
                     case VAR_KEYDOWNLEFT: keyDown[inputCheck].left = scriptEng.operands[i]; break;
