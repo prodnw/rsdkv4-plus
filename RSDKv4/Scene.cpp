@@ -808,16 +808,16 @@ void LoadStageFiles(void)
 
 #if RETRO_USE_COMPILER
 #if !RETRO_USE_ORIGINAL_CODE
-                bool bytecodeExists = false;
-                FileInfo bytecodeInfo;
-                GetFileInfo(&bytecodeInfo);
+            bool bytecodeExists = false;
+            FileInfo bytecodeInfo;
+            GetFileInfo(&bytecodeInfo);
+            CloseFile();
+            if (LoadFile("Bytecode/GlobalCode.bin", &info)) {
+                bytecodeExists = true;
                 CloseFile();
-                if (LoadFile("Bytecode/GlobalCode.bin", &info)) {
-                    bytecodeExists = true;
-                    CloseFile();
-                }
-                SetFileInfo(&bytecodeInfo);
-    
+            }
+            SetFileInfo(&bytecodeInfo);
+
                 if (bytecodeExists && !forceUseScripts) {
 #else
                 if (Engine.usingBytecode) {
@@ -849,7 +849,7 @@ void LoadStageFiles(void)
                 SetFileInfo(&infoStore);
 #endif
             }
-                CloseFile();
+            CloseFile();
 
 #if RETRO_USE_MOD_LOADER
             Engine.LoadXMLPalettes();
