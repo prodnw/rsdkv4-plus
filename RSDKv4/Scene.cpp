@@ -801,9 +801,9 @@ void LoadStageFiles(void)
 				}
 
 #if RETRO_USE_MOD_LOADER && RETRO_USE_COMPILER
-            for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
-                SetObjectTypeName(modTypeNames[i], globalObjectCount + i + 1);
-            }
+                for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
+                    SetObjectTypeName(modTypeNames[i], globalObjectCount + i + 1);
+                }
 #endif
 
 #if RETRO_USE_COMPILER
@@ -849,7 +849,7 @@ void LoadStageFiles(void)
                 SetFileInfo(&infoStore);
 #endif
             }
-                CloseFile();
+            CloseFile();
 
 #if RETRO_USE_MOD_LOADER
             Engine.LoadXMLPalettes();
