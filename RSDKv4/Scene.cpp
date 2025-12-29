@@ -818,7 +818,7 @@ void LoadStageFiles(void)
             }
             SetFileInfo(&bytecodeInfo);
 
-                if (bytecodeExists && !forceUseScripts) {
+            if (bytecodeExists && !forceUseScripts) {
 #else
                 if (Engine.usingBytecode) {
 #endif
