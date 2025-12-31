@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (56 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (57 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -431,6 +431,7 @@ const char variableNames[][0x20] = {
     "system.timeHour",
     "system.timeMinute",
     "system.timeSecond",
+    "engine.gameType"
 };
 #endif
 
@@ -1185,6 +1186,7 @@ enum ScrVar {
     VAR_SYSTEM_TIMEHOUR,
     VAR_SYSTEM_TIMEMINUTE,
     VAR_SYSTEM_TIMESECOND,
+    VAR_ENGINE_GAMETYPE
     VAR_MAX_CNT
 };
 
@@ -4783,6 +4785,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = tm_now->tm_sec;
                         break;
                     }
+                    
+                    case VAR_ENGINE_GAMETYPE: scriptEng.operands[i] = Engine.gameType; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -7587,6 +7591,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SYSTEM_TIMEHOUR: break;
                     case VAR_SYSTEM_TIMEMINUTE: break;
                     case VAR_SYSTEM_TIMESECOND: break;
+                    case VAR_ENGINE_GAMETYPE: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
