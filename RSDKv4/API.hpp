@@ -40,4 +40,11 @@ extern bool API_Steam_hasPlusDLC;
 void API_Steam_Init();
 #endif
 
+#if RETRO_USE_EOS_SDK
+#include "eos_sdk.h"
+
+void API_EOS_Init();
+void API_EOS_Update();
+#endif
+
 void API_Init();

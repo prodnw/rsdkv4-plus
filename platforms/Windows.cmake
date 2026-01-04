@@ -132,5 +132,5 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU
     target_compile_options(RetroEngine PRIVATE -Wno-microsoft-cast -Wno-microsoft-exception-spec)
 endif()
 
-target_sources(RetroEngine PRIVATE ${RETRO_NAME}/${RETRO_NAME}.rc)
+target_sources(RetroEngine PRIVATE RSDKv4/RSDKv4.rc)
 target_link_options(RetroEngine PRIVATE /subsystem:windows)

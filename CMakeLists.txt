@@ -11,7 +11,7 @@ option(RETRO_NETWORKING "Enables or disables networking features used for Sonic 
 option(RETRO_USE_HW_RENDER "Enables usage of the Hardware Render, menus are unplayable without it." ON)
 option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releases." OFF)
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
-option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API" OFF)
+option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API." OFF)
 
 if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
 	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
@@ -34,8 +34,11 @@ option(RETRO_VANILLA_LIKE "Brings back the normal v4 limitations." OFF)
 
 set(RETRO_ICON_NAME "RSDKv4 Decomp Icon.ico" CACHE STRING "Icon filename to embed in the executable. Defaults to RSDKv4 Decomp Icon.")
 
+option(RETRO_USE_EOS "Adds Epic Online Services SDK support for multiple network features." OFF)  
+
 set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
 set(DISCORD_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/discord_game_sdk")
+set(EOS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/eos_sdk")
 
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
@@ -46,9 +49,7 @@ if(RETRO_UPDATE_CHECKER)
 	set(RETRO_USE_CURL ON)
 endif()
 
-set(RETRO_NAME "RSDKv4")
-
-set(RETRO_OUTPUT_NAME ${RETRO_NAME} CACHE STRING "The exported name of the executable.")
+set(RETRO_OUTPUT_NAME "RSDKv4" CACHE STRING "The exported name of the executable.")
 
 set(RETRO_FILES
     dependencies/all/tinyxml2/tinyxml2.cpp
@@ -257,6 +258,14 @@ if(RETRO_USE_CURL)
 	target_link_libraries(RetroEngine CURL::libcurl)
 endif()
 
+if(RETRO_USE_EOS)
+    if(RETRO_ARCH STREQUAL "64")
+        target_link_libraries(RetroEngine ${EOS_SDK_DIR}/Lib/EOSSDK-Win64-Shipping.lib)
+    elseif(RETRO_ARCH STREQUAL "32")
+        target_link_libraries(RetroEngine ${EOS_SDK_DIR}/Lib/EOSSDK-Win32-Shipping.lib)
+    endif()
+endif()
+
 target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
@@ -295,6 +304,12 @@ if(RETRO_USE_DISCORD)
 	target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
 endif()
 
+if(RETRO_USE_EOS)
+    target_include_directories(RetroEngine PRIVATE
+        ${EOS_SDK_DIR}/Include
+    )
+endif()
+
 target_compile_definitions(RetroEngine PRIVATE
     RSDK_REVISION=${RETRO_REVISION}
     RETRO_USE_MOD_LOADER=$<BOOL:${RETRO_MOD_LOADER}>
@@ -308,10 +323,12 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
     RETRO_ACCEPT_OLD_SYNTAX=$<BOOL:${RETRO_ACCEPT_OLD_SYNTAX}>
     RETRO_VANILLA_LIKE=$<BOOL:${RETRO_VANILLA_LIKE}>
+    RETRO_USE_EOS_SDK=$<BOOL:${RETRO_USE_EOS}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 
     RETRO_DEV_EXTRA="${PLATFORM} - ${CMAKE_CXX_COMPILER_ID}"
     DECOMP_VERSION="${DECOMP_VERSION}"
     RETRO_ICON_NAME="${RETRO_ICON_NAME}"
+    RETRO_OUTPUT_NAME="${RETRO_OUTPUT_NAME}"
 )

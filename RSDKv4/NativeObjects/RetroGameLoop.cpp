@@ -12,10 +12,7 @@ void RetroGameLoop_Create(void *objPtr)
 {
     mixFiltersOnJekyll = Engine.useHighResAssets;
 
-#if RETRO_USE_DISCORD_SDK
-    if (GetGlobalVariableByName("engine.useDiscordRPC") == true)
-        API_Discord_Init();
-#endif
+    API_Init();
 }
 
 void RetroGameLoop_Main(void *objPtr)

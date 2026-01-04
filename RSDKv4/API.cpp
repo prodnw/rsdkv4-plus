@@ -1,5 +1,6 @@
 #include "RetroEngine.hpp"
 
+// Discord
 #if RETRO_USE_DISCORD_SDK
 #include "discord.h"
 discord::Core *__discord = {};
@@ -124,6 +125,7 @@ void API_Discord_UpdatePresence()
 }
 #endif
 
+// Steam
 #if RETRO_USE_STEAMWORKS
 #include "steam/steam_api.h"
 
@@ -153,13 +155,33 @@ void API_Steam_Init()
 }
 #endif
 
+// Epic Online Services (this seems like a HEAVY long shot but it would be so awesome to have in the engine)
+#if RETRO_USE_EOS_SDK
+#include "eos_sdk.h"
+
+void API_EOS_Init()
+{
+
+}
+
+void API_EOS_Update()
+{
+
+}
+#endif
+
 void API_Init()
 {
 #if RETRO_USE_DISCORD_SDK
-    API_Discord_Init();
+    if (GetGlobalVariableByName("engine.useDiscordRPC") == true)
+        API_Discord_Init();
 #endif
 
 #if RETRO_USE_STEAMWORKS
     API_Steam_Init();
+#endif
+
+#if RETRO_USE_EOS_SDK
+    API_EOS_Init();
 #endif
 }
