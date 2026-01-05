@@ -6246,7 +6246,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #else
                 LoadTextFile(menu, scriptText, false);
 #endif
-                PrintLog("Using MENU_%d to load 'Data/Strings/%s'", scriptEng.operands[0] + 1, scriptText);
                 break;
             }
             case FUNC_GETTEXTINFO: {
