@@ -79,6 +79,7 @@ bool ControllerVibration[DEFAULT_INPUT_COUNT];
 int VibrationIntensity[DEFAULT_INPUT_COUNT]; // 0 = Low, 1 = Medium, 2 = High
 int forcePlatform            = -1;
 int forceDeviceType          = -1;
+bool useDiscordRPC           = true;
 
 extern void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b);
 
@@ -320,6 +321,9 @@ void InitUserdata()
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
         ini.SetInteger("Game", "ForcePlatform", forcePlatform = -1);
         ini.SetInteger("Game", "ForceDeviceType", forceDeviceType = -1);
+#if RETRO_USE_DISCORD_SDK
+        ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
+#endif
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -540,6 +544,11 @@ void InitUserdata()
         Engine.gameDeviceType = forceDeviceType == -1 ? Engine.gameDeviceType : (forceDeviceType ? RETRO_MOBILE : RETRO_STANDARD);
         PrintLog("forceDeviceType == %d", forceDeviceType);
         PrintLog("Engine.gameDeviceType == %d", Engine.gameDeviceType);
+
+#if RETRO_USE_DISCORD_SDK
+        if (!ini.GetBool("Game", "UseDiscordRPC", &useDiscordRPC))
+            useDiscordRPC = true;
+#endif
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -924,6 +933,10 @@ void WriteSettings()
     ini.SetInteger("Game", "ForcePlatform", forcePlatform);
     ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts (-1 = use the current platform type, 0 = Standalone, 1 = Mobile)");
     ini.SetInteger("Game", "ForceDeviceType", forceDeviceType);
+#if RETRO_USE_DISCORD_SDK
+    ini.SetComment("Game", "UseDiscordRPC", "Enable this flag to enable the use of Discord Rich Presence");
+    ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC);
+#endif
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");

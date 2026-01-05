@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "Userdata.hpp"
 
 // Discord
 #if RETRO_USE_DISCORD_SDK
@@ -173,7 +174,8 @@ void API_EOS_Update()
 void API_Init()
 {
 #if RETRO_USE_DISCORD_SDK
-    if (GetGlobalVariableByName("engine.useDiscordRPC") == true)
+    extern bool useDiscordRPC;
+    if (useDiscordRPC)
         API_Discord_Init();
 #endif
 
