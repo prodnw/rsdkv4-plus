@@ -1,0 +1,4 @@
+RETRO ENGINE v4 USAGE:
+- Open the asset directory './' in a file browser
+- Place a data pack named 'Data.rsdk' in the asset directory
+- OR extract a data pack and place the "Data" & "Bytecode" folders in the asset directory

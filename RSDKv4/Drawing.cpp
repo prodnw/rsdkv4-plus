@@ -3024,7 +3024,7 @@ void DrawRectangle(int XPos, int YPos, int width, int height, int R, int G, int 
         }
     }
     else {
-        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - A)];
+        ushort *fbufferBlend = &blendLookupTable[0x20 * (0x100 - A)];
         ushort *pixelBlend   = &blendLookupTable[0x20 * A];
 
         int h = height;
@@ -3065,7 +3065,7 @@ void SetFadeHQ(int R, int G, int B, int A)
         }
     }
     else {
-        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - A)];
+        ushort *fbufferBlend = &blendLookupTable[0x20 * (0x100 - A)];
         ushort *pixelBlend   = &blendLookupTable[0x20 * A];
 
         int h = SCREEN_YSIZE;
@@ -3723,9 +3723,6 @@ void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, in
     byte *gfxData;
     ushort *frameBufferPtr;
 
-    ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-    ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
-
     switch (direction) {
         case FLIP_NONE:
             pitch          = GFX_LINESIZE - width;
@@ -3741,9 +3738,9 @@ void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, in
                 while (w--) {
                     if (*gfxData > 0) {
                         ushort color    = activePalette[*gfxData];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+     					int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                     ++gfxData;
@@ -3767,9 +3764,9 @@ void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, in
                 while (w--) {
                     if (*gfxData > 0) {
                         ushort color    = activePalette[*gfxData];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+					    int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                     --gfxData;
@@ -3793,9 +3790,9 @@ void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, in
                 while (w--) {
                     if (*gfxData > 0) {
                         ushort color    = activePalette[*gfxData];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+					    int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                     ++gfxData;
@@ -3819,9 +3816,9 @@ void DrawAlphaBlendedSpriteFlipped(int XPos, int YPos, int width, int height, in
                 while (w--) {
                     if (*gfxData > 0) {
                         ushort color    = activePalette[*gfxData];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+					    int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                     --gfxData;
@@ -3925,8 +3922,6 @@ void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX
     if (cosine < 0 || sine < 0)
         sprYPos += sine + cosine;
 
-    ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-    ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
     if (direction == FLIP_X) {
         int drawX = sprXPos - (cosine * startX - sine * startY) - 0x100;
         int drawY = cosine * startY + sprYPos + sine * startX;
@@ -3942,9 +3937,9 @@ void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
                         ushort color    = activePalette[index];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+					    int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                 }
@@ -3972,9 +3967,9 @@ void DrawAlphaBlendedSpriteRotated(int direction, int XPos, int YPos, int pivotX
                     byte index = gfxData[(finalY >> 9 << lineSize) + (finalX >> 9)];
                     if (index > 0) {
                         ushort color    = activePalette[index];
-                        int R           = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                        int G           = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                        int B           = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+    					int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					    int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					    int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
                         *frameBufferPtr = R | G | B;
                     }
                 }
@@ -4287,7 +4282,7 @@ void DrawSpriteAllFX(int direction, int XPos, int YPos, int pivotX, int pivotY, 
         return;
 
 	//ink tables here -- unused by this function
-	//ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
+	//ushort *fbufferBlend = &blendLookupTable[0x20 * (0x100 - alpha)];
 	//ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
 	//ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
 	
@@ -4682,8 +4677,6 @@ void DrawAlphaBlendedSprite(int XPos, int YPos, int width, int height, int sprX,
         }
     }
     else {
-        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - alpha)];
-        ushort *pixelBlend   = &blendLookupTable[0x20 * alpha];
 
         while (height--) {
             activePalette   = fullPalette[*lineBuffer];
@@ -4694,9 +4687,9 @@ void DrawAlphaBlendedSprite(int XPos, int YPos, int width, int height, int sprX,
                 if (*gfxData > 0) {
                     ushort color = activePalette[*gfxData];
 
-                    int R = (fbufferBlend[(*frameBufferPtr & 0xF800) >> 11] + pixelBlend[(color & 0xF800) >> 11]) << 11;
-                    int G = (fbufferBlend[(*frameBufferPtr & 0x7E0) >> 6] + pixelBlend[(color & 0x7E0) >> 6]) << 6;
-                    int B = fbufferBlend[*frameBufferPtr & 0x1F] + pixelBlend[color & 0x1F];
+					int R = ((((*frameBufferPtr & 0xF800) >> 11) * (0x100 - alpha)) + (((color & 0xF800) >> 11) * alpha) >> 8) << 11;
+					int G = ((((*frameBufferPtr & 0x7E0) >> 5) * (0x100 - alpha)) + (((color & 0x7E0) >> 5) * alpha) >> 8) << 5;
+					int B = (((*frameBufferPtr & 0x1F) * (0x100 - alpha)) + ((color & 0x1F) * alpha) >> 8);
 
                     *frameBufferPtr = R | G | B;
                 }
@@ -4731,7 +4724,6 @@ void DrawAdditiveBlendedSprite(int XPos, int YPos, int width, int height, int sp
     if (width <= 0 || height <= 0 || alpha <= 0)
         return;
 
-    ushort *blendTablePtr  = &blendLookupTable[0x20 * alpha];
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = GFX_LINESIZE - width;
     int gfxPitch           = surface->width - width;
@@ -4748,9 +4740,9 @@ void DrawAdditiveBlendedSprite(int XPos, int YPos, int width, int height, int sp
             if (*gfxData > 0) {
                 ushort color = activePalette[*gfxData];
 
-                int R = minVal((blendTablePtr[(color & 0xF800) >> 11] << 11) + (*frameBufferPtr & 0xF800), 0xF800);
-                int G = minVal((blendTablePtr[(color & 0x7E0) >> 6] << 6) + (*frameBufferPtr & 0x7E0), 0x7E0);
-                int B = minVal(blendTablePtr[color & 0x1F] + (*frameBufferPtr & 0x1F), 0x1F);
+				int R = minVal((((((color & 0xF800) >> 11) * alpha) >> 8) << 11) + (*frameBufferPtr & 0xF800), 0xF800);
+				int G = minVal((((((color & 0x7E0) >> 5) * alpha) >> 8) << 5) + (*frameBufferPtr & 0x7E0), 0x7E0);
+				int B = minVal((((color & 0x1F) * alpha) >> 8) + (*frameBufferPtr & 0x1F), 0x1F);
 
                 *frameBufferPtr = R | G | B;
             }
@@ -4785,7 +4777,6 @@ void DrawSubtractiveBlendedSprite(int XPos, int YPos, int width, int height, int
     if (width <= 0 || height <= 0 || alpha <= 0)
         return;
 
-    ushort *subBlendTable  = &subtractLookupTable[0x20 * alpha];
     GFXSurface *surface    = &gfxSurface[sheetID];
     int pitch              = GFX_LINESIZE - width;
     int gfxPitch           = surface->width - width;
@@ -4802,9 +4793,9 @@ void DrawSubtractiveBlendedSprite(int XPos, int YPos, int width, int height, int
             if (*gfxData > 0) {
                 ushort color = activePalette[*gfxData];
 
-                int R = maxVal((*frameBufferPtr & 0xF800) - (subBlendTable[(color & 0xF800) >> 11] << 11), 0);
-                int G = maxVal((*frameBufferPtr & 0x7E0) - (subBlendTable[(color & 0x7E0) >> 6] << 6), 0);
-                int B = maxVal((*frameBufferPtr & 0x1F) - subBlendTable[color & 0x1F], 0);
+				int R = maxVal((*frameBufferPtr & 0xF800) - (((((0xF800 - (color & 0xF800)) >> 11) * alpha) >> 8) << 11), 0);
+				int G = maxVal((*frameBufferPtr & 0x7E0) - (((((0x7E0 - (color & 0x7E0)) >> 5) * alpha) >> 8) << 5), 0);
+				int B = maxVal((*frameBufferPtr & 0x1F) - (((0x1F - (color & 0x1F)) * alpha) >> 8), 0);
 
                 *frameBufferPtr = R | G | B;
             }
