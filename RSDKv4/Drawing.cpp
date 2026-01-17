@@ -500,7 +500,7 @@ void FlipScreen()
         // reset everything just in case
         SDL_RenderSetLogicalSize(Engine.renderer, SCREEN_XSIZE, SCREEN_YSIZE);
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "nearest");
-        // putting some FLEX TAPE� on that memory leak
+        // putting some FLEX TAPE´┐Ż on that memory leak
         SDL_DestroyTexture(texTarget);
     }
     else {
@@ -1443,10 +1443,10 @@ void DrawStageGFX()
             SetFadeHQ(fadeR, fadeG, fadeB, fadeA);
 			break;
 			case 2:
-			DrawClassicFade(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
+			DrawClassicFadeOut(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
 			break;
 			case 3:
-			DrawClassicRedFade(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
+			DrawClassicFadeIn(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
 			break;
         }
     }
@@ -1458,10 +1458,10 @@ void DrawStageGFX()
             DrawRectangle(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeA);
 			break;
 			case 2:
-			DrawClassicFade(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
+			DrawClassicFadeOut(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
 			break;
 			case 3:
-			DrawClassicRedFade(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
+			DrawClassicFadeIn(0, 0, SCREEN_XSIZE, SCREEN_YSIZE, fadeR, fadeG, fadeB, fadeX);
 			break;
         }
     }
@@ -2870,7 +2870,7 @@ void Draw3DSkyLayer(int layerID)
 #endif
 }
 
-void DrawClassicFade(int XPos, int YPos, int width, int height, int R, int G, int B, int A)
+void DrawClassicFadeOut(int XPos, int YPos, int width, int height, int R, int G, int B, int A)
 {
 	
 #if RETRO_SOFTWARE_RENDER
@@ -2995,7 +2995,7 @@ void DrawClassicFade(int XPos, int YPos, int width, int height, int R, int G, in
 #endif
 }
 
-void DrawClassicRedFade(int XPos, int YPos, int width, int height, int R, int G, int B, int A)
+void DrawClassicFadeIn(int XPos, int YPos, int width, int height, int R, int G, int B, int A)
 {
 	
 #if RETRO_SOFTWARE_RENDER
@@ -3029,14 +3029,14 @@ void DrawClassicRedFade(int XPos, int YPos, int width, int height, int R, int G,
 			
 			int Awork = A;
 			
-			int R = (*frameBufferPtr & 0xF800) >> 11;
-			int G = (*frameBufferPtr & 0x7E0) >> 6;
-			int B = *frameBufferPtr & 0x1F;
+			int trgR = (*frameBufferPtr & 0xF800) >> 11;
+			int trgG = (*frameBufferPtr & 0x7E0) >> 6;
+			int trgB = *frameBufferPtr & 0x1F;
 			
-			int trgR = (clr & 0xF800) >> 11;
-			int trgG = (clr & 0x7E0) >> 6;
-			int trgB = clr & 0x1F;
-						
+			int R = (clr & 0xF800) >> 11;
+			int G = (clr & 0x7E0) >> 6;
+			int B = clr & 0x1F;
+					
 			if (Awork > 0) {	
 				if (trgB > B) {
 					dif = trgB - B;
@@ -3060,7 +3060,7 @@ void DrawClassicRedFade(int XPos, int YPos, int width, int height, int R, int G,
 						Awork -= dif;
 					}
 				}
-			}
+			}	
 			if (Awork > 0) {	
 				if (trgG > G) {
 					dif = trgG - G;

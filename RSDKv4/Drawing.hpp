@@ -139,8 +139,8 @@ void Draw3DSkyLayer(int layerID);
 
 // Shape Drawing
 void DrawRectangle(int XPos, int YPos, int width, int height, int R, int G, int B, int A);
-void DrawClassicFade(int XPos, int YPos, int width, int height, int R, int G, int B, int A);
-void DrawClassicRedFade(int XPos, int YPos, int width, int height, int R, int G, int B, int A);
+void DrawClassicFadeOut(int XPos, int YPos, int width, int height, int R, int G, int B, int A);
+void DrawClassicFadeIn(int XPos, int YPos, int width, int height, int R, int G, int B, int A);
 void SetFadeHQ(int R, int G, int B, int A);
 void DrawTintRectangle(int XPos, int YPos, int width, int height);
 void DrawScaledTintMask(int direction, int XPos, int YPos, int pivotX, int pivotY, int scaleX, int scaleY, int width, int height, int sprX, int sprY,

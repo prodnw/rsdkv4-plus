@@ -509,8 +509,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("LoadPalette", 5),
     FunctionInfo("RotatePalette", 4),
     FunctionInfo("SetScreenFade", 4),
-    FunctionInfo("SetClassicFade", 4),
-    FunctionInfo("SetClassicRFade", 4),
+    FunctionInfo("SetClassicFadeOut", 4),
+    FunctionInfo("SetClassicFadeIn", 4),
     FunctionInfo("SetActivePalette", 3),
 #if RETRO_REV00
     FunctionInfo("SetPaletteFade", 7),
@@ -531,8 +531,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("EditMenuEntry", 4),
     FunctionInfo("LoadStage", 0),
     FunctionInfo("DrawRect", 8),
-    FunctionInfo("ClassicTint", 8),
-    FunctionInfo("ClassicRTint", 8),
+    FunctionInfo("DrawClassicFadeOut", 8),
+    FunctionInfo("DrawClassicFadeIn", 8),
     FunctionInfo("ResetObjectEntity", 5),
     FunctionInfo("BoxCollisionTest", 11),
     FunctionInfo("CreateTempObject", 4),
@@ -1258,8 +1258,8 @@ enum ScrFunc {
     FUNC_LOADPALETTE,
     FUNC_ROTATEPALETTE,
     FUNC_SETSCREENFADE,
-    FUNC_SETCLASSICFADE,
-    FUNC_SETCLASSICRFADE,
+    FUNC_SETCLASSICFADEOUT,
+    FUNC_SETCLASSICFADEIN,
     FUNC_SETACTIVEPALETTE,
     FUNC_SETPALETTEFADE,
     FUNC_SETPALETTEENTRY,
@@ -1274,8 +1274,8 @@ enum ScrFunc {
     FUNC_EDITMENUENTRY,
     FUNC_LOADSTAGE,
     FUNC_DRAWRECT,
-    FUNC_CLASSICTINT,
-    FUNC_CLASSICRTINT,
+    FUNC_DRAWCLASSICOUT,
+    FUNC_DRAWCLASSICIN,
     FUNC_RESETOBJECTENTITY,
     FUNC_BOXCOLLISIONTEST,
     FUNC_CREATETEMPOBJECT,
@@ -5541,11 +5541,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 SetFade(1, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
-            case FUNC_SETCLASSICFADE:
+            case FUNC_SETCLASSICFADEOUT:
                 opcodeSize = 0;
                 SetFade(2, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
-            case FUNC_SETCLASSICRFADE:
+            case FUNC_SETCLASSICFADEIN:
                 opcodeSize = 0;
                 SetFade(3, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
@@ -5806,14 +5806,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 DrawRectangle(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
                 break;
-			case FUNC_CLASSICTINT:
+			case FUNC_DRAWCLASSICOUT:
                 opcodeSize = 0;
-                DrawClassicFade(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                DrawClassicFadeOut(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
                 break;
-			case FUNC_CLASSICRTINT:
+			case FUNC_DRAWCLASSICIN:
                 opcodeSize = 0;
-                DrawClassicRedFade(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                DrawClassicFadeIn(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
                 break;
             case FUNC_RESETOBJECTENTITY: {
@@ -6501,7 +6501,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				//The input system thing i implemented works almost completely different from v5U,,, but its easier so whos complaining
                 break;
 
-            case FUNC_GETFILTEREDINPUTDEVICEID: //dunno how dis even works :urm:  //but its unused so :bleh:  //if anybody figures this out pls add it 🙏️
+            case FUNC_GETFILTEREDINPUTDEVICEID: //dunno how dis even works :urm:  //but its unused so :bleh:  //if anybody figures this out pls add it �������
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = deviceID
                 // scriptEng.operands[1] = confirmOnly
