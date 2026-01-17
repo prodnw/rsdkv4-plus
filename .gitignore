@@ -30,6 +30,7 @@ bin/
 cmake/
 
 #dependencies
+/dependencies
 [Dd]ependencies/windows-uwp/**
 [Dd]ependencies/windows/*
 [Dd]ependencies/android/*
