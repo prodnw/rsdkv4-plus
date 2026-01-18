@@ -1153,12 +1153,12 @@ void RetroEngine::LoadXMLPlayers(TextMenu *menu)
                             if (nameAttr)
                                 plrName = GetXMLAttributeValueString(nameAttr);
 
-                            if (playerCount >= PLAYER_COUNT)
-                                PrintLog("Failed to add dev menu character '%s' (max limit reached)", plrName);
-                            else if (menu)
+                            if (menu)
                                 AddTextMenuEntry(menu, plrName);
-                            else
-                                StrCopy(playerNames[playerCount++], plrName);
+                            else {
+                                playerNames.push_back(plrName);
+                                playerCount++;
+                            }
 
                         } while ((plrElement = NextXMLSiblingElement(doc, plrElement, "player")));
                     }
@@ -1272,7 +1272,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     StrCopy(gameWindowText, "Retro-Engine"); // this is the default window name
 
     globalVariablesCount = 0;
-#if RETRO_USE_MOD_LOADER
+#if !RETRO_USE_ORIGINAL_CODE
     playerCount = 0;
 #endif
 
@@ -1343,12 +1343,8 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
         // Read Player Names
         byte plrCount = 0;
         FileRead(&plrCount, 1);
-#if RETRO_USE_MOD_LOADER
-        // Check for max player limit
-        if (plrCount >= PLAYER_COUNT) {
-            PrintLog("WARNING: GameConfig attempted to exceed the player limit, truncating to supported limit");
-            plrCount = PLAYER_COUNT;
-        }
+#if !RETRO_USE_ORIGINAL_CODE
+        playerNames.resize(plrCount);
 #endif
         for (byte p = 0; p < plrCount; ++p) {
             FileRead(&fileBuffer, 1);
@@ -1357,7 +1353,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
             // needed for PlayerName[] stuff in scripts
 #if !RETRO_USE_ORIGINAL_CODE
             strBuffer[fileBuffer] = 0;
-            StrCopy(playerNames[p], strBuffer);
+            playerNames[p] = strBuffer;
             playerCount++;
 #endif
         }

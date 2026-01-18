@@ -4,8 +4,8 @@
 char savePath[0x100];
 #endif
 
-char playerNames[PLAYER_COUNT][0x20];
-byte playerCount = 0;
+std::vector<std::string> playerNames;
+int playerCount = 0;
 
 #if RETRO_USE_MOD_LOADER
 std::vector<ModInfo> modList;

@@ -1,10 +1,8 @@
 #ifndef MOD_API_H
 #define MOD_API_H
 
-#define PLAYER_COUNT (0x100)
-
-extern char playerNames[PLAYER_COUNT][0x20];
-extern byte playerCount;
+extern std::vector<std::string> playerNames;
+extern int playerCount;
 
 #if RETRO_USE_MOD_LOADER
 #include <string>

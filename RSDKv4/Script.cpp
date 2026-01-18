@@ -2222,11 +2222,14 @@ void ConvertFunctionText(char *text)
                 funcName[0] = '0';
                 funcName[1] = 0;
 
-                int p = 0;
-                for (; p < PLAYER_COUNT; ++p) {
-                    char buf[0x40];
-                    char *str = playerNames[p];
-                    int pos   = 0;
+                std::string buf;
+                int pos = 0;
+                int p   = 0;
+
+                for (; p < playerCount; ++p) {
+                    buf.clear();
+                    const char *str = playerNames[p].c_str();
+                    pos = 0;
 
                     while (*str) {
                         if (*str != ' ')
@@ -2235,14 +2238,14 @@ void ConvertFunctionText(char *text)
                     }
                     buf[pos] = 0;
 
-                    if (StrComp(arrayStr, buf)) {
+                    if (StrComp(arrayStr, buf.c_str())) {
                         funcName[0] = 0;
                         AppendIntegerToString(funcName, p);
                         break;
                     }
                 }
 
-                if (p == PLAYER_COUNT)
+                if (p == playerCount)
                     PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
             }
 
@@ -2534,11 +2537,14 @@ void CheckCaseNumber(char *text)
             caseValue[0] = '0';
             caseValue[1] = 0;
 
-            int p = 0;
-            for (; p < PLAYER_COUNT; ++p) {
-                char buf[0x40];
-                char *str = playerNames[p];
-                int pos   = 0;
+            std::string buf;
+            int pos = 0;
+            int p   = 0;
+
+            for (; p < playerCount; ++p) {
+                buf.clear();
+                const char *str = playerNames[p].c_str();
+                pos = 0;
 
                 while (*str) {
                     if (*str != ' ')
@@ -2547,14 +2553,14 @@ void CheckCaseNumber(char *text)
                 }
                 buf[pos] = 0;
 
-                if (StrComp(arrayStr, buf)) {
+                if (StrComp(arrayStr, buf.c_str())) {
                     caseValue[0] = 0;
                     AppendIntegerToString(caseValue, p);
                     break;
                 }
             }
 
-            if (p == PLAYER_COUNT) {
+            if (p == playerCount) {
                 PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
             }
         }
@@ -2738,11 +2744,14 @@ bool ReadSwitchCase(char *text)
                 caseValue[0] = '0';
                 caseValue[1] = 0;
 
-                int p = 0;
-                for (; p < PLAYER_COUNT; ++p) {
-                    char buf[0x40];
-                    char *str = playerNames[p];
-                    int pos   = 0;
+                std::string buf;
+                int pos = 0;
+                int p   = 0;
+
+                for (; p < playerCount; ++p) {
+                    buf.clear();
+                    const char *str = playerNames[p].c_str();
+                    pos = 0;
 
                     while (*str) {
                         if (*str != ' ')
@@ -2751,14 +2760,14 @@ bool ReadSwitchCase(char *text)
                     }
                     buf[pos] = 0;
 
-                    if (StrComp(arrayStr, buf)) {
+                    if (StrComp(arrayStr, buf.c_str())) {
                         caseValue[0] = 0;
                         AppendIntegerToString(caseValue, p);
                         break;
                     }
                 }
 
-                if (p == PLAYER_COUNT)
+                if (p == playerCount)
                     PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
             }
 
