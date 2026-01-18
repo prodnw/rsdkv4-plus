@@ -3015,6 +3015,8 @@ void DrawClassicFadeIn(int XPos, int YPos, int width, int height, int R, int G, 
         return;
 
 	//A works differently here, and we're going to tweak the value to compensate
+	A = maxVal((256 - A),0);
+	
 	A *= 3;
 	A >>= 3;
     
