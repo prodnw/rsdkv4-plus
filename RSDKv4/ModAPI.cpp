@@ -235,6 +235,12 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
             info->discordGameClientID = infoBuf;
         }
 
+        // Author URL
+        StrCopy(infoBuf, "");
+        modSettings.GetString("", "AuthorURL", infoBuf);
+        if (!StrComp(infoBuf, "")) {
+            info->authorURL = infoBuf;
+        }
         return true;
     }
     return false;
@@ -619,6 +625,15 @@ void GetModID(int *unused, const char *modName)
 	}
 }
 
+void GetModAuthorURL(int *textMenu, int *highlight, uint *id, int *unused)
+{
+    if (*id >= modList.size())
+        return;
+
+    TextMenu *menu                       = &gameMenu[*textMenu];
+    menu->entryHighlight[menu->rowCount] = *highlight;
+    AddTextMenuEntry(menu, modList[*id].authorURL.c_str());
+}
 #endif
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE

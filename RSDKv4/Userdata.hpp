@@ -100,6 +100,7 @@ extern char gamePath[0x100];
 #else
 extern char gamePath[0x200];
 #endif
+extern char username[0x100];
 extern int saveRAM[SAVEDATA_SIZE];
 extern Achievement achievements[ACHIEVEMENT_COUNT];
 extern int achievementCount;
@@ -178,6 +179,8 @@ void InitUserdata();
 void WriteSettings();
 void ReadUserdata();
 void WriteUserdata();
+void GetUsername(int *unused, int *textMenu);
+void SetUsername(int *unused, const char *newUsername);
 
 inline void AddAchievement(const char *name, const char *description)
 {

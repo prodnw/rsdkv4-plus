@@ -141,4 +141,7 @@ inline int GetHapticEffectNum()
 void HapticEffect(int *id, int *a2, int *a3, int *a4);
 #endif
 
+void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
+int GetGamepadBatteryLevel();
+
 #endif // !INPUT_H

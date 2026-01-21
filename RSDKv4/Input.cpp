@@ -668,3 +668,52 @@ void HapticEffect(int *hapticID, int *a2, int *a3, int *a4)
         hapticEffectNum = *hapticID;
 }
 #endif
+
+// Set the LED color on a specific controller that supports it
+void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b)
+{
+#if RETRO_USING_SDL2
+    if (SDL_IsGameController(controllerID)) {
+        SDL_GameController *controller = SDL_GameControllerOpen(controllerID);
+        if (controller) {
+            if (SDL_GameControllerSetLED(controller, r, g, b) == 0) {
+                const char* name = SDL_GameControllerName(controller);
+                PrintLog("Set LED color for controller %d (%s) to (%d, %d, %d)", controllerID, name ? name : "Unknown", r, g, b);
+            } else {
+                PrintLog("Controller %d does not support RGB LED", controllerID);
+            }
+            SDL_GameControllerClose(controller);
+        } else {
+            PrintLog("Failed to open controller %d", controllerID);
+        }
+    }
+#endif
+}
+
+int GetGamepadBatteryLevel()
+{
+#if RETRO_USING_SDL2
+    // Load battery level from the first connected gamepad
+    if (gamepadCount > 0 && controllers.size() > 0) {
+        SDL_GameController *controller = controllers[0].devicePtr;
+        if (controller) {
+            SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+            if (joystick) {
+                SDL_JoystickPowerLevel powerLevel = SDL_JoystickCurrentPowerLevel(joystick);
+                
+                // Hey Vegeta, what does that scouter say about his power level?
+                switch (powerLevel) {
+                    case SDL_JOYSTICK_POWER_UNKNOWN: return 100;
+                    case SDL_JOYSTICK_POWER_EMPTY: return 0;
+                    case SDL_JOYSTICK_POWER_LOW: return 25;
+                    case SDL_JOYSTICK_POWER_MEDIUM: return 50;
+                    case SDL_JOYSTICK_POWER_FULL: return 100;
+                    case SDL_JOYSTICK_POWER_WIRED: return 100;
+                    default: return 100;
+                }
+            }
+        }
+    }
+#endif
+    return 100; // Default to full
+}

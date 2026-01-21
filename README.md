@@ -19,29 +19,17 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * Video Player has been ported over from CD, allowing any video to be played. (Videos must be in .ogv, and placed in "Data/Videos")
  * Compatibility with mods / projects that run on the older syntax.
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
- * Objects that use animation files (e.g. players) now support ink effects
- * New functions
+ * Objects that use animation files (e.g. players) now support ink effects.
+ * New username feature, if you have Steam enabled it'll automatically use your Steam username on first launch. Otherwise, it can be set from the settings.ini.
+ * Changes to the renderer, allowing for multiple filters.
+ * New functions:
     * PauseSfx(SfxName) - Pauses the defined SFX.
     * ResumeSFX(SfxName) - Resumes the defined SFX.
     * SetClassicFade(r, g, b, alpha) - Works exactly like SetScreenFade but the fading itself is more like the Classics.
     * CheckUpdates("GitHubPageLink") - Checks whether your game needs an update.
     * LoadWebsite("WebsiteLink") - Opens up any web link into your browser (please don't abuse this...)
-    * VibrateController(true/false, controller ID, intensity L, intensity R, intensity timer) - Determines whether or not the controller should vibrate.
-    * AutoDetectController() - Detects what controller you're using and stores the returned value in the checkResult.
-      * CheckResult 0 - No device.
-      * CheckResult 1 - Keyboard.
-      * CheckResult 2 - Xbox 360
-      * CheckResult 3 - Xbox One/Series
-      * CheckResult 4 - PS3
-      * CheckResult 5 - PS4
-      * CheckResult 6 - PS5
-      * CheckResult 7 - Nintendo Switch (Any Controller)
-      * CheckResult 8 - Steam Deck
-      * CheckResult 9 - Other
-    * SetControllerLEDColour(r, g, b) - (PLAYSTATION CONTROLLERS ONLY) Changes the colour of the LED on a controller.
-    * CheckWindowFocus() - Checks if the window has lost focus or not.
-      * CheckResult 0 - Focussed.
-      * CheckResult 1 - Not focussed.
+    * VibrateController(controllerID, intensity, timer) - Determines whether or not the controller should vibrate.
+    * SetControllerLEDColour(controllerID, r, g, b) - (PLAYSTATION CONTROLLERS ONLY) Changes the colour of the LED on a controller.
     * CheckAnyButtonPressed() - Stores any button you've just pressed, whether on keyboard or controller (recorded in SDL2 keycodes.)
     * CheckControllerConnect() - Checks whether a controller has been connected.
     * CheckControllerDisconnect() - Checks whether a controller has been disconnected.
@@ -51,13 +39,23 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * GetPlaytimeHours() - Gets the playtime in hours.
     * GetPlaytimeMinutes() - Gets the playtime in minutes.
     * GetPlaytimeSeconds() - Gets the playtime in seconds.
-  * New variables
+    * GetUsername(textMenu) - Grabs the username from the settings.ini.
+    * SetUsername("NewName") - Sets the username and saves it into the settings.ini.
+  * New variables:
     * "engine.platformID" - Restored back into v4 and stores the platform you're currently playing on.
     * "temp8"
     * "temp9"
     * "temp10"
+    * "menu3.selection"
+    * "menu4.selection"
+    * "key.pressed[SDL_SCANCODE]" - Checks if a certain key is pressed, refer to [here](https://wiki.libsdl.org/SDL2/SDLScancodeLookup) to check the value of a specific scancode.
+    * "key.down[SDL_SCANCODE]" - Same as above, but this time it's held down.
+    * "controller.pressed[BUTTON_ID]" - Checks if a certain controller button is pressed, refer to [here](https://rsdkmodding.com/RSDKv4/Decompilation/SettingsINI/#controller-buttons) to check the value of a specific button.
+    * "controller.down[BUTTON_ID]" - Same as above, but this time it's held down.
     * "game.checkForUpdates" - Links with CheckUpdates in the settings.ini, and allows for update checking.
     * "game.networkPing" - Returns the amount of time it takes to update when using network features.
+    * "controller.device" - Returns the current controller type, refer to [Script.cpp](https://github.com/prodnw/rsdkv4-plus/blob/b58adf5d3620afe3d373273660a7b282ca1ddbae/RSDKv4/Script.cpp#L4627-L4628) for what each value means.
+    * "controller.wired" - Returns whether your controller is being used through a wire or not.
     * "controller.vibrationEnabled" - Links with ControllerVibration in the settings.ini, and allows a controller to vibrate.
     * "tempStr0/1/2/3/4/5/6/7/8/9/10" - Temporary values that hold text.
     * "system.timeYear" - Grabs the year value from your system clock.
@@ -66,7 +64,11 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * "system.timeHour" - Grabs the hour value from your system clock.
     * "system.timeMinute" - Grabs the minute value from your system clock.
     * "system.timeSecond" - Grabs the seconds value from your system clock.
-  * New aliases
+    * "discord.enableRPC" - (DISCORD SDK MUST BE INSTALLED AND TURNED ON) Enables or disables the use of Discord RPC in the settings.ini.
+    * "gamepad.batteryLevel" - The status of your gamepad battery level.
+    * "engine.windowFocused" - Checks whether the window is focussed or not.
+    * "engine.usernameLength" - Grabs the value of the length of the username you set in settings.ini.
+  * New aliases:
     * "FX_HSCALE" - Horizontal scaling of a sprite.
     * "FX_VSCALE" - Vertical scaling of a sprite.
     * "FX_ALL" - New FX command for DrawSpriteFX, and allows for every effect to be used at once.
@@ -84,6 +86,9 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
     * "RETRO_SWITCH" - Used for engine.platformID
   * New native functions (used via "CallNativeFunction"/"2"/"4" - be sure to add these as values in GameConfig.bin/Game.xml!)
     * GetModID("ModName") - Gets the ID of any mod in in the mod list via name and stores it in the checkResult (this could be used for checking if another mod is enabled, allowing for improved compatibility.)
+    * GetModAuthorURL() - Gets the the AuthorURL from a certain mod and stores it in a text menu.
+  * ModAPI Adjustments
+    * "AuthorURL" - Add a URL to one of your social media pages, whatever it could be. Can pair well with LoadWebsite to open from in the engine.
   * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw.
 
 # Fork Credits
@@ -98,9 +103,14 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * AlyStyle - v4+ Icon
 
 # To-Dos:
+- [ ] Improve online by a LOT, this would mean lobbies for competition, lobbies for co-op, better servers, etc.
 - [ ] Port plenty of features from previous RSDK versions that aren't in v4.
 - [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, PNG Images, and more.)
 - [ ] Continue adding plenty of QoL features along with fixing any normal v4 bugs.
+
+# ModAPI To-Dos:
+- [ ] Add mod icons, would be useful to show if there is a big list of mods.
+- [ ] Add a feature for mod dependencies which checks if you have a certain mod installed for another to work properly.
 
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.

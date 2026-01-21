@@ -33,6 +33,7 @@ char gamePath[0x100];
 #else
 char gamePath[0x200];
 #endif
+char username[0x100];
 int saveRAM[SAVEDATA_SIZE];
 Achievement achievements[ACHIEVEMENT_COUNT];
 int achievementCount = 0;
@@ -81,7 +82,7 @@ int forcePlatform            = -1;
 int forceDeviceType          = -1;
 bool useDiscordRPC           = true;
 
-extern void SetControllerLEDColour(Uint8 r, Uint8 g, Uint8 b);
+extern void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
 
 extern unsigned long long totalPlaytimeMs;
 
@@ -325,6 +326,27 @@ void InitUserdata()
         ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
 #endif
 
+        // Initialize username with Steam username if available, otherwise use default
+#if RETRO_USE_STEAMWORKS
+        if (SteamAPI_Init()) {
+            const char *steamUsername = SteamFriends()->GetPersonaName();
+            if (steamUsername && strlen(steamUsername) > 0) {
+                ini.SetString("Game", "Username", (char *)steamUsername);
+                StrCopy(username, steamUsername);
+            } else {
+                ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
+                StrCopy(username, "IntegerGeorge802");
+            }
+            SteamAPI_Shutdown();
+        } else {
+            ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
+            StrCopy(username, "IntegerGeorge802");
+        }
+#else
+        ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
+        StrCopy(username, "IntegerGeorge802");
+#endif
+
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
         StrCopy(networkHost, "127.0.0.1");
@@ -544,6 +566,8 @@ void InitUserdata()
         Engine.gameDeviceType = forceDeviceType == -1 ? Engine.gameDeviceType : (forceDeviceType ? RETRO_MOBILE : RETRO_STANDARD);
         PrintLog("forceDeviceType == %d", forceDeviceType);
         PrintLog("Engine.gameDeviceType == %d", Engine.gameDeviceType);
+        if (!ini.GetString("Game", "Username", username))
+            StrCopy(username, "IntegerGeorge802");
 
 #if RETRO_USE_DISCORD_SDK
         if (!ini.GetBool("Game", "UseDiscordRPC", &useDiscordRPC))
@@ -925,23 +949,25 @@ void WriteSettings()
                    "Handles pausing behaviour when focus is lost\n; 0 = Game focus enabled, engine focus enabled\n; 1 = Game focus disabled, "
                    "engine focus enabled\n; 2 = Game focus enabled, engine focus disabled\n; 3 = Game focus disabled, engine focus disabled");
     ini.SetInteger("Game", "DisableFocusPause", disableFocusPause_Config);
-    ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup.");
+    ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
     ini.SetComment("Game", "ForcePlatformComment",
                    "Forces the platform used in scripts, set to -1 to use the current platform.\n; "
-                   "Check the platform aliases for a full list (https://github.com/prodnw/rsdkv4-plus/blob/main/RSDKv4/RetroEngine.hpp#L46).");
+                   "Check the platform aliases for a full list (https://github.com/prodnw/rsdkv4-plus/blob/main/RSDKv4/RetroEngine.hpp#L46)");
     ini.SetInteger("Game", "ForcePlatform", forcePlatform);
     ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts (-1 = use the current platform type, 0 = Standalone, 1 = Mobile)");
     ini.SetInteger("Game", "ForceDeviceType", forceDeviceType);
 #if RETRO_USE_DISCORD_SDK
-    ini.SetComment("Game", "UseDiscordRPC", "Enable this flag to enable the use of Discord Rich Presence");
+    ini.SetComment("Game", "UseDiscordRPCComment", "Enable this flag to enable the use of Discord Rich Presence");
     ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC);
 #endif
+    ini.SetComment("Game", "UsernameComment", "The username stored locally for the game");
+    ini.SetString("Game", "Username", username);
 
 #if RETRO_USE_NETWORKING
-    ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to.");
+    ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to");
     ini.SetString("Network", "Host", networkHost);
-    ini.SetComment("Network", "PortComment", "The port the game will try to connect to.");
+    ini.SetComment("Network", "PortComment", "The port the game will try to connect to");
     ini.SetInteger("Network", "Port", networkPort);
 #endif
 
@@ -952,7 +978,7 @@ void WriteSettings()
     ini.SetComment("Window", "VSComment",
                    "Determines if VSync will be active or not (not recommended as the engine is built around running at 60 FPS)");
     ini.SetBool("Window", "VSync", Engine.vsync);
-    ini.SetComment("Window", "SMComment", "Determines what scaling is used. 0 is nearest neighbour, 1 is linear.");
+    ini.SetComment("Window", "SMComment", "Determines what scaling is used. 0 is nearest neighbour, 1 is linear");
     ini.SetInteger("Window", "ScalingMode", Engine.scalingMode);
     ini.SetComment("Window", "WSComment", "How big the window will be");
     ini.SetInteger("Window", "WindowScale", Engine.windowScale);
@@ -1221,6 +1247,31 @@ void GetAchievement(uint *id, void *unused)
     scriptEng.checkResult = achievements[*id].status;
 }
 #endif
+
+void GetUsername(int *unused, int *textMenu)
+{
+    TextMenu *menu                       = &gameMenu[*textMenu];
+    menu->entryHighlight[menu->rowCount] = false;
+    
+    // Convert username to a string
+    ushort usernameWide[0x100];
+    int pos = 0;
+    for (int i = 0; username[i] && pos < 0xFF; i++, pos++) {
+        usernameWide[pos] = (ushort)username[i];
+    }
+    usernameWide[pos] = 0;
+    
+    AddTextMenuEntryW(menu, usernameWide);
+}
+
+void SetUsername(int *unused, const char *newUsername)
+{
+    if (newUsername && newUsername[0] != 0) {
+        StrCopy(username, newUsername);
+        WriteSettings();
+    }
+}
+
 void ShowAchievementsScreen()
 {
 #if !RETRO_USE_ORIGINAL_CODE
@@ -1559,8 +1610,9 @@ void NotifyCallback(int *callback, int *param1, int *param2, int *param3)
 void ExitGame() 
 {
     WriteUserdata();
+    SetControllerLEDColour(0, 0, 0, 255);
+    SetControllerLEDColour(1, 255, 0, 0);
     Engine.running = false; 
-    SetControllerLEDColour(0, 0, 255);
 }
 
 void FileExists(int *unused, const char *filePath)
@@ -1640,7 +1692,6 @@ void SetFrameRate(int *enabled, int *unused)
     Engine.refreshRate = *enabled;
     if (Engine.refreshRate > 60)
         Engine.refreshRate = 60;
-	//ApplyWindowChanges();
 }
 
 void ApplyWindowChanges()

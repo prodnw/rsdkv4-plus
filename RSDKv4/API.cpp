@@ -69,7 +69,6 @@ void API_Discord_SetPresence(const char *text, int type)
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
         case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);   break;
-
         case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(text); break;
         case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText(text);  break;
         case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(text); break;
@@ -86,7 +85,6 @@ void API_Discord_ClearPresenceType(int type)
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(""); break;
         case PRESENCE_ACTIVITY_STATE:   __activity.SetState("");   break;
-
         case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(""); break;
         case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText("");  break;
         case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(""); break;
