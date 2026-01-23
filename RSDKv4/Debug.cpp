@@ -339,8 +339,10 @@ void ProcessStageSelect()
                 gameMenu[0].alignment        = 2;
                 gameMenu[1].alignment        = 0;
                 gameMenu[1].selectionCount   = 1;
-                gameMenu[1].visibleRowCount  = 0;
-                gameMenu[1].visibleRowOffset = 0;
+                if (gameMenu[1].rowCount > 18)
+                    gameMenu[1].visibleRowCount = 18;
+                else
+                    gameMenu[1].visibleRowCount = 0;
                 gameMenu[1].selection1       = playerListPos;
                 stageMode                    = DEVMENU_PLAYERSEL;
             }
