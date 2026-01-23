@@ -164,6 +164,10 @@ void ProcessStageSelect()
                     gameMenu[1].alignment      = 0;
                     gameMenu[1].selectionCount = 1;
                     gameMenu[1].selection1     = 0;
+                    if (gameMenu[1].rowCount > 18)
+                        gameMenu[1].visibleRowCount = 18;
+                    else
+                        gameMenu[1].visibleRowCount = 0;
                     stageMode                  = DEVMENU_PLAYERSEL;
                 }
                 else if (gameMenu[0].selection2 == 13) {
@@ -215,18 +219,52 @@ void ProcessStageSelect()
         }
         case DEVMENU_PLAYERSEL: // Selecting Player
         {
-            if (keyPress[0].down)
+            if (keyDown[0].down) {
+                gameMenu[1].timer += 1;
+                if (gameMenu[1].timer > 8) {
+                    gameMenu[1].timer = 0;
+                    keyPress[0].down   = true;
+                }
+            }
+            else {
+                if (keyDown[0].up) {
+                    gameMenu[1].timer -= 1;
+                    if (gameMenu[1].timer < -8) {
+                        gameMenu[1].timer = 0;
+                        keyPress[0].up     = true;
+                    }
+                }
+                else {
+                    gameMenu[1].timer = 0;
+                }
+            }
+
+            if (keyPress[0].down) {
                 ++gameMenu[1].selection1;
-            if (keyPress[0].up)
+                if (gameMenu[1].selection1 - gameMenu[1].visibleRowOffset >= gameMenu[1].visibleRowCount) {
+                    gameMenu[1].visibleRowOffset += 1;
+                }
+            }
+
+            if (keyPress[0].up) {
                 --gameMenu[1].selection1;
-            if (gameMenu[1].selection1 == gameMenu[1].rowCount)
+                if (gameMenu[1].selection1 - gameMenu[1].visibleRowOffset < 0) {
+                    gameMenu[1].visibleRowOffset -= 1;
+                }
+            }
+
+            if (gameMenu[1].selection1 == gameMenu[1].rowCount) {
                 gameMenu[1].selection1 = 0;
+                gameMenu[1].visibleRowOffset = 0;
+            }
 
-            if (gameMenu[1].selection1 < 0)
+            if (gameMenu[1].selection1 < 0) {
                 gameMenu[1].selection1 = gameMenu[1].rowCount - 1;
-
-            DrawTextMenu(&gameMenu[0], SCREEN_CENTERX - 4, 72);
-            DrawTextMenu(&gameMenu[1], SCREEN_CENTERX - 40, 96);
+                gameMenu[1].visibleRowOffset = gameMenu[1].rowCount - gameMenu[1].visibleRowCount;
+            }
+            
+            DrawTextMenu(&gameMenu[0], SCREEN_CENTERX - 4, 40);
+            DrawTextMenu(&gameMenu[1], SCREEN_CENTERX - 40, 64);
             if (keyPress[0].start || keyPress[0].A) {
                 playerListPos = gameMenu[1].selection1;
                 SetTextMenu(DEVMENU_STAGELISTSEL);
