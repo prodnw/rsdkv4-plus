@@ -21,7 +21,6 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
  * Many original limitations have been hugely buffed (e.g. more chunks, tiles, and objects can be in a stage, music file size can be larger, etc)
  * Objects that use animation files (e.g. players) now support ink effects.
  * New username feature, if you have Steam enabled it'll automatically use your Steam username on first launch. Otherwise, it can be set from the settings.ini.
- * Changes to the renderer, allowing for multiple filters.
  * New functions:
     * PauseSfx(SfxName) - Pauses the defined SFX.
     * ResumeSFX(SfxName) - Resumes the defined SFX.
