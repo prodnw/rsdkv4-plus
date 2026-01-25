@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.rsdk_pkg.rsdkv4_plus</id>
+  
+  <name>RSDKv4 Plus</name>
+  <summary>Fork of the RSDKv4 Decompilation with more features</summary>
+  
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>LicenseRef-proprietary</project_license>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+    <control>gamepad</control>
+  </supports>
+  
+  <description>
+    <p>
+      This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones
+    </p>
+  </description>
+  
+  <url type="homepage">https://www.sega.com/games/sonic-hedgehog</url>
+  
+  <launchable type="desktop-id">io.github.rsdk_pkg.rsdkv4_plus.desktop</launchable>
+  <screenshots>
+    <screenshot type="default"><image>https://cdn.sega.com/1.png</image></screenshot>
+    <screenshot><image>https://cdn.sega.com/2.png</image></screenshot>
+    <screenshot><image>https://cdn.sega.com/3.png</image></screenshot>
+  </screenshots>
+</component>

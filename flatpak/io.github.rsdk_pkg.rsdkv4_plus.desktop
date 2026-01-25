@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=RSDKv4 Plus
+Comment=Fork of the RSDKv4 Decompilation with more features
+Icon=RSDKv4-Decomp-Icon
+Categories=Game;
+Keywords=sonic;the;hedgehog;rsdkv4+;plus;
+Exec=RSDKv4
+Terminal=false
