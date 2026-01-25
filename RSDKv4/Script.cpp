@@ -2131,7 +2131,166 @@ void ConvertFunctionText(char *text)
                 }
             }
 
-            ConvertAlias(funcName, arrayStr);
+            // Eg: temp0 = game.variable
+            for (int v = 0; v < globalVariablesCount; ++v) {
+                if (StrComp(funcName, globalVariableNames[v])) {
+                    StrCopy(funcName, "global");
+                    arrayStr[0] = 0;
+                    AppendIntegerToString(arrayStr, v);
+                }
+            }
+
+            // Eg: temp0 = Function1
+            for (int f = 0; f < scriptFunctionCount; ++f) {
+                if (StrComp(funcName, scriptFunctionList[f].name)) {
+                    funcName[0] = 0;
+                    AppendIntegerToString(funcName, f);
+                }
+            }
+
+            // Eg: temp0 = TypeName[Player Object]
+            if (StrComp(funcName, "TypeName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                int o = 0;
+                for (; o < OBJECT_COUNT; ++o) {
+                    if (StrComp(arrayStr, typeNames[o])) {
+                        funcName[0] = 0;
+                        AppendIntegerToString(funcName, o);
+                        break;
+                    }
+                }
+
+                if (o == OBJECT_COUNT)
+                    PrintLog("WARNING: Unknown typename \"%s\", on line %d", arrayStr, lineID);
+            }
+
+#if !RETRO_USE_ORIGINAL_CODE
+            // Eg: temp0 = SfxName[Jump]
+            if (StrComp(funcName, "SfxName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                int s = 0;
+                for (; s < SFX_COUNT; ++s) {
+                    if (StrComp(arrayStr, sfxNames[s])) {
+                        funcName[0] = 0;
+                        AppendIntegerToString(funcName, s);
+                        break;
+                    }
+                }
+
+                if (s == SFX_COUNT)
+                    PrintLog("WARNING: Unknown sfxName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = VarName[player.lives]
+            if (StrComp(funcName, "VarName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                int v = 0;
+                for (; v < globalVariablesCount; ++v) {
+                    if (StrComp(arrayStr, globalVariableNames[v])) {
+                        funcName[0] = 0;
+                        AppendIntegerToString(funcName, v);
+                        break;
+                    }
+                }
+
+                if (v == globalVariablesCount)
+                    PrintLog("WARNING: Unknown varName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = AchievementName[Ring King]
+            if (StrComp(funcName, "AchievementName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                int a = 0;
+                for (; a < achievementCount; ++a) {
+                    char buf[0x40];
+                    char *str = achievements[a].name;
+                    int pos   = 0;
+
+                    while (*str) {
+                        if (*str != ' ')
+                            buf[pos++] = *str;
+                        str++;
+                    }
+                    buf[pos] = 0;
+
+                    if (StrComp(arrayStr, buf)) {
+                        funcName[0] = 0;
+                        AppendIntegerToString(funcName, a);
+                        break;
+                    }
+                }
+
+                if (a == achievementCount)
+                    PrintLog("WARNING: Unknown AchievementName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = PlayerName[SONIC]
+            if (StrComp(funcName, "PlayerName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                std::string buf;
+                int pos = 0;
+                int p   = 0;
+
+                for (; p < playerCount; ++p) {
+                    buf.clear();
+                    const char *str = playerNames[p].c_str();
+                    pos = 0;
+
+                    while (*str) {
+                        if (*str != ' ')
+                            buf[pos++] = *str;
+                        str++;
+                    }
+                    buf[pos] = 0;
+
+                    if (StrComp(arrayStr, buf.c_str())) {
+                        funcName[0] = 0;
+                        AppendIntegerToString(funcName, p);
+                        break;
+                    }
+                }
+
+                if (p == playerCount)
+                    PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = StageName[R - GREEN HILL ZONE 1]
+            if (StrComp(funcName, "StageName")) {
+                funcName[0] = '0';
+                funcName[1] = 0;
+
+                int s = -1;
+                if (StrLength(arrayStr) >= 2) {
+                    char list = arrayStr[0];
+                    switch (list) {
+                        case 'P': list = STAGELIST_PRESENTATION; break;
+                        case 'R': list = STAGELIST_REGULAR; break;
+                        case 'S': list = STAGELIST_SPECIAL; break;
+                        case 'B': list = STAGELIST_BONUS; break;
+                    }
+                    s = GetSceneID(list, &arrayStr[2]);
+                }
+
+                if (s == -1) {
+                    char buf[0x40];
+                    sprintf(buf, "WARNING: Unknown StageName \"%s\", on line %d", arrayStr, lineID);
+                    PrintLog(buf);
+                    s = 0;
+                }
+                funcName[0] = 0;
+                AppendIntegerToString(funcName, s);
+            }
+#endif
 
             // Storing Values
             int constant = 0;
@@ -2301,8 +2460,151 @@ void CheckCaseNumber(char *text)
         }
         caseValue[funcNamePos] = 0;
         arrayStr[arrayStrPos]  = 0;
-        ConvertAlias(caseValue, arrayStr);
 
+        // Eg: temp0 = TypeName[Player Object]
+        if (StrComp(caseValue, "TypeName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            int o = 0;
+            for (; o < OBJECT_COUNT; ++o) {
+                if (StrComp(arrayStr, typeNames[o])) {
+                    caseValue[0] = 0;
+                    AppendIntegerToString(caseValue, o);
+                    break;
+                }
+            }
+
+            if (o == OBJECT_COUNT)
+                PrintLog("WARNING: Unknown typename \"%s\", on line %d", arrayStr, lineID);
+        }
+
+        // Eg: temp0 = SfxName[Jump]
+        if (StrComp(caseValue, "SfxName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            int s = 0;
+            for (; s < SFX_COUNT; ++s) {
+                if (StrComp(arrayStr, sfxNames[s])) {
+                    caseValue[0] = 0;
+                    AppendIntegerToString(caseValue, s);
+                    break;
+                }
+            }
+
+            if (s == SFX_COUNT)
+                PrintLog("WARNING: Unknown sfxName \"%s\", on line %d", arrayStr, lineID);
+        }
+
+#if !RETRO_USE_ORIGINAL_CODE
+        // Eg: temp0 = VarName[player.lives]
+        if (StrComp(caseValue, "VarName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            int v = 0;
+            for (; v < globalVariablesCount; ++v) {
+                if (StrComp(arrayStr, globalVariableNames[v])) {
+                    caseValue[0] = 0;
+                    AppendIntegerToString(caseValue, v);
+                    break;
+                }
+            }
+
+            if (v == globalVariablesCount) {
+                PrintLog("WARNING: Unknown varName \"%s\", on line %d", arrayStr, lineID);
+            }
+        }
+
+        // Eg: temp0 = AchievementName[Ring King]
+        if (StrComp(caseValue, "AchievementName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            int a = 0;
+            for (; a < achievementCount; ++a) {
+                char buf[0x40];
+                char *str = achievements[a].name;
+                int pos   = 0;
+
+                while (*str) {
+                    if (*str != ' ')
+                        buf[pos++] = *str;
+                    str++;
+                }
+                buf[pos] = 0;
+
+                if (StrComp(arrayStr, buf)) {
+                    caseValue[0] = 0;
+                    AppendIntegerToString(caseValue, a);
+                    break;
+                }
+            }
+
+            if (a == achievementCount) {
+                PrintLog("WARNING: Unknown AchievementName \"%s\", on line %d", arrayStr, lineID);
+            }
+        }
+
+        // Eg: temp0 = PlayerName[SONIC]
+        if (StrComp(caseValue, "PlayerName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            std::string buf;
+            int pos = 0;
+            int p   = 0;
+
+            for (; p < playerCount; ++p) {
+                buf.clear();
+                const char *str = playerNames[p].c_str();
+                pos = 0;
+
+                while (*str) {
+                    if (*str != ' ')
+                        buf[pos++] = *str;
+                    str++;
+                }
+                buf[pos] = 0;
+
+                if (StrComp(arrayStr, buf.c_str())) {
+                    caseValue[0] = 0;
+                    AppendIntegerToString(caseValue, p);
+                    break;
+                }
+            }
+
+            if (p == playerCount) {
+                PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
+            }
+        }
+
+        // Eg: temp0 = StageName[R - GREEN HILL ZONE 1]
+        if (StrComp(caseValue, "StageName")) {
+            caseValue[0] = '0';
+            caseValue[1] = 0;
+
+            int s = -1;
+            if (StrLength(arrayStr) >= 2) {
+                char list = arrayStr[0];
+                switch (list) {
+                    case 'P': list = STAGELIST_PRESENTATION; break;
+                    case 'R': list = STAGELIST_REGULAR; break;
+                    case 'S': list = STAGELIST_SPECIAL; break;
+                    case 'B': list = STAGELIST_BONUS; break;
+                }
+                s = GetSceneID(list, &arrayStr[2]);
+            }
+
+            if (s == -1) {
+                PrintLog("WARNING: Unknown StageName \"%s\", on line %d", arrayStr, lineID);
+                s = 0;
+            }
+            caseValue[0] = 0;
+            AppendIntegerToString(caseValue, s);
+        }
+#endif
         StrCopy(caseString, caseValue);
         foundValue = true;
     }
@@ -2367,8 +2669,148 @@ bool ReadSwitchCase(char *text)
             }
             caseValue[funcNamePos] = 0;
             arrayStr[arrayStrPos]  = 0;
-            ConvertAlias(caseValue, arrayStr);
 
+            // Eg: temp0 = TypeName[Player Object]
+            if (StrComp(caseValue, "TypeName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                int o = 0;
+                for (; o < OBJECT_COUNT; ++o) {
+                    if (StrComp(arrayStr, typeNames[o])) {
+                        caseValue[0] = 0;
+                        AppendIntegerToString(caseValue, o);
+                        break;
+                    }
+                }
+
+                if (o == OBJECT_COUNT)
+                    PrintLog("WARNING: Unknown typename \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = SfxName[Jump]
+            if (StrComp(caseValue, "SfxName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                int s = 0;
+                for (; s < SFX_COUNT; ++s) {
+                    if (StrComp(arrayStr, sfxNames[s])) {
+                        caseValue[0] = 0;
+                        AppendIntegerToString(caseValue, s);
+                        break;
+                    }
+                }
+
+                if (s == SFX_COUNT)
+                    PrintLog("WARNING: Unknown sfxName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+#if !RETRO_USE_ORIGINAL_CODE
+            // Eg: temp0 = VarName[player.lives]
+            if (StrComp(caseValue, "VarName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                int v = 0;
+                for (; v < globalVariablesCount; ++v) {
+                    if (StrComp(arrayStr, globalVariableNames[v])) {
+                        caseValue[0] = 0;
+                        AppendIntegerToString(caseValue, v);
+                        break;
+                    }
+                }
+
+                if (v == globalVariablesCount)
+                    PrintLog("WARNING: Unknown varName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = AchievementName[Ring King]
+            if (StrComp(caseValue, "AchievementName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                int a = 0;
+                for (; a < achievementCount; ++a) {
+                    char buf[0x40];
+                    char *str = achievements[a].name;
+                    int pos   = 0;
+
+                    while (*str) {
+                        if (*str != ' ')
+                            buf[pos++] = *str;
+                        str++;
+                    }
+                    buf[pos] = 0;
+
+                    if (StrComp(arrayStr, buf)) {
+                        caseValue[0] = 0;
+                        AppendIntegerToString(caseValue, a);
+                        break;
+                    }
+                }
+
+                if (a == achievementCount)
+                    PrintLog("WARNING: Unknown AchievementName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = PlayerName[SONIC]
+            if (StrComp(caseValue, "PlayerName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                std::string buf;
+                int pos = 0;
+                int p   = 0;
+
+                for (; p < playerCount; ++p) {
+                    buf.clear();
+                    const char *str = playerNames[p].c_str();
+                    pos = 0;
+
+                    while (*str) {
+                        if (*str != ' ')
+                            buf[pos++] = *str;
+                        str++;
+                    }
+                    buf[pos] = 0;
+
+                    if (StrComp(arrayStr, buf.c_str())) {
+                        caseValue[0] = 0;
+                        AppendIntegerToString(caseValue, p);
+                        break;
+                    }
+                }
+
+                if (p == playerCount)
+                    PrintLog("WARNING: Unknown PlayerName \"%s\", on line %d", arrayStr, lineID);
+            }
+
+            // Eg: temp0 = StageName[R - GREEN HILL ZONE 1]
+            if (StrComp(caseValue, "StageName")) {
+                caseValue[0] = '0';
+                caseValue[1] = 0;
+
+                int s = -1;
+                if (StrLength(arrayStr) >= 2) {
+                    char list = arrayStr[0];
+                    switch (list) {
+                        case 'P': list = STAGELIST_PRESENTATION; break;
+                        case 'R': list = STAGELIST_REGULAR; break;
+                        case 'S': list = STAGELIST_SPECIAL; break;
+                        case 'B': list = STAGELIST_BONUS; break;
+                    }
+                    s = GetSceneID(list, &arrayStr[2]);
+                }
+
+                if (s == -1) {
+                    PrintLog("WARNING: Unknown StageName \"%s\", on line %d", arrayStr, lineID);
+                    s = 0;
+                }
+                caseValue[0] = 0;
+                AppendIntegerToString(caseValue, s);
+            }
+#endif
             StrCopy(caseText, caseValue);
             foundValue = true;
         }
