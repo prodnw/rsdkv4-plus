@@ -32,8 +32,8 @@ struct Entity {
     int state;
     int angle;
     int scale;
+    int xscale;
     int yscale;
-    int scaleMode;
     int rotation;
     int alpha;
     int animationTimer;

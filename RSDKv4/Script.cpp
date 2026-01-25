@@ -112,8 +112,8 @@ const char variableNames[][0x20] = {
     "object.state",
     "object.rotation",
     "object.scale",
+    "object.xscale",
     "object.yscale",
-    "object.scaleMode",
     "object.priority",
     "object.drawOrder",
     "object.direction",
@@ -899,8 +899,8 @@ enum ScrVar {
     VAR_OBJECTSTATE,
     VAR_OBJECTROTATION,
     VAR_OBJECTSCALE,
+    VAR_OBJECTXSCALE,
     VAR_OBJECTYSCALE,
-    VAR_OBJECTSCALEMODE,
     VAR_OBJECTPRIORITY,
     VAR_OBJECTDRAWORDER,
     VAR_OBJECTDIRECTION,
@@ -4073,12 +4073,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = objectEntityList[arrayVal].scale;
                         break;
                     }
-                    case VAR_OBJECTYSCALE: {
-                        scriptEng.operands[i] = objectEntityList[arrayVal].yscale;
+                    case VAR_OBJECTXSCALE: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].xscale;
                         break;
                     }
-                    case VAR_OBJECTSCALEMODE: {
-                        scriptEng.operands[i] = objectEntityList[arrayVal].scaleMode;
+                    case VAR_OBJECTYSCALE: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].yscale;
                         break;
                     }
                     case VAR_OBJECTPRIORITY: {
@@ -4966,10 +4966,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
         SpriteFrame *spriteFrame = nullptr;
 
         // sort out scale modes here since funcs hate me
-        int entityScaleX = entity->scale;
-        int entityScaleY = entity->scale;
-        if (entity->scaleMode == 1)
-            entityScaleY = entity->yscale;
+        int entityScaleX = entity->xscale;
+        int entityScaleY = entity->yscale;
+        if (entity->xscale == 512 && entity->yscale == 512) {
+            entityScaleX = entity->scale;
+            entityScaleY = entity->scale;
+        }
 
         // String Variable Functions
         switch (opcode) {
@@ -7108,12 +7110,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         objectEntityList[arrayVal].scale = scriptEng.operands[i];
                         break;
                     }
-                    case VAR_OBJECTYSCALE: {
-                        objectEntityList[arrayVal].yscale = scriptEng.operands[i];
+                    case VAR_OBJECTXSCALE: {
+                        objectEntityList[arrayVal].xscale = scriptEng.operands[i];
                         break;
                     }
-                    case VAR_OBJECTSCALEMODE: {
-                        objectEntityList[arrayVal].scaleMode = scriptEng.operands[i];
+                    case VAR_OBJECTYSCALE: {
+                        objectEntityList[arrayVal].yscale = scriptEng.operands[i];
                         break;
                     }
                     case VAR_OBJECTPRIORITY: {

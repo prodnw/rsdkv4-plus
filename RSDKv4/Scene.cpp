@@ -988,6 +988,7 @@ void LoadStageFiles(void)
     for (int i = 0; i < ENTITY_COUNT; ++i) {
         objectEntityList[i].drawOrder          = 3;
         objectEntityList[i].scale              = 512;
+        objectEntityList[i].xscale             = 512;
         objectEntityList[i].yscale             = 512;
         objectEntityList[i].objectInteractions = true;
         objectEntityList[i].visible            = true;

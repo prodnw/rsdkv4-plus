@@ -4948,10 +4948,12 @@ void DrawObjectAnimation(void *objScr, void *ent, int XPos, int YPos)
     SpriteFrame *frame         = &animFrames[sprAnim->frameListOffset + entity->frame];
     int rotation               = 0;
 
-    int entityScaleX = entity->scale;
-    int entityScaleY = entity->scale;
-    if (entity->scaleMode == 1)
-        entityScaleY = entity->yscale;
+    int entityScaleX = entity->xscale;
+    int entityScaleY = entity->yscale;
+    if (entity->xscale == 512 && entity->yscale == 512) {
+        entityScaleX = entity->scale;
+        entityScaleY = entity->scale;
+    }
 
     switch (sprAnim->rotationStyle) {
         case ROTSTYLE_NONE:
