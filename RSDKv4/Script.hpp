@@ -99,6 +99,7 @@ void AppendIntegerToString(char *text, int value);
 void AppendIntegerToStringW(ushort *text, int value);
 void CopyAliasStr(char *dest, char *text, bool arrayIndex);
 bool CheckOpcodeType(char *text); // Never actually used
+void ConvertAlias(char *funcBuf, char *arrayBuf);
 
 void ParseScriptFile(char *scriptName, int scriptID);
 #endif
