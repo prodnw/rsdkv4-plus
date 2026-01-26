@@ -498,6 +498,10 @@ void RefreshEngine()
         Engine.gameType = GAME_PROJECT_SAP;
     }
 
+    if (strstr(Engine.gameWindowText, "A Night at the Casino")) {
+        Engine.gameType = GAME_ANATC;
+    }
+
     // Feel free to insert your own games!
 
     achievementCount = 0;

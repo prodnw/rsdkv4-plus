@@ -49,6 +49,18 @@ void API_Discord_SetAppID() {
         case GAME_PROJECT_SAP:
             API_DISCORD_CLIENT_ID = 1453058404892283130; // Project SAP ID
             break;
+        case GAME_SONIC1FOREVER:
+            API_DISCORD_CLIENT_ID = 1465393302542225520; // Sonic 1 Forever ID
+            break;
+        case GAME_SONIC2ABSOLUTE:
+            API_DISCORD_CLIENT_ID = 1465394176609878254; // Sonic 2 Absolute ID
+            break;
+        case GAME_SONICCDINFINITE:
+            API_DISCORD_CLIENT_ID = 1465394543561277717; // Sonic CD Infinite ID
+            break;
+        case GAME_ANATC:
+            API_DISCORD_CLIENT_ID = 1465394350929477682; // A Night at the Casino ID
+            break;
         default:
             API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to V4+ ID
             break;

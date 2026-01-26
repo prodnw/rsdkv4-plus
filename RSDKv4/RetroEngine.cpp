@@ -517,6 +517,10 @@ void RetroEngine::Init()
         gameType = GAME_PROJECT_SAP;
     }
 
+    if (strstr(gameWindowText, "A Night at the Casino")) {
+        gameType = GAME_ANATC;
+    }
+
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE
