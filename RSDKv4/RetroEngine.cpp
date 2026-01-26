@@ -496,7 +496,7 @@ void RetroEngine::Init()
         gameType = GAME_SONICESSENCE;
     }
 
-    if (strstr(gameWindowText, "Sonic 1 Forever")) {
+    if (strstr(gameWindowText, "Sonic Forever")) {
         gameType = GAME_SONIC1FOREVER;
     }
 

@@ -478,7 +478,7 @@ void RefreshEngine()
         Engine.gameType = GAME_SONICESSENCE;
     }
 
-    if (strstr(Engine.gameWindowText, "Sonic 1 Forever")) {
+    if (strstr(Engine.gameWindowText, "Sonic Forever")) {
         Engine.gameType = GAME_SONIC1FOREVER;
     }
 
