@@ -5976,6 +5976,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 newEnt->priority           = PRIORITY_BOUNDS;
                 newEnt->drawOrder          = 3;
                 newEnt->scale              = 512;
+                newEnt->xscale             = 512;
+                newEnt->yscale             = 512;
                 newEnt->inkEffect          = INK_NONE;
                 newEnt->objectInteractions = true;
                 newEnt->visible            = true;
@@ -6025,6 +6027,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 temp->priority           = PRIORITY_ACTIVE;
                 temp->drawOrder          = 3;
                 temp->scale              = 512;
+                temp->xscale             = 512;
+                temp->yscale             = 512;
                 temp->inkEffect          = INK_NONE;
                 temp->objectInteractions = true;
                 temp->visible            = true;
