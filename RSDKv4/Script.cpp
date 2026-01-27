@@ -697,6 +697,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("IntToStr", 3),
     FunctionInfo("StrLength", 2),
     FunctionInfo("SetVariableByName", 2),
+    FunctionInfo("ConvertStringToByte", 3),
+    FunctionInfo("ConvertByteToString", 3),
 };
 
 #if RETRO_USE_COMPILER
@@ -1413,6 +1415,8 @@ enum ScrFunc {
     FUNC_INTTOSTR,
     FUNC_STRLENGTH,
     FUNC_SETVARIABLEBYNAME,
+    FUNC_CONVERTSTRINGTOBYTE,
+    FUNC_CONVERTBYTETOSTRING,
     FUNC_MAX_CNT
 };
 
@@ -5000,6 +5004,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         globalVariables[v] = scriptEng.operands[1];
                     }
                 }
+                break;
+            case FUNC_CONVERTSTRINGTOBYTE: //ConvertStringToByte(string text, int index, int store)
+                if (scriptEng.operands[1] < StrLength(scriptText))
+                    scriptEng.operands[2] = scriptEng.operandStr[0][scriptEng.operands[1]] + '\0';
+                break;
+            case FUNC_CONVERTBYTETOSTRING: //ConvertByteToString(string store, int index, int byte)
+                scriptEng.operandStr[0][scriptEng.operands[1]] = scriptEng.operands[2] + '\0';
+                
+                if (scriptEng.operands[1] >= StrLength(scriptText))
+                    scriptEng.operandStr[0][scriptEng.operands[1] + 1] = '\0';
                 break;
         }
 
