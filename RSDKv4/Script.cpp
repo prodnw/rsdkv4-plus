@@ -6722,13 +6722,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
-                if (strncmp(scriptText, "https://", 8) == 0)
-                    sprintf(temporar, "%s", scriptText);
-                else
-                    sprintf(temporar, "https://%s", scriptText);
+                sprintf(temporar, "https://%s", scriptText);
 
 				PrintLog("Checking version: %s", temporar);
-
 				if(CheckUpdates(temporar) >= 0) // fancy
 					PrintLog("Successfully loaded website!: %s", temporar);
 				else
@@ -6738,13 +6734,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_LOADWEBSITE: {
             	opcodeSize = 0;
-                if (strncmp(scriptText, "https://", 8) == 0)
-                    sprintf(temporar, "%s", scriptText);
-                else
-                    sprintf(temporar, "https://%s", scriptText);
+                sprintf(temporar, "https://%s", scriptText);
 
 				PrintLog("Loading website: %s", temporar);
-
 				if(SDL_OpenURL(temporar)) // fancy
 					PrintLog("Successfully loaded website!: %s", temporar);
 				else
@@ -6772,10 +6764,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
                 if (scriptEng.operands[1]) {
-                    if (strncmp(scriptText, "https://", 8) == 0)
-                        sprintf(temporar, "%s", scriptText);
-                    else
-                        sprintf(temporar, "https://%s", scriptText);
+                    sprintf(temporar, "https://%s", scriptText);
                 } else {
                     sprintf(temporar, "%s", scriptText);
                 }
@@ -6797,10 +6786,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
                 if (scriptEng.operands[1]) {
-                    if (strncmp(scriptText, "https://", 8) == 0)
-                        sprintf(temporar, "%s", scriptText);
-                    else
-                        sprintf(temporar, "https://%s", scriptText);
+                    sprintf(temporar, "https://%s", scriptText);
                 } else {
                     sprintf(temporar, "%s", scriptText);
                 }
@@ -6941,7 +6927,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 static int prevControllerCount = 0;
                 int currentControllerCount = 0;
 
-                // Count currently connected controllers without opening them (much faster)
+                // Count currently connected controllers without opening them
                 int numJoysticks = SDL_NumJoysticks();
                 for (int i = 0; i < numJoysticks; ++i) {
                     if (SDL_IsGameController(i)) {

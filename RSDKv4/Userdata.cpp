@@ -325,27 +325,8 @@ void InitUserdata()
 #if RETRO_USE_DISCORD_SDK
         ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
 #endif
-
-        // Initialize username with Steam username if available, otherwise use default
-#if RETRO_USE_STEAMWORKS
-        if (SteamAPI_Init()) {
-            const char *steamUsername = SteamFriends()->GetPersonaName();
-            if (steamUsername && strlen(steamUsername) > 0) {
-                ini.SetString("Game", "Username", (char *)steamUsername);
-                StrCopy(username, steamUsername);
-            } else {
-                ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
-                StrCopy(username, "IntegerGeorge802");
-            }
-            SteamAPI_Shutdown();
-        } else {
-            ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
-            StrCopy(username, "IntegerGeorge802");
-        }
-#else
         ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
         StrCopy(username, "IntegerGeorge802");
-#endif
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
