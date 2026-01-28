@@ -25,6 +25,9 @@ extern bool useDiscordRPC;
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
 
+int end = 0;
+int front = 0;
+
 enum ScriptVarType { VAR_ALIAS, VAR_STATICVALUE, VAR_TABLE };
 enum ScriptVarAccessModifier { ACCESS_NONE, ACCESS_PUBLIC, ACCESS_PRIVATE };
 
@@ -6431,9 +6434,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 TextMenu *menu = &gameMenu[scriptEng.operands[1]];
                 switch (scriptEng.operands[2]) {
                     case TEXTINFO_TEXTDATA:
-                        scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + scriptEng.operands[4]];
+						end = scriptEng.operands[4] << 1;
+						front = end + 1;
+                        end = scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
+                        front = scriptEng.operands[0] = (menu->textData[menu->entryStart[scriptEng.operands[3]] + front]) << 8;
+						scriptEng.operands[0] = end + front;
+						//scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
                         break;
-                    case TEXTINFO_TEXTSIZE: scriptEng.operands[0] = menu->entrySize[scriptEng.operands[3]]; break;
+                    case TEXTINFO_TEXTSIZE: scriptEng.operands[0] = menu->entrySize[scriptEng.operands[3]] >> 1; break;
                     case TEXTINFO_ROWCOUNT: scriptEng.operands[0] = menu->rowCount; break;
                 }
                 break;
