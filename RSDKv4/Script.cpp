@@ -667,8 +667,10 @@ const FunctionInfo functions[] = {
     FunctionInfo("AssignInputSlotToDevice", 2),
     FunctionInfo("IsInputSlotAssigned", 1),
     FunctionInfo("ResetInputSlotAssignments", 0),
-    
-    // New functions start here
+
+//-------- New functions start here --------//
+
+    // Website interaction
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
     
@@ -685,7 +687,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("UpdatePresence", 0),
     FunctionInfo("ClearPresence", 0),
     FunctionInfo("ClearPresenceType", 1),
-
+    
+    // Controller management
     FunctionInfo("VibrateController", 3), // VibrateController(controllerID, intensity, duration)
     FunctionInfo("SetControllerLEDColour", 4),
     FunctionInfo("CheckControllerConnect", 0),
@@ -694,14 +697,17 @@ const FunctionInfo functions[] = {
     FunctionInfo("CheckMouseLeftPress", 0),
     FunctionInfo("CheckMouseRightPress", 0),
     
-    FunctionInfo("GetUsername", 2),
-    FunctionInfo("SetUsername", 2),
-    
+    // Strings
     FunctionInfo("IntToStr", 3),
     FunctionInfo("StrLength", 2),
     FunctionInfo("SetVariableByName", 2),
     FunctionInfo("ConvertStringToByte", 3),
     FunctionInfo("ConvertByteToString", 3),
+    FunctionInfo("GetTextInfo16", 5),
+    
+    // Misc.
+    FunctionInfo("GetUsername", 2),
+    FunctionInfo("SetUsername", 2),
 };
 
 #if RETRO_USE_COMPILER
@@ -1390,8 +1396,10 @@ enum ScrFunc {
     FUNC_ASSIGNINPUTSLOTTODEVICE,
     FUNC_ISSLOTASSIGNED,
     FUNC_RESETINPUTSLOTASSIGNMENTS,
-    
-    // New functions start here
+
+//-------- New functions start here --------//
+
+    // Website interaction
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
     
@@ -1406,6 +1414,7 @@ enum ScrFunc {
     FUNC_CLEAR_PRESENCE,
     FUNC_CLEAR_PRESENCE_TYPE,
 
+    // Controller management
     FUNC_VIBRATECONTROLLER,
     FUNC_SETCONTROLLERLEDCOLOUR,
     FUNC_CHECKCONTROLLERCONNECT,
@@ -1413,13 +1422,20 @@ enum ScrFunc {
     FUNC_CHECKMOUSEMOVED,
     FUNC_CHECKMOUSE1PRESS,
     FUNC_CHECKMOUSE2PRESS,
-    FUNC_GETUSERNAME,
-    FUNC_SETUSERNAME,
+    
+    // Strings
     FUNC_INTTOSTR,
     FUNC_STRLENGTH,
     FUNC_SETVARIABLEBYNAME,
     FUNC_CONVERTSTRINGTOBYTE,
     FUNC_CONVERTBYTETOSTRING,
+    FUNC_GETTEXTINFO_16,
+    
+    // Misc.
+    FUNC_GETUSERNAME,
+    FUNC_SETUSERNAME,
+    
+    // The End
     FUNC_MAX_CNT
 };
 
@@ -6431,6 +6447,17 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
             case FUNC_GETTEXTINFO: {
+                TextMenu *menu = &gameMenu[scriptEng.operands[1]];
+                switch (scriptEng.operands[2]) {
+                    case TEXTINFO_TEXTDATA:
+                        scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + scriptEng.operands[4]];
+                        break;
+                    case TEXTINFO_TEXTSIZE: scriptEng.operands[0] = menu->entrySize[scriptEng.operands[3]]; break;
+                    case TEXTINFO_ROWCOUNT: scriptEng.operands[0] = menu->rowCount; break;
+                }
+                break;
+            }
+            case FUNC_GETTEXTINFO_16: {
                 TextMenu *menu = &gameMenu[scriptEng.operands[1]];
                 switch (scriptEng.operands[2]) {
                     case TEXTINFO_TEXTDATA:
