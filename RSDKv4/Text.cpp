@@ -100,7 +100,7 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
     char fullPath[256];
     StrCopy(fullPath, "Data/Strings/");
     StrAdd(fullPath, filePath);
-    if (LoadFile(fullPath, &info)) {
+    if (LoadFile(fullPath, &info) || LoadFile(filePath, &info)) {
         menu->textDataPos                = 0;
         menu->rowCount                   = 0;
         menu->entryStart[menu->rowCount] = menu->textDataPos;
