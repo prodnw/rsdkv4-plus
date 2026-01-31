@@ -339,11 +339,23 @@ void FlipScreen()
 
     switch (Engine.scalingMode) {
         // reset to default if value is invalid.
-        default: Engine.scalingMode = 0; break;
-        case 0: break;                         // nearest
-        case 1: integerScaling = true; break;  // integer scaling
-        case 2: break;                         // sharp bilinear
-        case 3: bilinearScaling = true; break; // regular old bilinear
+        default: Engine.scalingMode = 0; //let this continue down to apply nearest scaling immediately
+        case 0: // nearest
+			integerScaling = false;
+			bilinearScaling = false;
+			break;                         
+        case 1: // integer scaling
+			integerScaling = true;
+			bilinearScaling = false;
+			break;  
+        case 2: // sharp bilinear
+			integerScaling = false;
+			bilinearScaling = false;
+			break;                         
+        case 3: // regular old bilinear
+			integerScaling = false;
+			bilinearScaling = true;
+			break; 
     }
 
     SDL_GetWindowSize(Engine.window, &Engine.windowXSize, &Engine.windowYSize);
