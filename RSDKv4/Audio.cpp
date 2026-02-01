@@ -237,6 +237,7 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
                     }
                     else {
                         musicStatus = MUSIC_STOPPED;
+						trackID = -1;
                         break;
                     }
                 }
@@ -274,6 +275,7 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
                     }
                     else {
                         musicStatus = MUSIC_STOPPED;
+						trackID = -1;
                         break;
                     }
                 }
@@ -616,6 +618,7 @@ void LoadMusic(void *userdata)
         }
         else {
             musicStatus = MUSIC_STOPPED;
+			trackID = -1;
             PrintLog("Failed to load vorbis! error: %d", error);
             switch (error) {
                 default: PrintLog("Vorbis open error: Unknown (%d)", error); break;
@@ -629,6 +632,7 @@ void LoadMusic(void *userdata)
     }
     else {
         musicStatus = MUSIC_STOPPED;
+		trackID = -1;
     }
     UnlockAudioDevice();
 }

@@ -10,12 +10,13 @@ ushort tintLookupTable[0x10000];
 
 bool windowCreated = false;
 
-int SCREEN_XSIZE_CONFIG = 424;
-int SCREEN_XSIZE        = 424;
-int SCREEN_CENTERX      = 424 / 2;
+int CURRENT_DISP_SCREEN = 0;
+int SCREEN_XSIZE_CONFIG = 426;
+int SCREEN_XSIZE        = 426;
+int SCREEN_CENTERX      = 426 / 2;
 
-float SCREEN_XSIZE_F   = 424;
-float SCREEN_CENTERX_F = 424 / 2;
+float SCREEN_XSIZE_F   = 426;
+float SCREEN_CENTERX_F = 426 / 2;
 
 float SCREEN_YSIZE_F   = SCREEN_YSIZE;
 float SCREEN_CENTERY_F = SCREEN_YSIZE / 2;
@@ -41,7 +42,7 @@ bool mixFiltersOnJekyll = false;
 GLint defaultFramebuffer = -1;
 GLuint framebufferHiRes  = -1;
 GLuint renderbufferHiRes = -1;
-GLuint videoBuffer       = 0;
+GLuint videoBuffer       = -1;
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -100,8 +101,8 @@ int InitRenderDevice()
 #endif
 
     SCREEN_CENTERX = SCREEN_XSIZE / 2;
-    Engine.window  = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_XSIZE * Engine.windowScale,
-                                      SCREEN_YSIZE * Engine.windowScale, SDL_WINDOW_ALLOW_HIGHDPI | flags);
+    Engine.window  = SDL_CreateWindow(gameTitle, SDL_WINDOWPOS_CENTERED_DISPLAY(CURRENT_DISP_SCREEN), SDL_WINDOWPOS_CENTERED_DISPLAY(CURRENT_DISP_SCREEN), SCREEN_XSIZE * Engine.windowScale,
+                                     SCREEN_YSIZE * Engine.windowScale, SDL_WINDOW_ALLOW_HIGHDPI | flags);
 
     if (!Engine.window) {
         PrintLog("ERROR: failed to create window!");
@@ -3209,7 +3210,7 @@ void SetFadeHQ(int R, int G, int B, int A)
         }
     }
     else {
-        ushort *fbufferBlend = &blendLookupTable[0x20 * (0x100 - A)];
+        ushort *fbufferBlend = &blendLookupTable[0x20 * (0xFF - A)];
         ushort *pixelBlend   = &blendLookupTable[0x20 * A];
 
         int h = SCREEN_YSIZE;

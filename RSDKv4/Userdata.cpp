@@ -243,9 +243,11 @@ void InitUserdata()
 #endif
 
 #if RETRO_PLATFORM == RETRO_OSX
-    sprintf(gamePath, "%s/RSDKv4", getResourcesPath());
-    sprintf(modsPath, "%s/RSDKv4/", getResourcesPath());
-
+    char macBuffer[0x100];
+    getResourcesPath(macBuffer, sizeof(macBuffer));
+    snprintf(gamePath, sizeof(macBuffer), "%s/", macBuffer);
+    snprintf(modsPath, sizeof(macBuffer), "%s/", macBuffer);
+    
     mkdir(gamePath, 0777);
 #elif RETRO_PLATFORM == RETRO_ANDROID
     {
@@ -299,6 +301,7 @@ void InitUserdata()
 
         ini.SetBool("Dev", "UseHQModes", Engine.useHQModes = true);
         ini.SetString("Dev", "DataFile", (char *)"Data.rsdk");
+
         StrCopy(Engine.dataFile[0], "Data.rsdk");
         if (!StrComp(Engine.dataFile[1], "")) {
             ini.SetString("Dev", "DataFile2", (char *)"Data2.rsdk");
@@ -336,7 +339,7 @@ void InitUserdata()
 
         ini.SetBool("Window", "FullScreen", Engine.startFullScreen = DEFAULT_FULLSCREEN);
         ini.SetBool("Window", "Borderless", Engine.borderless = false);
-        ini.SetBool("Window", "VSync", Engine.vsync = false);
+        ini.SetBool("Window", "VSync", Engine.vsync = true);
         ini.SetInteger("Window", "ScalingMode", Engine.scalingMode = 0);
         ini.SetInteger("Window", "WindowScale", Engine.windowScale = 2);
         ini.SetInteger("Window", "ScreenWidth", SCREEN_XSIZE_CONFIG = DEFAULT_SCREEN_XSIZE);
@@ -567,7 +570,7 @@ void InitUserdata()
         if (!ini.GetBool("Window", "Borderless", &Engine.borderless))
             Engine.borderless = false;
         if (!ini.GetBool("Window", "VSync", &Engine.vsync))
-            Engine.vsync = false;
+            Engine.vsync = true;
         if (!ini.GetInteger("Window", "ScalingMode", &Engine.scalingMode))
             Engine.scalingMode = 0;
         if (!ini.GetInteger("Window", "WindowScale", &Engine.windowScale))
@@ -1617,11 +1620,10 @@ void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
 {
-    if (!width)
-        return;
-
-    SCREEN_XSIZE_CONFIG = *width;
-    changedScreenWidth  = SCREEN_XSIZE_CONFIG != SCREEN_XSIZE;
+	if (!width)
+	return;
+	SCREEN_XSIZE_CONFIG = *width;
+	SCREEN_XSIZE        = SCREEN_XSIZE_CONFIG;
 }
 
 void SetWindowScale(int *scale, int *unused)

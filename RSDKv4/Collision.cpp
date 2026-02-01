@@ -7,6 +7,8 @@ int collisionBottom = 0;
 
 int collisionTolerance = 0;
 
+int crushForgive = 0x20000;
+
 CollisionSensor sensors[RETRO_REV00 ? 6 : 7];
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -2623,8 +2625,8 @@ void BoxCollision(Entity *thisEntity, int thisLeft, int thisTop, int thisRight, 
                 else {
                     sensors[0].collided = false;
                     sensors[1].collided = false;
-                    sensors[0].xpos     = rx + otherLeft + 0x20000;
-                    sensors[1].xpos     = rx + otherRight - 0x20000;
+                    sensors[0].xpos     = rx + otherLeft + crushForgive;
+                    sensors[1].xpos     = rx + otherRight - crushForgive;
                     sensors[0].ypos     = ry + otherTop;
 
                     for (int i = 0; i < 2; ++i) {
@@ -2758,8 +2760,8 @@ void BoxCollision2(Entity *thisEntity, int thisLeft, int thisTop, int thisRight,
         else {
             sensors[0].collided = false;
             sensors[1].collided = false;
-            sensors[0].xpos     = rx + otherLeft + 0x20000;
-            sensors[1].xpos     = rx + otherRight - 0x20000;
+            sensors[0].xpos     = rx + otherLeft + crushForgive;
+            sensors[1].xpos     = rx + otherRight - crushForgive;
 
             sensors[0].ypos = ry + otherTop;
 
@@ -2922,8 +2924,8 @@ void BoxCollision2(Entity *thisEntity, int thisLeft, int thisTop, int thisRight,
                 else {
                     sensors[0].collided = false;
                     sensors[1].collided = false;
-                    sensors[0].xpos     = rx + otherLeft + 0x20000;
-                    sensors[1].xpos     = rx + otherRight - 0x20000;
+                    sensors[0].xpos     = rx + otherLeft + crushForgive;
+                    sensors[1].xpos     = rx + otherRight - crushForgive;
 
                     sensors[0].ypos = ry + otherTop;
 

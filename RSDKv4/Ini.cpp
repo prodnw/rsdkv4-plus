@@ -133,7 +133,7 @@ int IniParser::GetFloat(const char *section, const char *key, float *dest)
         }
     }
 
-    return 0;
+    return 0.0f;
 }
 int IniParser::GetBool(const char *section, const char *key, bool *dest)
 {

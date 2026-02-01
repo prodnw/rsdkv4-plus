@@ -97,11 +97,11 @@ typedef unsigned int uint;
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #else
 //#error "No Platform was defined"
-#define RETRO_PLATFORM   (RETRO_LINUX)
+#define RETRO_PLATFORM   (RETRO_WIN)
 #define RETRO_DEVICETYPE (RETRO_STANDARD)
 #endif
 
-#define DEFAULT_SCREEN_XSIZE 424
+#define DEFAULT_SCREEN_XSIZE 426
 #define DEFAULT_FULLSCREEN   false
 #define RETRO_USING_MOUSE
 #define RETRO_USING_TOUCH
@@ -152,7 +152,7 @@ typedef unsigned int uint;
 #endif
 
 #define RETRO_SOFTWARE_RENDER (RETRO_RENDERTYPE == RETRO_SW_RENDER)
-//#define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
+#define RETRO_HARDWARE_RENDER (RETRO_RENDERTYPE == RETRO_HW_RENDER)
 
 #if RETRO_USING_OPENGL
 #if RETRO_PLATFORM == RETRO_ANDROID
@@ -202,6 +202,11 @@ typedef unsigned int uint;
 #define GL_FRAMEBUFFER         GL_FRAMEBUFFER_EXT
 #define GL_COLOR_ATTACHMENT0   GL_COLOR_ATTACHMENT0_EXT
 #define GL_FRAMEBUFFER_BINDING GL_FRAMEBUFFER_BINDING_EXT
+#elif RETRO_PLATFORM == RETRO_SWITCH
+#include <GLES/gl.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <glad/glad.h>  // OpenGL loader
 #else
 #include <GL/glew.h>
 #endif
@@ -213,7 +218,17 @@ typedef unsigned int uint;
 #if RETRO_PLATFORM < RETRO_PLATCNT
 #define RETRO_GAMEPLATFORMID (RETRO_PLATFORM)
 #else
+
+// use *this* macro to determine what platform the game thinks its running on (since only the first 7 platforms are supported natively by scripts)
+#if RETRO_PLATFORM == RETRO_LINUX
+#define RETRO_GAMEPLATFORMID (RETRO_WIN)
+#elif RETRO_PLATFORM == RETRO_UWP
+#define RETRO_GAMEPLATFORMID (UAP_GetRetroGamePlatformId())
+#elif RETRO_PLATFORM == RETRO_SWITCH
+#define RETRO_GAMEPLATFORMID (RETRO_SWITCH)
+#else
 #error Unspecified RETRO_GAMEPLATFORMID
+#endif
 #endif
 
 // Determines which revision to use (see defines below for specifics). Datafiles from REV00 and REV01 builds will not work on later revisions and vice versa.
@@ -501,7 +516,7 @@ public:
 
     bool startFullScreen  = false; // if should start as fullscreen
     bool borderless       = false;
-    bool vsync            = false;
+    bool vsync            = true;
     int scalingMode       = 0;
     int windowScale       = 2;
     int refreshRate       = 60; // user-picked screen update rate
