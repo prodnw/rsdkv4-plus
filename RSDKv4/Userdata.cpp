@@ -1620,10 +1620,11 @@ void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
 {
-	if (!width)
-	return;
-	SCREEN_XSIZE_CONFIG = *width;
-	SCREEN_XSIZE        = SCREEN_XSIZE_CONFIG;
+    if (!width)
+        return;
+
+    SCREEN_XSIZE_CONFIG = *width;
+    changedScreenWidth  = SCREEN_XSIZE_CONFIG != SCREEN_XSIZE;
 }
 
 void SetWindowScale(int *scale, int *unused)
