@@ -97,6 +97,7 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
 {
     FileInfo info;
     byte fileBuffer = 0;
+    byte prevFileBuffer = 0;
     char fullPath[256];
     StrCopy(fullPath, "Data/Strings/");
     StrAdd(fullPath, filePath);
@@ -111,15 +112,18 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
         FileRead(&fileBuffer, 1);
         if (fileBuffer == 0xFF) {
             FileRead(&fileBuffer, 1);
+            ushort val = 0;
+            ushort prevVal = 0;
             while (!flag) {
-                ushort val = 0;
+                prevVal = val;
+
                 FileRead(&fileBuffer, 1);
                 val = fileBuffer;
                 FileRead(&fileBuffer, 1);
                 val |= fileBuffer << 8;
 
-                if (val != '\n') {
-                    if (val == '\r') {
+                if (val != '\n' || (val == '\n' && prevVal != '\r')) {
+                    if (val == '\r' || val == '\n') {
                         menu->rowCount += 1;
                         if (menu->rowCount > 511) {
                             flag = true;
@@ -158,38 +162,40 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
         }
         else {
             ushort val = fileBuffer;
-            if (val != '\n') {
-                if (val == '\r') {
-                    menu->rowCount++;
-                    menu->entryStart[menu->rowCount] = menu->textDataPos;
-                    menu->entrySize[menu->rowCount]  = 0;
-                }
-                else {
-                    if (mapCode) {
-                        int i = 0;
-                        while (i < 1024) {
-                            if (fontCharacterList[i].id == val) {
-                                val = i;
-                                i   = 1025;
-                            }
-                            else {
-                                ++i;
-                            }
+            ushort prevVal = 0;
+
+            if (val == '\r' || val == '\n') {
+                menu->rowCount++;
+                menu->entryStart[menu->rowCount] = menu->textDataPos;
+                menu->entrySize[menu->rowCount]  = 0;
+            }
+            else {
+                if (mapCode) {
+                    int i = 0;
+                    while (i < 1024) {
+                        if (fontCharacterList[i].id == val) {
+                            val = i;
+                            i   = 1025;
                         }
-                        if (i == 1024) {
-                            val = 0;
+                        else {
+                            ++i;
                         }
                     }
-                    menu->textData[menu->textDataPos++] = val;
-                    menu->entrySize[menu->rowCount]++;
+                    if (i == 1024) {
+                        val = 0;
+                    }
                 }
+                menu->textData[menu->textDataPos++] = val;
+                menu->entrySize[menu->rowCount]++;
             }
 
             while (!flag) {
+                prevVal = val;
+
                 FileRead(&fileBuffer, 1);
                 val = fileBuffer;
-                if (val != '\n') {
-                    if (val == '\r') {
+                if (val != '\n' || (val == '\n' && prevVal != '\r')) {
+                    if (val == '\r' || val == '\n') {
                         menu->rowCount++;
                         if (menu->rowCount > 511) {
                             flag = true;
@@ -227,9 +233,10 @@ void LoadTextFile(TextMenu *menu, const char *filePath, byte mapCode)
         }
 #else
         while (menu->textDataPos < TEXTDATA_COUNT && !ReachedEndOfFile()) {
+            prevFileBuffer = fileBuffer;
             FileRead(&fileBuffer, 1);
-            if (fileBuffer != '\n') {
-                if (fileBuffer == '\r') {
+            if (fileBuffer != '\n' || (fileBuffer == '\n' && prevFileBuffer != '\r')) {
+                if (fileBuffer == '\r' || fileBuffer == '\n') {
                     menu->rowCount++;
                     menu->entryStart[menu->rowCount] = menu->textDataPos;
                     menu->entrySize[menu->rowCount]  = 0;
@@ -693,14 +700,15 @@ float GetTextHeight(ushort *text, int fontID, float scaleY)
 
 void SetStringToFont(ushort *text, ushort *string, int fontID)
 {
-    ushort stringChar = *string++;
+    ushort stringChar     = *string++;
+    ushort nextStringChar = *string;
 
     int textPos = 0;
     while (stringChar) {
         ushort charID = 0;
         while (!charID && stringChar) {
-            if (stringChar != '\n') {
-                if (stringChar == '\r') {
+            if (stringChar != '\r' || nextStringChar != '\n') {
+                if (stringChar == '\r' || stringChar == '\n') {
                     charID = 1;
                 }
                 else {
@@ -714,6 +722,8 @@ void SetStringToFont(ushort *text, ushort *string, int fontID)
             }
 
             stringChar = *string++;
+            if (string)
+                nextStringChar = *string;
         }
         text[textPos++] = charID;
     }
@@ -722,14 +732,15 @@ void SetStringToFont(ushort *text, ushort *string, int fontID)
 
 void SetStringToFont8(ushort *text, const char *string, int fontID)
 {
-    char stringChar = *string++;
+    char stringChar     = *string++;
+    char nextStringChar = *string;
 
     int textPos = 0;
     while (stringChar) {
         ushort charID = 0;
         while (!charID && stringChar) {
-            if (stringChar != '\n') {
-                if (stringChar == '\r') {
+            if (stringChar != '\r' || nextStringChar != '\n') {
+                if (stringChar == '\r' || stringChar == '\n') { //CR is skipped on CRLF
                     charID = 1;
                 }
                 else {
@@ -743,6 +754,8 @@ void SetStringToFont8(ushort *text, const char *string, int fontID)
             }
 
             stringChar = *string++;
+            if (string)
+                nextStringChar = *string;
         }
         text[textPos++] = charID;
     }
