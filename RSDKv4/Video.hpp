@@ -21,7 +21,7 @@ extern int vidFrameMS;
 extern int vidBaseticks;
 extern float videoAR;
 
-void PlayVideoFile(char *filepath);
+void PlayVideoFile(char *filepath, int audioTrack);
 void UpdateVideoFrame();
 void PauseVideo();
 void ResumeVideo();

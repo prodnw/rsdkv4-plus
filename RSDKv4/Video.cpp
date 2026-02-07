@@ -40,7 +40,7 @@ static void videoClose(THEORAPLAY_Io *io)
     fClose(file);
 }
 
-void PlayVideoFile(char *filePath)
+void PlayVideoFile(char *filePath, int audioTrack)
 {
     char pathBuffer[0x100];
     int len = StrLength(filePath);

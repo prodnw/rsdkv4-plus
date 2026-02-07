@@ -706,6 +706,7 @@ const FunctionInfo functions[] = {
 
     // Video
     FunctionInfo("LoadVideo", 1),
+    FunctionInfo("LoadVideoAudio", 2),
     FunctionInfo("NextVideoFrame", 0),
     
     // Misc.
@@ -1441,6 +1442,7 @@ enum ScrFunc {
 
     // Video
     FUNC_LOADVIDEO,
+    FUNC_LOADVIDEOAUDIO,
     FUNC_NEXTVIDEOFRAME,
     
     // Misc.
@@ -6134,10 +6136,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     SwapMusicTrack(scriptText, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
             case FUNC_LOADVIDEO:
+                // cheat to let LoadVideo use the v3 method of choosing audio
+                // while not basically copy-pasting the function
+                scriptEng.operands[1] = GetGlobalVariableByName("Options.Soundtrack") ? 1 : 0;
+                // fallthrough to FUNC_LOADVIDEOAUDIO, no break
+            case FUNC_LOADVIDEOAUDIO:
                 opcodeSize = 0;
                 PauseSound();
                 if (FindStringToken(scriptText, ".rsv", 1) <= -1)
-                    PlayVideoFile(scriptText); // not an rsv
+                    PlayVideoFile(scriptText, scriptEng.operands[1]); // not an rsv
                 else
                     scriptInfo->spriteSheetID = AddGraphicsFile(scriptText);
                 ResumeSound();
