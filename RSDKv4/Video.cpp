@@ -241,9 +241,16 @@ int ProcessVideo()
         if (videoPlaying == VIDEOSTATUS_PLAYING_OGV) {
             const Uint32 now = (SDL_GetTicks() - vidBaseticks);
 
-            if (!videoVidData)
+            if (!videoVidData) {
                 videoVidData = THEORAPLAY_getVideo(videoDecoder);
-
+                // we done lmao
+                if (!videoVidData) {
+                    StopVideoPlayback();
+                    ResumeSound();
+                    return QuitVideo();
+                }
+            }
+            
             // Play video frames when it's time.
             if (videoVidData && (videoVidData->playms <= now)) {
                 if (vidFrameMS && ((now - videoVidData->playms) >= vidFrameMS)) {
@@ -353,13 +360,16 @@ void SetupVideoBuffer(int width, int height)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
+	
+	if (!videoBuffer || !&videoBuffer || !videoVidData)
+        PrintLog("Failed to create video buffer!");
 #elif RETRO_USING_SDL1
     Engine.videoBuffer = SDL_CreateRGBSurface(0, width, height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
 #elif RETRO_USING_SDL2
-    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_STREAMING, width, height);
+    Engine.videoBuffer = SDL_CreateTexture(Engine.renderer, SDL_PIXELFORMAT_YV12, SDL_TEXTUREACCESS_TARGET, width, height);
 
     if (!Engine.videoBuffer)
         PrintLog("Failed to create video buffer!");
