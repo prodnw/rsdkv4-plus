@@ -528,7 +528,6 @@ void FlipScreen()
         // no change here
         SDL_RenderPresent(Engine.renderer);
     }
-	SDL_ShowWindow(Engine.window);
 #endif
 
 #if RETRO_USING_SDL1
