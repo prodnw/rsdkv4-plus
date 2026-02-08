@@ -7409,7 +7409,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                                     -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
                                                     entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha,
                                                     entity->inkEffect, scriptEng.operands[8]);
-                                break;
+                                    break;
+                                }
                                 scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
                             }
 
@@ -7577,7 +7578,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                                     -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
                                                     entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha,
                                                     entity->inkEffect, scriptEng.operands[8]);
-                                break;
+                                    break;
+                                }
                                 scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
                             }
                             charID++;
@@ -7718,7 +7720,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                                     -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
                                                     entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha,
                                                     entity->inkEffect, scriptEng.operands[8]);
-                                break;
+                                    break;
+                                }
                                 scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
                             }
                             charID++;
@@ -7886,7 +7889,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                                     -spriteFrame->pivotY, spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height,
                                                     entity->rotation, entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha,
                                                     entity->inkEffect, scriptEng.operands[8]);
-                                break;
+                                    break;
+                                }
                                 scriptEng.operands[1] += spriteFrame->width + scriptEng.operands[6];
                             }
                             scriptEng.operands[0] += 26;
@@ -7916,10 +7920,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                             }
                             charID++;
                         }
-                        break;
+                    break;
                 }
                 break;
             }
+            
             case FUNC_DRAWMENUFX: {
 
                 break;
