@@ -760,6 +760,7 @@ void LoadStageFiles(void)
 	//Nope. When I say LoadStage() you Load the fuckin Stage() ya piece o' shit.
 	if (true) {
         PrintLog("Loading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
+        PrintLog("Playing as %s, with a player ID of %d", playerNames[playerListPos], playerListPos);
         ReleaseStageSfx();
         ClearScriptData();
         for (int i = SURFACE_COUNT; i > 0; i--) RemoveGraphicsFile((char *)"", i - 1);
