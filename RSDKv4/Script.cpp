@@ -7926,7 +7926,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             
             case FUNC_DRAWMENUFX: {
-
+                opcodeSize        = 0;
+                textMenuSurfaceNo = scriptInfo->spriteSheetID;
+                DrawTextMenuFX(&gameMenu[scriptEng.operands[0]], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
             }
 

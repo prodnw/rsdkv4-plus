@@ -188,8 +188,11 @@ void DrawBitmapText(void *menu, int XPos, int YPos, int scale, int spacing, int 
 #endif
 
 void DrawTextMenu(void *menu, int XPos, int YPos);
+void DrawTextMenuFX(void *menu, int XPos, int YPos, int effect);
 void DrawTextMenuEntry(void *menu, int rowID, int XPos, int YPos, int textHighlight);
+void DrawTextMenuEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int effect);
 void DrawStageTextEntry(void *menu, int rowID, int XPos, int YPos, int textHighlight);
+void DrawStageTextEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int effect);
 void DrawBlendedTextMenuEntry(void *menu, int rowID, int XPos, int YPos, int textHighlight);
 
 #endif // !DRAWING_H
