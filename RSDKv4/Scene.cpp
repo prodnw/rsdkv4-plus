@@ -373,21 +373,21 @@ void ProcessStage(void)
             // Update
             ProcessFrozenObjects();
 
-            if (cameraTarget > -1) {
-                if (cameraEnabled == 1) {
-                    switch (cameraStyle) {
-                        case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
-                        case CAMERASTYLE_EXTENDED:
-                        case CAMERASTYLE_EXTENDED_OFFSET_L:
-                        case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
-                        case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
-                        default: break;
-                    }
-                }
-                else {
-                    SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
-                }
-            }
+            // if (cameraTarget > -1) {
+            //     if (cameraEnabled == 1) {
+            //         switch (cameraStyle) {
+            //             case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
+            //             case CAMERASTYLE_EXTENDED:
+            //             case CAMERASTYLE_EXTENDED_OFFSET_L:
+            //             case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
+            //             case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
+            //             default: break;
+            //         }
+            //     }
+            //     else {
+            //         SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
+            //     }
+            // }
 
             DrawStageGFX();
             break;
@@ -604,21 +604,21 @@ void ProcessStage(void)
                 // Update
                 ProcessFrozenObjects();
 
-                if (cameraTarget > -1) {
-                    if (cameraEnabled == 1) {
-                        switch (cameraStyle) {
-                            case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
-                            case CAMERASTYLE_EXTENDED:
-                            case CAMERASTYLE_EXTENDED_OFFSET_L:
-                            case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
-                            case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
-                            default: break;
-                        }
-                    }
-                    else {
-                        SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
-                    }
-                }
+                // if (cameraTarget > -1) {
+                //     if (cameraEnabled == 1) {
+                //         switch (cameraStyle) {
+                //             case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[cameraTarget]); break;
+                //             case CAMERASTYLE_EXTENDED:
+                //             case CAMERASTYLE_EXTENDED_OFFSET_L:
+                //             case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[cameraTarget]); break;
+                //             case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[cameraTarget]); break;
+                //             default: break;
+                //         }
+                //     }
+                //     else {
+                //         SetPlayerLockedScreenPosition(&objectEntityList[cameraTarget]);
+                //     }
+                // }
 
                 DrawStageGFX();
             }
