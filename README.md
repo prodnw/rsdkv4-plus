@@ -218,10 +218,10 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_HW_RENDER`: Enables the Hardware Renderer used by the main menu and touch controls UI. Takes a boolean, defaults to `on`.
 - `RETRO_ORIGINAL_CODE`: Removes any custom code. *A playable game will not be built with this enabled.* Takes a boolean, defaults to `off`.
 - `RETRO_SDL_VERSION`: *Only change this if you know what you're doing.* Switches between using SDL1 or SDL2. Takes an integer of either `1` or `2`, defaults to `2`.
-- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well, defaults to `off`, requires the [Steamworks SDK](https://partner.steamgames.com/downloads/list) extracted to `./dependencies/all/steamworks_sdk`.
+- `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well.
+  - Defaults to `off`, requires the [Steamworks SDK](https://partner.steamgames.com/downloads/list) extracted to `./dependencies/all/steamworks_sdk`.
 - `RETRO_USE_DISCORD`: Toggles whether or not Discord RPC is enabled, defaults to `on` if not on Android, requires the [Discord SDK](https://discord.com/developers/docs/developer-tools/game-sdk#getting-started) `sdk` folder extracted to `./dependencies/all/discord_game_sdk`.
-  - Unfortunatly, on Linux, you must rename `./dependencies/all/discord_game_sdk/lib/x86_64/discord_game_sdk.so` from `discord_game_sdk.so` to `libdiscord_game_sdk.so`.
-- `RETRO_USE_CURL`: Adds support for cURL, which is used for loading websites, defaults to `off`.
+- `RETRO_USE_CURL`: Adds support for cURL, which is used for accessing websites, defaults to `off`.
 - `RETRO_UPDATE_CHECKER`: Adds support for the update checker, which is used for checking updates, defaults to `on` if not on Android, forces `RETRO_USE_CURL` to be set to `on`.
 - `RETRO_ACCEPT_OLD_SYNTAX`: Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
 - `RETRO_ICON_NAME`: Sets the icon for the built executable to use, defaults to `RSDKv4 Decomp Icon.ico`.
