@@ -1,5 +1,4 @@
-#ifndef DISCORDHEADERS_H
-#define DISCORDHEADERS_H
+#pragma once
 #if RETRO_USE_DISCORD_SDK
 
 // cstdint is not in C
@@ -9,4 +8,3 @@
 #endif //! __cplusplus
 
 #endif //! RETRO_USE_DISCORD_SDK
-#endif //! DISCORDHEADERS_H
