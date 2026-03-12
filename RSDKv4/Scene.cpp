@@ -165,17 +165,7 @@ void ProcessStage(void)
             stageMode                    = STAGEMODE_NORMAL;
 
 #if RSDK_AUTOBUILD // Now it works with various games. TODO: update this if it needs to, but it should be fine?
-#if RETRO_USE_STEAMWORKS
-            if (SteamAPI_Init()) {
-                bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
-                SetGlobalVariableByName("game.hasPlusDLC", installed);
-            }
-            else {
-                SetGlobalVariableByName("game.hasPlusDLC", false);
-            }
-
-            if (GetGlobalVariableByName("game.hasPlusDLC") == false) {
-#endif
+            if (!hasPlusDLC) {
                 switch (Engine.gameType) {
                     // Forever and Absolute has their own Amy, so....
                     case GAME_SONIC1:
@@ -216,9 +206,7 @@ void ProcessStage(void)
                             playerListPos = 0;
                         break;
                 }
-#if RETRO_USE_STEAMWORKS
             }
-#endif
 #endif
 
 

@@ -648,32 +648,6 @@ void RetroEngine::Init()
     }
 
 #endif
-
-#if RETRO_USE_STEAMWORKS
-    SteamErrMsg errMsg;
-    PrintLog("Initializing steam...");
-
-    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
-        //running = false;
-    }
-
-    if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK )
-        PrintLog( "Failed to init Steam.  %s", errMsg );
-
-    if (!SteamAPI_Init()) {
-        PrintLog( "Failed to init Steam. See previous error.");
-    }
-    else {
-        PrintLog("Do we have Sonic Origins Plus?");
-
-        bool installed = SteamApps()->BIsDlcInstalled(2343200);
-        if (installed)
-            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
-        else
-            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
-
-    }
-#endif
 }
 
 void RetroEngine::Run()
@@ -1455,17 +1429,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
     }
 
-#if RETRO_USE_STEAMWORKS
-    if (SteamAPI_Init()) {
-        bool installed = SteamApps()->BIsDlcInstalled(2343200); // is Origins Plus here?
-        SetGlobalVariableByName("game.hasPlusDLC", installed);
-    }
-    else {
-        SetGlobalVariableByName("game.hasPlusDLC", false);
-    }
-#else
-    SetGlobalVariableByName("game.hasPlusDLC", !RSDK_AUTOBUILD);
-#endif
+    SetGlobalVariableByName("game.hasPlusDLC", hasPlusDLC || !RSDK_AUTOBUILD);
 
     // These need to be set every time its reloaded
     nativeFunctionCount = 0;

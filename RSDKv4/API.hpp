@@ -31,11 +31,13 @@ void API_Discord_ClearAllPresence();
 void API_Discord_UpdatePresence();
 #endif
 
+// easier to just check if this is true
+// rather than having RETRO_USE_STEAMWORKS checks too lol
+extern bool hasPlusDLC;
+
 #if RETRO_USE_STEAMWORKS
 #include "steam/steam_api.h"
 #define API_STEAM_SONIC_ORIGINS_PLUS_DLC_ID (2343200)
-
-extern bool API_Steam_hasPlusDLC;
 
 void API_Steam_Init();
 #endif

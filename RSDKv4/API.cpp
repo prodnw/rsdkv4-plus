@@ -137,32 +137,39 @@ void API_Discord_UpdatePresence()
 #endif
 
 // Steam
+bool hasPlusDLC = false;
+
 #if RETRO_USE_STEAMWORKS
 #include "steam/steam_api.h"
 
-bool API_Steam_hasPlusDLC = false;
-
 void API_Steam_Init()
 {
-    PrintLog("Initializing Steam API");
-
-    SteamErrMsg error = {};
+    SteamErrMsg errMsg;
+    PrintLog("Initializing steam...");
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
         // running = false;
     }
 
-    if (SteamAPI_InitEx(&error) != k_ESteamAPIInitResult_OK) {
-        PrintLog("Failed to initialize Steam API.  %s", error);
+    if (SteamAPI_InitEx(&errMsg) != k_ESteamAPIInitResult_OK) {
+        PrintLog("Failed to init Steam.  %s", errMsg);
         return;
     }
 
-    API_Steam_hasPlusDLC = SteamApps()->BIsDlcInstalled(API_STEAM_SONIC_ORIGINS_PLUS_DLC_ID);
+    if (!SteamAPI_Init()) {
+        PrintLog("Failed to init Steam. See previous error.");
+        return;
+    }
+    else {
+        PrintLog("Do we have Sonic Origins Plus?");
 
-    if (API_Steam_hasPlusDLC)
-        PrintLog("[API TEST] API_Steam_hasPlusDLC is enabled");
-    else
-        PrintLog("[API TEST] API_Steam_hasPlusDLC is disabled");
+        hasPlusDLC = SteamApps()->BIsDlcInstalled(API_STEAM_SONIC_ORIGINS_PLUS_DLC_ID);
+        if (hasPlusDLC)
+            PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
+        else
+            PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
+
+    }
 }
 #endif
 
