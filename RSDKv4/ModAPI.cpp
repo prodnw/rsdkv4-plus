@@ -158,6 +158,7 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
     info->folder              = "";
     info->discordGameClientID = "";
     info->active              = false;
+    info->forcedGameType      = GAME_UNKNOWN;
 
     const std::string modDir = modsPath + "/" + folder;
 
@@ -179,16 +180,19 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         modSettings.GetString("", "Name", infoBuf);
         if (!StrComp(infoBuf, ""))
             info->name = infoBuf;
+
         // Desc
         StrCopy(infoBuf, "");
         modSettings.GetString("", "Description", infoBuf);
         if (!StrComp(infoBuf, ""))
             info->desc = infoBuf;
+
         // Author
         StrCopy(infoBuf, "");
         modSettings.GetString("", "Author", infoBuf);
         if (!StrComp(infoBuf, ""))
             info->author = infoBuf;
+
         // Version
         StrCopy(infoBuf, "");
         modSettings.GetString("", "Version", infoBuf);
@@ -199,21 +203,25 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
 
         ScanModFolder(info);
 
+        // Use the decompiled scripts instead
         info->useScripts = false;
         modSettings.GetBool("", "TxtScripts", &info->useScripts);
         if (info->useScripts && info->active)
             forceUseScripts = true;
 
+        // Skip the HW menu and go straight to the SEGA screen
         info->skipStartMenu = false;
         modSettings.GetBool("", "SkipStartMenu", &info->skipStartMenu);
         if (info->skipStartMenu && info->active)
             skipStartMenu = true;
 
+        // What happens when the window is out of focus
         info->disableFocusPause = false;
         modSettings.GetInteger("", "DisableFocusPause", &info->disableFocusPause);
         if (info->disableFocusPause && info->active)
             disableFocusPause |= info->disableFocusPause;
 
+        // Save your data and progression in the mod folder
         info->redirectSave = false;
         modSettings.GetBool("", "RedirectSaveRAM", &info->redirectSave);
         if (info->redirectSave) {
@@ -222,10 +230,45 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
             info->savePath = path;
         }
 
+        // Force Sonic 1 Game Type
         info->forceSonic1 = false;
         modSettings.GetBool("", "ForceSonic1", &info->forceSonic1);
         if (info->forceSonic1 && info->active)
             Engine.forceSonic1 = true;
+
+        // Force specific Game Type
+        info->forcedGameType = GAME_UNKNOWN;
+        StrCopy(infoBuf, "");
+        modSettings.GetString("", "ForceGameType", infoBuf);
+        if (!StrComp(infoBuf, "")) {
+            char typeBuf[0x40];
+            StringLowerCase(typeBuf, infoBuf);
+            
+            if (StrComp(typeBuf, "sonic1") || StrComp(typeBuf, "s1"))
+                info->forcedGameType = GAME_SONIC1;
+            else if (StrComp(typeBuf, "sonic2") || StrComp(typeBuf, "s2"))
+                info->forcedGameType = GAME_SONIC2;
+            else if (StrComp(typeBuf, "sonic3") || StrComp(typeBuf, "s3") || StrComp(typeBuf, "sk") || StrComp(typeBuf, "s&k") || StrComp(typeBuf, "s3k") || StrComp(typeBuf, "s3&k"))
+                info->forcedGameType = GAME_SONIC3;
+            else if (StrComp(typeBuf, "soniccd") || StrComp(typeBuf, "scd") || StrComp(typeBuf, "cd"))
+                info->forcedGameType = GAME_SONICCD;
+            else if (StrComp(typeBuf, "sonicnexus") || StrComp(typeBuf, "nexus"))
+                info->forcedGameType = GAME_SONICNEXUS;
+            else if (StrComp(typeBuf, "sonicdueloffates") || StrComp(typeBuf, "dueloffates") || StrComp(typeBuf, "dof"))
+                info->forcedGameType = GAME_SONICDUELOFFATES;
+            else if (StrComp(typeBuf, "sonicessence") || StrComp(typeBuf, "essence"))
+                info->forcedGameType = GAME_SONICESSENCE;
+            else if (StrComp(typeBuf, "sonic1forever") || StrComp(typeBuf, "forever") || StrComp(typeBuf, "s1f"))
+                info->forcedGameType = GAME_SONIC1FOREVER;
+            else if (StrComp(typeBuf, "sonic2absolute") || StrComp(typeBuf, "absolute") || StrComp(typeBuf, "s2a"))
+                info->forcedGameType = GAME_SONIC2ABSOLUTE;
+            else if (StrComp(typeBuf, "soniccdinfinite") || StrComp(typeBuf, "infinite") || StrComp(typeBuf, "scdi"))
+                info->forcedGameType = GAME_SONICCDINFINITE;
+            else if (StrComp(typeBuf, "projectsap") || StrComp(typeBuf, "sap"))
+                info->forcedGameType = GAME_PROJECT_SAP;
+            else if (StrComp(typeBuf, "anatc") || StrComp(typeBuf, "anightatthecasino"))
+                info->forcedGameType = GAME_ANATC;
+        }
 
         // Discord GameAPI App ID
         StrCopy(infoBuf, "");
@@ -423,6 +466,7 @@ void RefreshEngine()
     disableFocusPause  = disableFocusPause_Config;
     redirectSave       = false;
     Engine.forceSonic1 = false;
+    int forcedGameType = GAME_UNKNOWN;
     sprintf(savePath, "");
     for (int m = 0; m < modList.size(); ++m) {
         if (!modList[m].active)
@@ -439,6 +483,8 @@ void RefreshEngine()
         }
         if (modList[m].forceSonic1)
             Engine.forceSonic1 = true;
+        if (modList[m].forcedGameType != GAME_UNKNOWN)
+            forcedGameType = modList[m].forcedGameType;
     }
 
     Engine.gameType = GAME_UNKNOWN;
@@ -503,6 +549,11 @@ void RefreshEngine()
     }
 
     // Feel free to insert your own games!
+
+    // Override with forced game type from mods if specified
+    if (forcedGameType != GAME_UNKNOWN) {
+        Engine.gameType = forcedGameType;
+    }
 
     achievementCount = 0;
     if (Engine.gameType == GAME_SONIC1 || Engine.gameType == GAME_SONIC1FOREVER) {

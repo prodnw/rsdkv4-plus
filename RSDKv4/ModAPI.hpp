@@ -26,6 +26,7 @@ struct ModInfo {
     bool forceSonic1;
     bool active;
     std::string discordGameClientID;
+    int forcedGameType;
 };
 
 extern std::vector<ModInfo> modList;

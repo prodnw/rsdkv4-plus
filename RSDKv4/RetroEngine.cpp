@@ -528,6 +528,18 @@ void RetroEngine::Init()
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE
+    // Override with forced game type from mods if specified
+    #if RETRO_USE_MOD_LOADER
+        for (int m = 0; m < modList.size(); ++m) {
+            if (!modList[m].active || modList[m].forcedGameType == GAME_UNKNOWN)
+                continue;
+            gameType = modList[m].forcedGameType;
+            break; // Use the first active mod with a forced game type
+        }
+    #endif
+#endif
+
+#if !RETRO_USE_ORIGINAL_CODE
     bool skipStore = skipStartMenu;
     skipStartMenu  = skipStart;
     InitNativeObjectSystem();
