@@ -1,7 +1,7 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-#define DEFAULT_INPUT_COUNT 4
+#define DEFAULT_INPUT_COUNT (DEFAULT_LOCAL_PLAYER_COUNT)
 
 enum InputButtons {
     INPUT_UP,

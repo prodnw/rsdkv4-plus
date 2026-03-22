@@ -30,6 +30,8 @@
 
 #define CPATH_COUNT (2)
 
+#define DEFAULT_CAMERA_COUNT (DEFAULT_LOCAL_PLAYER_COUNT)
+
 enum StageListNames {
     STAGELIST_PRESENTATION,
     STAGELIST_REGULAR,
@@ -51,14 +53,19 @@ enum StageModes {
     STAGEMODE_NORMAL,
     STAGEMODE_PAUSED,
     STAGEMODE_FROZEN,
+#if !RETRO_REV00
     STAGEMODE_2P,
-    STAGEMODE_SPLITSCREEN,
+#endif
 
     STAGEMODE_NORMAL_STEP,
     STAGEMODE_PAUSED_STEP,
     STAGEMODE_FROZEN_STEP,
     STAGEMODE_2P_STEP,
-    STAGEMODE_SPLITSCREEN_STEP,
+
+    // put custom stagemodes here
+#if RETRO_REV00
+    STAGEMODE_2P, // just to not break rev00 bytecode using STAGEMODE_STEPs yknow
+#endif
 };
 
 enum TileInfo {
@@ -138,37 +145,62 @@ struct Tiles128x128 {
     byte collisionFlags[CPATH_COUNT][CHUNKTILE_COUNT];
 };
 
+struct Camera {
+    int target = -1;
+    int style;
+    int enabled;
+    int adjustY;
+    int xScrollOffset;
+    int yScrollOffset;
+    int xpos;
+    int ypos;
+    int shakeX;
+    int shakeY;
+    // drawx/drawy should both be the position of the top left corner of the camera, like rects
+    int drawx; // xpos of the camera in the renderer
+    int drawy;
+    int xscale; // to make the camera smaller
+    int yscale;
+    
+    // engine-only stuff
+    int shift;	// extended camera shenanigans
+    int lockedY;// Camera Y trailing i think
+    
+    // maybe someday
+//    int adjustX;
+	
+	// additions for multiplayer
+	int curXBoundary1;
+	int curYBoundary1;
+	int newXBoundary1;
+	int newYBoundary1;
+	int curXBoundary2;
+	int curYBoundary2;
+	int newXBoundary2;
+	int newYBoundary2;
+	
+	// walter level stuff
+	int waterLevel;   // not really used but what the hey
+	int waterDrawPos; // same here
+	
+	// mirror mode shenanigans
+	byte layerDir[DRAWLAYER_COUNT];
+	byte direction;
+};
+
 extern int stageListCount[STAGELIST_MAX];
 extern char stageListNames[STAGELIST_MAX][0x20];
 extern SceneInfo stageList[STAGELIST_MAX][0x100];
 
 extern int stageMode;
 
-extern int cameraTarget;
-extern int cameraStyle;
-extern int cameraEnabled;
-extern int cameraAdjustY;
-extern int xScrollOffset;
-extern int yScrollOffset;
-extern int cameraXPos;
-extern int cameraYPos;
-extern int cameraShift;
-extern int cameraLockedY;
-extern int cameraShakeX;
-extern int cameraShakeY;
-extern int cameraLag;
-extern int cameraLagStyle;
-
-extern int curXBoundary1;
-extern int newXBoundary1;
-extern int curYBoundary1;
-extern int newYBoundary1;
-extern int curXBoundary2;
-extern int curYBoundary2;
-extern int waterLevel;
-extern int waterDrawPos;
-extern int newXBoundary2;
-extern int newYBoundary2;
+extern Camera camera[DEFAULT_CAMERA_COUNT];
+extern int currentCamera;
+extern int cameraCount;
+extern int &curCam;
+// these 2 were literally never used LMAO
+//extern int cameraLag;
+//extern int cameraLagStyle;
 
 extern int SCREEN_SCROLL_LEFT;
 extern int SCREEN_SCROLL_RIGHT;

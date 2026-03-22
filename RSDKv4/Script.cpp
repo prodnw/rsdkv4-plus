@@ -1396,7 +1396,7 @@ enum ScrFunc {
     // Website interaction
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
-    
+
     // Discord presence
     FUNC_SET_PRESENCE_DETAILS,
     FUNC_SET_PRESENCE_STATE,
@@ -1422,7 +1422,7 @@ enum ScrFunc {
     FUNC_RESUMESFX,
     FUNC_PLAYVOICE,
     FUNC_STOPVOICE,
-    
+
     // Strings
     FUNC_INTTOSTR,
     FUNC_STRLENGTH,
@@ -1444,11 +1444,11 @@ enum ScrFunc {
     FUNC_LOADVIDEO,
     FUNC_LOADVIDEOAUDIO,
     FUNC_NEXTVIDEOFRAME,
-    
+
     // Misc.
     FUNC_GETUSERNAME,
     FUNC_SETUSERNAME,
-    
+
     // The End
     FUNC_MAX_CNT
 };
@@ -4352,12 +4352,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 scriptEng.operands[i] = oobP1 && oobP2;
                             }
                             else {
-                                int boundL = xScrollOffset - OBJECT_BORDER_X3;
-                                int boundR = xScrollOffset + OBJECT_BORDER_X4;
-                                int boundT = yScrollOffset - OBJECT_BORDER_Y3;
-                                int boundB = yScrollOffset + OBJECT_BORDER_Y4;
+                                scriptEng.operands[i] = false;
+                                for (int c = 0; c < cameraCount; ++c) {
+                                    int boundL = camera[c].xScrollOffset - OBJECT_BORDER_X3;
+                                    int boundR = camera[c].xScrollOffset + OBJECT_BORDER_X4;
+                                    int boundT = camera[c].yScrollOffset - OBJECT_BORDER_Y3;
+                                    int boundB = camera[c].yScrollOffset + OBJECT_BORDER_Y4;
 
-                                scriptEng.operands[i] = x <= boundL || x >= boundR || y <= boundT || y >= boundB;
+                                    scriptEng.operands[i] |= (x <= boundL || x >= boundR || y <= boundT || y >= boundB);
+                                }
                             }
                         }
                         else {
@@ -4381,12 +4384,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                 scriptEng.operands[i] = oobP1 && oobP2;
                             }
                             else {
-                                int boundL = xScrollOffset - OBJECT_BORDER_X1;
-                                int boundR = xScrollOffset + OBJECT_BORDER_X2;
-                                int boundT = yScrollOffset - OBJECT_BORDER_Y1;
-                                int boundB = yScrollOffset + OBJECT_BORDER_Y2;
+                                scriptEng.operands[i] = false;
+                                for (int c = 0; c < cameraCount; ++c) {
+                                    int boundL = camera[c].xScrollOffset - OBJECT_BORDER_X1;
+                                    int boundR = camera[c].xScrollOffset + OBJECT_BORDER_X2;
+                                    int boundT = camera[c].yScrollOffset - OBJECT_BORDER_Y1;
+                                    int boundB = camera[c].yScrollOffset + OBJECT_BORDER_Y2;
 
-                                scriptEng.operands[i] = x <= boundL || x >= boundR || y <= boundT || y >= boundB;
+                                    scriptEng.operands[i] |= (x <= boundL || x >= boundR || y <= boundT || y >= boundB);
+                                }
                             }
                         }
                         break;
@@ -4597,39 +4603,40 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEACTNUM: scriptEng.operands[i] = actID; break;
                     case VAR_STAGEPAUSEENABLED: scriptEng.operands[i] = pauseEnabled; break;
                     case VAR_STAGELISTSIZE: scriptEng.operands[i] = stageListCount[activeStageList]; break;
-                    case VAR_STAGENEWXBOUNDARY1: scriptEng.operands[i] = newXBoundary1; break;
-                    case VAR_STAGENEWXBOUNDARY2: scriptEng.operands[i] = newXBoundary2; break;
-                    case VAR_STAGENEWYBOUNDARY1: scriptEng.operands[i] = newYBoundary1; break;
-                    case VAR_STAGENEWYBOUNDARY2: scriptEng.operands[i] = newYBoundary2; break;
-                    case VAR_STAGECURXBOUNDARY1: scriptEng.operands[i] = curXBoundary1; break;
-                    case VAR_STAGECURXBOUNDARY2: scriptEng.operands[i] = curXBoundary2; break;
-                    case VAR_STAGECURYBOUNDARY1: scriptEng.operands[i] = curYBoundary1; break;
-                    case VAR_STAGECURYBOUNDARY2: scriptEng.operands[i] = curYBoundary2; break;
+                    case VAR_STAGENEWXBOUNDARY1: scriptEng.operands[i] = camera[0].newXBoundary1; break;
+                    case VAR_STAGENEWXBOUNDARY2: scriptEng.operands[i] = camera[0].newXBoundary2; break;
+                    case VAR_STAGENEWYBOUNDARY1: scriptEng.operands[i] = camera[0].newYBoundary1; break;
+                    case VAR_STAGENEWYBOUNDARY2: scriptEng.operands[i] = camera[0].newYBoundary2; break;
+                    case VAR_STAGECURXBOUNDARY1: scriptEng.operands[i] = camera[0].curXBoundary1; break;
+                    case VAR_STAGECURXBOUNDARY2: scriptEng.operands[i] = camera[0].curXBoundary2; break;
+                    case VAR_STAGECURYBOUNDARY1: scriptEng.operands[i] = camera[0].curYBoundary1; break;
+                    case VAR_STAGECURYBOUNDARY2: scriptEng.operands[i] = camera[0].curYBoundary2; break;
                     case VAR_STAGEDEFORMATIONDATA0: scriptEng.operands[i] = bgDeformationData0[arrayVal]; break;
                     case VAR_STAGEDEFORMATIONDATA1: scriptEng.operands[i] = bgDeformationData1[arrayVal]; break;
                     case VAR_STAGEDEFORMATIONDATA2: scriptEng.operands[i] = bgDeformationData2[arrayVal]; break;
                     case VAR_STAGEDEFORMATIONDATA3: scriptEng.operands[i] = bgDeformationData3[arrayVal]; break;
-                    case VAR_STAGEWATERLEVEL: scriptEng.operands[i] = waterLevel; break;
+                    case VAR_STAGEWATERLEVEL: scriptEng.operands[i] = camera[0].waterLevel; break;
                     case VAR_STAGEACTIVELAYER: scriptEng.operands[i] = activeTileLayers[arrayVal]; break;
                     case VAR_STAGEMIDPOINT: scriptEng.operands[i] = tLayerMidPoint; break;
                     case VAR_STAGEPLAYERLISTPOS: scriptEng.operands[i] = playerListPos; break;
                     case VAR_STAGEDEBUGMODE: scriptEng.operands[i] = debugMode; break;
                     case VAR_STAGEENTITYPOS: scriptEng.operands[i] = objectEntityPos; break;
-                    case VAR_SCREENCAMERAENABLED: scriptEng.operands[i] = cameraEnabled; break;
-                    case VAR_SCREENCAMERATARGET: scriptEng.operands[i] = cameraTarget; break;
-                    case VAR_SCREENCAMERASTYLE: scriptEng.operands[i] = cameraStyle; break;
-                    case VAR_SCREENCAMERAX: scriptEng.operands[i] = cameraXPos; break;
-                    case VAR_SCREENCAMERAY: scriptEng.operands[i] = cameraYPos; break;
+                    // for some reason v5U has currentCamera here?? i mean sure ig
+                    case VAR_SCREENCAMERAENABLED: scriptEng.operands[i] = camera[curCam].enabled; break;
+                    case VAR_SCREENCAMERATARGET: scriptEng.operands[i] = camera[curCam].target; break;
+                    case VAR_SCREENCAMERASTYLE: scriptEng.operands[i] = camera[curCam].style; break;
+                    case VAR_SCREENCAMERAX: scriptEng.operands[i] = camera[curCam].xpos; break;
+                    case VAR_SCREENCAMERAY: scriptEng.operands[i] = camera[curCam].ypos; break;
                     case VAR_SCREENDRAWLISTSIZE: scriptEng.operands[i] = drawListEntries[arrayVal].listSize; break;
                     case VAR_SCREENXCENTER: scriptEng.operands[i] = SCREEN_CENTERX; break;
                     case VAR_SCREENYCENTER: scriptEng.operands[i] = SCREEN_CENTERY; break;
                     case VAR_SCREENXSIZE: scriptEng.operands[i] = SCREEN_XSIZE; break;
                     case VAR_SCREENYSIZE: scriptEng.operands[i] = SCREEN_YSIZE; break;
-                    case VAR_SCREENXOFFSET: scriptEng.operands[i] = xScrollOffset; break;
-                    case VAR_SCREENYOFFSET: scriptEng.operands[i] = yScrollOffset; break;
-                    case VAR_SCREENSHAKEX: scriptEng.operands[i] = cameraShakeX; break;
-                    case VAR_SCREENSHAKEY: scriptEng.operands[i] = cameraShakeY; break;
-                    case VAR_SCREENADJUSTCAMERAY: scriptEng.operands[i] = cameraAdjustY; break;
+                    case VAR_SCREENXOFFSET: scriptEng.operands[i] = camera[0].xScrollOffset; break;
+                    case VAR_SCREENYOFFSET: scriptEng.operands[i] = camera[0].yScrollOffset; break;
+                    case VAR_SCREENSHAKEX: scriptEng.operands[i] = camera[0].shakeX; break;
+                    case VAR_SCREENSHAKEY: scriptEng.operands[i] = camera[0].shakeY; break;
+                    case VAR_SCREENADJUSTCAMERAY: scriptEng.operands[i] = camera[0].adjustY; break;
                     case VAR_TOUCHSCREENDOWN: scriptEng.operands[i] = touchDown[arrayVal]; break;
                     case VAR_TOUCHSCREENXPOS: scriptEng.operands[i] = touchX[arrayVal]; break;
                     case VAR_TOUCHSCREENYPOS: scriptEng.operands[i] = touchY[arrayVal]; break;
@@ -4768,50 +4775,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                     // Origins Extras
                     // Due to using regular v4, these don't support array values like origins expects, so its always screen[0]
-                    case VAR_SCREENCURRENTID: scriptEng.operands[i] = 0; break;
-                    case VAR_CAMERAENABLED:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraEnabled;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-                    case VAR_CAMERATARGET:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraTarget;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-                    case VAR_CAMERASTYLE:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraStyle;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-                    case VAR_CAMERAXPOS:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraXPos;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-                    case VAR_CAMERAYPOS:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraYPos;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-                    case VAR_CAMERAADJUSTY:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = cameraAdjustY;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
-
-                    case VAR_CAMERA_DIRECTION:
-                        if (arrayVal == 0)
-                            scriptEng.operands[i] = screenDirection;
-                        else
-                            scriptEng.operands[i] = 0;
-                        break;
+                    // Due to using v4+, these DO support array values like origins expects, so it can be any camera!!
+                    case VAR_SCREENCURRENTID: scriptEng.operands[i] = currentCamera; break;
+                    case VAR_CAMERAENABLED: scriptEng.operands[i] = camera[arrayVal].enabled; break;
+                    case VAR_CAMERATARGET: scriptEng.operands[i] = camera[arrayVal].target; break;
+                    case VAR_CAMERASTYLE: scriptEng.operands[i] = camera[arrayVal].style; break;
+                    case VAR_CAMERAXPOS: scriptEng.operands[i] = camera[arrayVal].xpos; break;
+                    case VAR_CAMERAYPOS: scriptEng.operands[i] = camera[arrayVal].ypos; break;
+                    case VAR_CAMERAADJUSTY: scriptEng.operands[i] = camera[arrayVal].adjustY; break;
+                    case VAR_CAMERA_DIRECTION: scriptEng.operands[i] = camera[arrayVal].direction; break;
                     // Optimisation by merging them all maybe
                     case VAR_CAMERA_DRAWLAYER0DIRECTION:
                     case VAR_CAMERA_DRAWLAYER1DIRECTION:
@@ -4821,10 +4793,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_CAMERA_DRAWLAYER5DIRECTION:
                     case VAR_CAMERA_DRAWLAYER6DIRECTION:
                     case VAR_CAMERA_DRAWLAYER7DIRECTION:
-                        if (arrayVal == 0 && arrayVal < DRAWLAYER_COUNT)
-                            scriptEng.operands[i] = drawLayerDirection[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION];
-                        else
-                            scriptEng.operands[i] = FLIP_NONE;
+                        if (arrayVal < DRAWLAYER_COUNT)
+                            scriptEng.operands[i] = camera[arrayVal].layerDir[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION];
                         break;
 
 #if RETRO_USE_HAPTICS
@@ -5315,14 +5285,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_DRAWSPRITE:
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
-                DrawSprite((entity->xpos >> 16) - xScrollOffset + spriteFrame->pivotX, (entity->ypos >> 16) - yScrollOffset + spriteFrame->pivotY,
+                DrawSprite((entity->xpos >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                           (entity->ypos >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
                            spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                 break;
             case FUNC_DRAWSPRITEXY:
                 opcodeSize  = 0;
                 spriteFrame = &scriptFrames[scriptInfo->frameListOffset + scriptEng.operands[0]];
-                DrawSprite((scriptEng.operands[1] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                           (scriptEng.operands[2] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
+                DrawSprite((scriptEng.operands[1] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                           (scriptEng.operands[2] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
                            spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                 break;
             case FUNC_DRAWSPRITESCREENXY:
@@ -5777,66 +5748,66 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 
                 switch (scriptEng.operands[1]) {
                     case FX_SCALE:
-                        DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                         (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entityScaleX,
-                                         entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+                        DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                         (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                                         entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
                                          scriptInfo->spriteSheetID);
                         break;
                     case FX_ROTATE:
-                        DrawSpriteRotated(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                          (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                        DrawSpriteRotated(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                          (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                           spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
                                           scriptInfo->spriteSheetID);
                         break;
                     case FX_ROTOZOOM:
-                        DrawSpriteRotozoom(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                           (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                        DrawSpriteRotozoom(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                           (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
                                            entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
                         break;
                     case FX_INK:
                         switch (entity->inkEffect) {
                             case INK_NONE:
-                                DrawSprite((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                           (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                           spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                DrawSprite((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                           (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
+                                           spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                                 break;
                             case INK_BLEND:
-                                DrawBlendedSprite((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                  (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                  spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+                                DrawBlendedSprite((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                  (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
+                                                  spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
                                 break;
                             case INK_ALPHA:
-                                DrawAlphaBlendedSprite((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                       (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                       spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+                                DrawAlphaBlendedSprite((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                       (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
+                                                       spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
                                                        scriptInfo->spriteSheetID);
                                 break;
                             case INK_ADD:
-                                DrawAdditiveBlendedSprite((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                          (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                          spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+                                DrawAdditiveBlendedSprite((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                          (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
+                                                          spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
                                                           scriptInfo->spriteSheetID);
                                 break;
                             case INK_SUB:
-                                DrawSubtractiveBlendedSprite((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                             (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
-                                                             spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+                                DrawSubtractiveBlendedSprite((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                             (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY,
+                                                             spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
                                                              scriptInfo->spriteSheetID);
                                 break;
                         }
                         break;
                     case FX_TINT:
                         if (entity->inkEffect == INK_ALPHA) {
-                            DrawScaledTintMask(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                               (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                            DrawScaledTintMask(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                               (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                                entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
                                                spriteFrame->sprY, scriptInfo->spriteSheetID);
                         }
                         else {
-                            DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                             (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY, entityScaleX,
-                                             entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+                            DrawSpriteScaled(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                             (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                                             entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
                                              scriptInfo->spriteSheetID);
                         }
                         break;
@@ -5844,24 +5815,24 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         switch (entity->direction) {
                             default:
                             case FLIP_NONE:
-                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                  (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
+                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                  (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
                                                   spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE, scriptInfo->spriteSheetID);
                                 break;
                             case FLIP_X:
-                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
-                                                  (scriptEng.operands[3] >> 16) - yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
+                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
+                                                  (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset + spriteFrame->pivotY, spriteFrame->width,
                                                   spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_X, scriptInfo->spriteSheetID);
                                 break;
                             case FLIP_Y:
-                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - xScrollOffset + spriteFrame->pivotX,
-                                                  (scriptEng.operands[3] >> 16) - yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
+                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset + spriteFrame->pivotX,
+                                                  (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
                                                   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y,
                                                   scriptInfo->spriteSheetID);
                                 break;
                             case FLIP_XY:
-                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
-                                                  (scriptEng.operands[3] >> 16) - yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
+                                DrawSpriteFlipped((scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset - spriteFrame->width - spriteFrame->pivotX,
+                                                  (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset - spriteFrame->height - spriteFrame->pivotY,
                                                   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_XY,
                                                   scriptInfo->spriteSheetID);
                                 break;
@@ -5869,8 +5840,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         break;
                     //case FX_ALL:
 					default: //use for stacked flags that don't use all
-                            DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - xScrollOffset,
-                                           (scriptEng.operands[3] >> 16) - yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
+                            DrawSpriteAllFX(entity->direction, (scriptEng.operands[2] >> 16) - camera[currentCamera].xScrollOffset,
+                                           (scriptEng.operands[3] >> 16) - camera[currentCamera].yScrollOffset, -spriteFrame->pivotX, -spriteFrame->pivotY,
                                            spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
                                            entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, scriptEng.operands[1]);
                         break;
@@ -6107,7 +6078,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_DRAWOBJECTANIMATION:
                 opcodeSize = 0;
                 if (entity->visible)
-                    DrawObjectAnimation(scriptInfo, entity, (entity->xpos >> 16) - xScrollOffset, (entity->ypos >> 16) - yScrollOffset);
+                    DrawObjectAnimation(scriptInfo, entity, (entity->xpos >> 16) - camera[currentCamera].xScrollOffset,
+                                                            (entity->ypos >> 16) - camera[currentCamera].yScrollOffset);
                 break;
             case FUNC_SETMUSICTRACK:
                 opcodeSize = 0;
@@ -6668,30 +6640,33 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // FUNCTION NOTES:
                 // - Sets scriptEng.checkResult
 
-                if (scriptEng.operands[2] > 0 && scriptEng.operands[3] > 0) {
-                    int sx = abs(scriptEng.operands[0] - cameraXPos);
-                    int sy = abs(scriptEng.operands[1] - cameraYPos);
+                scriptEng.checkResult = false;
+                for (int c = 0; c < cameraCount; ++c) {
+                    if (scriptEng.operands[2] > 0 && scriptEng.operands[3] > 0) {
+                        int sx = abs(scriptEng.operands[0] - camera[c].xpos);
+                        int sy = abs(scriptEng.operands[1] - camera[c].ypos);
 
-                    if (sx < scriptEng.operands[2] && sy < scriptEng.operands[3]) {
-                        scriptEng.checkResult = true;
-                        break;
-                    }
-                }
-                else {
-                    if (scriptEng.operands[2] > 0) {
-                        int sx = abs(scriptEng.operands[0] - cameraXPos);
-
-                        if (sx < scriptEng.operands[2]) {
-                            scriptEng.checkResult = true;
+                        if (sx < scriptEng.operands[2] && sy < scriptEng.operands[3]) {
+                            scriptEng.checkResult |= true;
                             break;
                         }
                     }
-                    else if (scriptEng.operands[3] > 0) {
-                        int sy = abs(scriptEng.operands[1] - cameraYPos);
+                    else {
+                        if (scriptEng.operands[2] > 0) {
+                            int sx = abs(scriptEng.operands[0] - camera[c].xpos);
 
-                        if (sy < scriptEng.operands[3]) {
-                            scriptEng.checkResult = true;
-                            break;
+                            if (sx < scriptEng.operands[2]) {
+                                scriptEng.checkResult |= true;
+                                break;
+                            }
+                        }
+                        else if (scriptEng.operands[3] > 0) {
+                            int sy = abs(scriptEng.operands[1] - camera[c].ypos);
+
+                            if (sy < scriptEng.operands[3]) {
+                                scriptEng.checkResult |= true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -6700,7 +6675,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SETSCREENCOUNT:
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = screenCount
-
+                // My only question is... why is this a function and not a variable?
+                cameraCount = scriptEng.operands[0];
                 break;
 
             case FUNC_SETSCREENVERTICES:
@@ -6722,10 +6698,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // - Assigns the device's id to scriptEng.operands[0]
 
 				scriptEng.operands[0] = entity->controlMode;
-				//The input system thing i implemented works almost completely different from v5U,,, but its easier so whos complaining
+				// The input system thing implemented works almost completely different from v5U,,, but its easier so whos complaining
                 break;
 
-            case FUNC_GETFILTEREDINPUTDEVICEID: //dunno how dis even works :urm:  //but its unused so :bleh:  //if anybody figures this out pls add it �������
+            case FUNC_GETFILTEREDINPUTDEVICEID: //dunno how dis even works :urm:  //but its unused so :bleh:  //if anybody figures this out pls add it
                 // FUNCTION PARAMS:
                 // scriptEng.operands[0] = deviceID
                 // scriptEng.operands[1] = confirmOnly
@@ -6752,7 +6728,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // scriptEng.operands[0] = deviceID
 
 				scriptEng.checkResult = true;
-				//Again, the input system thing i implemented works almost completely different from v5U so its easy peasyebyfbyebgrbghbeghbeagbhg ahrbg bhejgreg
+				// Again, the input system thing implemented works almost completely different from v5U so its easy peasyebyfbyebgrbghbeghbeagbhg ahrbg bhejgreg
                 break;
 
             case FUNC_ASSIGNINPUTSLOTTODEVICE:
@@ -8461,59 +8437,81 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEACTNUM: actID = scriptEng.operands[i]; break;
                     case VAR_STAGEPAUSEENABLED: pauseEnabled = scriptEng.operands[i]; break;
                     case VAR_STAGELISTSIZE: break;
-                    case VAR_STAGENEWXBOUNDARY1: newXBoundary1 = scriptEng.operands[i]; break;
-                    case VAR_STAGENEWXBOUNDARY2: newXBoundary2 = scriptEng.operands[i]; break;
-                    case VAR_STAGENEWYBOUNDARY1: newYBoundary1 = scriptEng.operands[i]; break;
-                    case VAR_STAGENEWYBOUNDARY2: newYBoundary2 = scriptEng.operands[i]; break;
+                    // v5U DOESNT have currentCamera here tho so uhh
+                    case VAR_STAGENEWXBOUNDARY1: for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].newXBoundary1 = scriptEng.operands[i]; break;
+                    case VAR_STAGENEWXBOUNDARY2: for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].newXBoundary2 = scriptEng.operands[i]; break;
+                    case VAR_STAGENEWYBOUNDARY1: for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].newYBoundary1 = scriptEng.operands[i]; break;
+                    case VAR_STAGENEWYBOUNDARY2: for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].newYBoundary2 = scriptEng.operands[i]; break;
                     case VAR_STAGECURXBOUNDARY1:
-                        if (curXBoundary1 != scriptEng.operands[i]) {
-                            curXBoundary1 = scriptEng.operands[i];
-                            newXBoundary1 = scriptEng.operands[i];
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+                            if (camera[c].curXBoundary1 != scriptEng.operands[i]) {
+                                camera[c].curXBoundary1  = scriptEng.operands[i];
+                                camera[c].newXBoundary1  = scriptEng.operands[i];
+                            }
                         }
                         break;
                     case VAR_STAGECURXBOUNDARY2:
-                        if (curXBoundary2 != scriptEng.operands[i]) {
-                            curXBoundary2 = scriptEng.operands[i];
-                            newXBoundary2 = scriptEng.operands[i];
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+                            if (camera[c].curXBoundary2 != scriptEng.operands[i]) {
+                                camera[c].curXBoundary2  = scriptEng.operands[i];
+                                camera[c].newXBoundary2  = scriptEng.operands[i];
+                            }
                         }
                         break;
                     case VAR_STAGECURYBOUNDARY1:
-                        if (curYBoundary1 != scriptEng.operands[i]) {
-                            curYBoundary1 = scriptEng.operands[i];
-                            newYBoundary1 = scriptEng.operands[i];
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+                            if (camera[c].curYBoundary1 != scriptEng.operands[i]) {
+                                camera[c].curYBoundary1  = scriptEng.operands[i];
+                                camera[c].newYBoundary1  = scriptEng.operands[i];
+                            }
                         }
                         break;
                     case VAR_STAGECURYBOUNDARY2:
-                        if (curYBoundary2 != scriptEng.operands[i]) {
-                            curYBoundary2 = scriptEng.operands[i];
-                            newYBoundary2 = scriptEng.operands[i];
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+                            if (camera[c].curYBoundary2 != scriptEng.operands[i]) {
+                                camera[c].curYBoundary2  = scriptEng.operands[i];
+                                camera[c].newYBoundary2  = scriptEng.operands[i];
+                            }
                         }
                         break;
                     case VAR_STAGEDEFORMATIONDATA0: bgDeformationData0[arrayVal] = scriptEng.operands[i]; break;
                     case VAR_STAGEDEFORMATIONDATA1: bgDeformationData1[arrayVal] = scriptEng.operands[i]; break;
                     case VAR_STAGEDEFORMATIONDATA2: bgDeformationData2[arrayVal] = scriptEng.operands[i]; break;
                     case VAR_STAGEDEFORMATIONDATA3: bgDeformationData3[arrayVal] = scriptEng.operands[i]; break;
-                    case VAR_STAGEWATERLEVEL: waterLevel = scriptEng.operands[i]; break;
+                    case VAR_STAGEWATERLEVEL: // v5U doesnt have currentCamera here either
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].waterLevel = scriptEng.operands[i];
+                        break;
                     case VAR_STAGEACTIVELAYER: activeTileLayers[arrayVal] = scriptEng.operands[i]; break;
                     case VAR_STAGEMIDPOINT: tLayerMidPoint = scriptEng.operands[i]; break;
                     case VAR_STAGEPLAYERLISTPOS: playerListPos = scriptEng.operands[i]; break;
                     case VAR_STAGEDEBUGMODE: debugMode = scriptEng.operands[i]; break;
                     case VAR_STAGEENTITYPOS: objectEntityPos = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERAENABLED: cameraEnabled = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERATARGET: cameraTarget = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERASTYLE: cameraStyle = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERAX: cameraXPos = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERAY: cameraYPos = scriptEng.operands[i]; break;
+                    // v5U does have it here for these 5
+                    case VAR_SCREENCAMERAENABLED: camera[curCam].enabled = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERATARGET: camera[curCam].target = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERASTYLE: camera[curCam].style = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERAX: camera[curCam].xpos = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERAY: camera[curCam].ypos = scriptEng.operands[i]; break;
                     case VAR_SCREENDRAWLISTSIZE: drawListEntries[arrayVal].listSize = scriptEng.operands[i]; break;
                     case VAR_SCREENXCENTER: break;
                     case VAR_SCREENYCENTER: break;
                     case VAR_SCREENXSIZE: break;
                     case VAR_SCREENYSIZE: break;
-                    case VAR_SCREENXOFFSET: xScrollOffset = scriptEng.operands[i]; break;
-                    case VAR_SCREENYOFFSET: yScrollOffset = scriptEng.operands[i]; break;
-                    case VAR_SCREENSHAKEX: cameraShakeX = scriptEng.operands[i]; break;
-                    case VAR_SCREENSHAKEY: cameraShakeY = scriptEng.operands[i]; break;
-                    case VAR_SCREENADJUSTCAMERAY: cameraAdjustY = scriptEng.operands[i]; break;
+                    case VAR_SCREENXOFFSET: // v5U also doesnt have currentCamera here
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].xScrollOffset = scriptEng.operands[i];
+                        break;
+                    case VAR_SCREENYOFFSET:
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].yScrollOffset = scriptEng.operands[i];
+                        break;
+                    case VAR_SCREENSHAKEX:
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].shakeX = scriptEng.operands[i];
+                        break;
+                    case VAR_SCREENSHAKEY:
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].shakeY = scriptEng.operands[i];
+                        break;
+                    case VAR_SCREENADJUSTCAMERAY:
+                        for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].adjustY = scriptEng.operands[i];
+                        break;
                     case VAR_TOUCHSCREENDOWN: break;
                     case VAR_TOUCHSCREENXPOS: break;
                     case VAR_TOUCHSCREENYPOS: break;
@@ -8654,36 +8652,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
                     // Origins Extras
                     // Due to using regular v4, these don't support array values like origins expects, so its always screen[0]
-                    case VAR_SCREENCURRENTID: break;
-                    case VAR_CAMERAENABLED:
-                        if (arrayVal == 0)
-                            cameraEnabled = scriptEng.operands[i];
-                        break;
-                    case VAR_CAMERATARGET:
-                        if (arrayVal == 0)
-                            cameraTarget = scriptEng.operands[i];
-                        break;
-                    case VAR_CAMERASTYLE:
-                        if (arrayVal == 0)
-                            cameraStyle = scriptEng.operands[i];
-                        break;
-                    case VAR_CAMERAXPOS:
-                        if (arrayVal == 0)
-                            cameraXPos = scriptEng.operands[i];
-                        break;
-                    case VAR_CAMERAYPOS:
-                        if (arrayVal == 0)
-                            cameraYPos = scriptEng.operands[i];
-                        break;
-                    case VAR_CAMERAADJUSTY:
-                        if (arrayVal == 0)
-                            cameraAdjustY = scriptEng.operands[i];
-                        break;
-
-                    case VAR_CAMERA_DIRECTION:
-                        if (arrayVal == 0)
-                            screenDirection = scriptEng.operands[i];
-                        break;
+                    // Due to using v4+, these DO support array values like origins expects, so it can be any camera!!
+                    case VAR_SCREENCURRENTID: currentCamera = scriptEng.operands[i]; break;
+                    case VAR_CAMERAENABLED: camera[arrayVal].enabled = scriptEng.operands[i]; break;
+                    case VAR_CAMERATARGET: camera[arrayVal].target = scriptEng.operands[i]; break;
+                    case VAR_CAMERASTYLE: camera[arrayVal].style = scriptEng.operands[i]; break;
+                    case VAR_CAMERAXPOS: camera[arrayVal].xpos = scriptEng.operands[i]; break;
+                    case VAR_CAMERAYPOS: camera[arrayVal].ypos = scriptEng.operands[i]; break;
+                    case VAR_CAMERAADJUSTY: scriptEng.operands[i] = camera[arrayVal].adjustY; break;
+                    case VAR_CAMERA_DIRECTION: scriptEng.operands[i] = camera[arrayVal].direction; break;
                     // Optimisation by merging them all maybe
                     case VAR_CAMERA_DRAWLAYER0DIRECTION:
                     case VAR_CAMERA_DRAWLAYER1DIRECTION:
@@ -8693,8 +8670,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_CAMERA_DRAWLAYER5DIRECTION:
                     case VAR_CAMERA_DRAWLAYER6DIRECTION:
                     case VAR_CAMERA_DRAWLAYER7DIRECTION:
-                        if (arrayVal == 0 && arrayVal < DRAWLAYER_COUNT)
-	                        drawLayerDirection[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION] = scriptEng.operands[i];
+                        if (arrayVal < DRAWLAYER_COUNT)
+                            camera[arrayVal].layerDir[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION] = scriptEng.operands[i];
                         break;
 
 #if RETRO_USE_HAPTICS

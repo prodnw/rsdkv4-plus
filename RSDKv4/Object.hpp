@@ -66,7 +66,6 @@ struct Entity {
     byte jumpPress;
     byte jumpHold;
     byte keyFlip;
-    byte loadObjects;
     byte scrollTracking;
     // was 3 on S1 release, but bumped up to 5 for S2
     byte floorSensors[RETRO_REV00 ? 3 : 5];

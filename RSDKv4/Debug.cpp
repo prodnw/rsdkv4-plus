@@ -96,8 +96,10 @@ void InitDevMenu()
     for (int m = 0; m < modList.size(); ++m) ScanModFolder(&modList[m]);
 #endif
     // DrawStageGFXHQ = 0;
-    xScrollOffset = 0;
-    yScrollOffset = 0;
+    for (int c = 0; c < DEFAULT_INPUT_COUNT; ++c) {
+        camera[c].xScrollOffset = 0;
+        camera[c].yScrollOffset = 0;
+    }
     StopMusic(true);
     StopAllSfx();
     ReleaseStageSfx();
@@ -125,8 +127,10 @@ void InitDevMenu()
 }
 void InitErrorMessage()
 {
-    xScrollOffset = 0;
-    yScrollOffset = 0;
+    for (int c = 0; c < DEFAULT_INPUT_COUNT; ++c) {
+        camera[c].xScrollOffset = 0;
+        camera[c].yScrollOffset = 0;
+    }
     StopMusic(true);
     StopAllSfx();
     ReleaseStageSfx();

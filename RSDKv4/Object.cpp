@@ -76,39 +76,44 @@ void ProcessObjects()
     for (objectEntityPos = 0; objectEntityPos < ENTITY_COUNT; ++objectEntityPos) {
         processObjectFlag[objectEntityPos] = false;
         int x = 0, y = 0;
+        int camX = 0, camY = 0;
         Entity *entity = &objectEntityList[objectEntityPos];
         x              = entity->xpos >> 16;
         y              = entity->ypos >> 16;
 
-        switch (entity->priority) {
-            case PRIORITY_BOUNDS:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < xScrollOffset + OBJECT_BORDER_X2
-                                                     && y > yScrollOffset - OBJECT_BORDER_Y1 && y < yScrollOffset + OBJECT_BORDER_Y2;
-                break;
+        for (currentCamera = 0; currentCamera < cameraCount; ++currentCamera) {
+            camX = camera[currentCamera].xScrollOffset;
+            camY = camera[currentCamera].yScrollOffset;
+            switch (entity->priority) {
+                case PRIORITY_BOUNDS:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < camX + OBJECT_BORDER_X2
+                                                         && y > camY - OBJECT_BORDER_Y1 && y < camY + OBJECT_BORDER_Y2;
+                    break;
 
-            case PRIORITY_ACTIVE:
-            case PRIORITY_ALWAYS:
-            case PRIORITY_ACTIVE_SMALL: processObjectFlag[objectEntityPos] = true; break;
+                case PRIORITY_ACTIVE:
+                case PRIORITY_ALWAYS:
+                case PRIORITY_ACTIVE_SMALL: processObjectFlag[objectEntityPos] = true; break;
 
-            case PRIORITY_XBOUNDS:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset;
-                break;
+                case PRIORITY_XBOUNDS:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + camX;
+                    break;
 
-            case PRIORITY_XBOUNDS_DESTROY:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < xScrollOffset + OBJECT_BORDER_X2;
-                if (!processObjectFlag[objectEntityPos]) {
-                    processObjectFlag[objectEntityPos] = false;
-                    entity->type                       = OBJ_TYPE_BLANKOBJECT;
-                }
-                break;
+                case PRIORITY_XBOUNDS_DESTROY:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < camX + OBJECT_BORDER_X2;
+                    if (!processObjectFlag[objectEntityPos]) {
+                        processObjectFlag[objectEntityPos] = false;
+                        entity->type                       = OBJ_TYPE_BLANKOBJECT;
+                    }
+                    break;
 
-            case PRIORITY_INACTIVE: processObjectFlag[objectEntityPos] = false; break;
-            case PRIORITY_BOUNDS_SMALL:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X3 && x < OBJECT_BORDER_X4 + xScrollOffset
-                                                     && y > yScrollOffset - OBJECT_BORDER_Y3 && y < yScrollOffset + OBJECT_BORDER_Y4;
-                break;
+                case PRIORITY_INACTIVE: processObjectFlag[objectEntityPos] = false; break;
+                case PRIORITY_BOUNDS_SMALL:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X3 && x < OBJECT_BORDER_X4 + camX
+                                                         && y > camY - OBJECT_BORDER_Y3 && y < camY + OBJECT_BORDER_Y4;
+                    break;
 
-            default: break;
+                default: break;
+            }
         }
 
         if (processObjectFlag[objectEntityPos] && entity->type > OBJ_TYPE_BLANKOBJECT) {
@@ -166,40 +171,45 @@ void ProcessFrozenObjects()
     for (objectEntityPos = 0; objectEntityPos < ENTITY_COUNT; ++objectEntityPos) {
         processObjectFlag[objectEntityPos] = false;
         int x = 0, y = 0;
+        int camX = 0, camY = 0;
         Entity *entity = &objectEntityList[objectEntityPos];
         x              = entity->xpos >> 16;
         y              = entity->ypos >> 16;
 
-        switch (entity->priority) {
-            case PRIORITY_BOUNDS:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < xScrollOffset + OBJECT_BORDER_X2
-                                                     && y > yScrollOffset - OBJECT_BORDER_Y1 && y < yScrollOffset + OBJECT_BORDER_Y2;
-                break;
+        for (currentCamera = 0; currentCamera < cameraCount; ++currentCamera) {
+            camX = camera[currentCamera].xScrollOffset;
+            camY = camera[currentCamera].yScrollOffset;
+            switch (entity->priority) {
+                case PRIORITY_BOUNDS:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < camX + OBJECT_BORDER_X2
+                                                         && y > camY - OBJECT_BORDER_Y1 && y < camY + OBJECT_BORDER_Y2;
+                    break;
 
-            case PRIORITY_ACTIVE:
-            case PRIORITY_ALWAYS:
-            case PRIORITY_ACTIVE_SMALL: processObjectFlag[objectEntityPos] = true; break;
+                case PRIORITY_ACTIVE:
+                case PRIORITY_ALWAYS:
+                case PRIORITY_ACTIVE_SMALL: processObjectFlag[objectEntityPos] = true; break;
 
-            case PRIORITY_XBOUNDS:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScrollOffset;
-                break;
+                case PRIORITY_XBOUNDS:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + camX;
+                    break;
 
-            case PRIORITY_XBOUNDS_DESTROY:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X1 && x < xScrollOffset + OBJECT_BORDER_X2;
-                if (!processObjectFlag[objectEntityPos]) {
-                    processObjectFlag[objectEntityPos] = false;
-                    entity->type                       = OBJ_TYPE_BLANKOBJECT;
-                }
-                break;
+                case PRIORITY_XBOUNDS_DESTROY:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X1 && x < camX + OBJECT_BORDER_X2;
+                    if (!processObjectFlag[objectEntityPos]) {
+                        processObjectFlag[objectEntityPos] = false;
+                        entity->type                       = OBJ_TYPE_BLANKOBJECT;
+                    }
+                    break;
 
-            case PRIORITY_INACTIVE: processObjectFlag[objectEntityPos] = false; break;
+                case PRIORITY_INACTIVE: processObjectFlag[objectEntityPos] = false; break;
 
-            case PRIORITY_BOUNDS_SMALL:
-                processObjectFlag[objectEntityPos] = x > xScrollOffset - OBJECT_BORDER_X3 && x < OBJECT_BORDER_X4 + xScrollOffset
-                                                     && y > yScrollOffset - OBJECT_BORDER_Y3 && y < yScrollOffset + OBJECT_BORDER_Y4;
-                break;
+                case PRIORITY_BOUNDS_SMALL:
+                    processObjectFlag[objectEntityPos] = x > camX - OBJECT_BORDER_X3 && x < OBJECT_BORDER_X4 + camX
+                                                         && y > camY - OBJECT_BORDER_Y3 && y < camY + OBJECT_BORDER_Y4;
+                    break;
 
-            default: break;
+                default: break;
+            }
         }
 
         if (processObjectFlag[objectEntityPos] && entity->type > OBJ_TYPE_BLANKOBJECT) {
@@ -322,95 +332,6 @@ void Process2PObjects()
                 TypeGroupList *listCustom                      = &objectTypeGroupList[objectEntityList[objectEntityPos].groupID];
                 listCustom->entityRefs[listCustom->listSize++] = objectEntityPos;
             }
-            // Type-Specific list
-            TypeGroupList *listType                    = &objectTypeGroupList[objectEntityList[objectEntityPos].type];
-            listType->entityRefs[listType->listSize++] = objectEntityPos;
-
-            // All Entities list
-            TypeGroupList *listAll                   = &objectTypeGroupList[GROUP_ALL];
-            listAll->entityRefs[listAll->listSize++] = objectEntityPos;
-        }
-    }
-}
-void ProcessSplitscreenObjects()
-{
-    int playerEntityPos = 0;
-    
-    int xScroll = 0, yScroll = 0;
-    int x = 0, y = 0;
-    Entity *entity;
-
-    for (int i = 0; i < DRAWLAYER_COUNT; ++i) drawListEntries[i].listSize = 0;
-
-    for (objectEntityPos = 0; objectEntityPos < ENTITY_COUNT; ++objectEntityPos) {
-        processObjectFlag[objectEntityPos] = false;
-
-        entity = &objectEntityList[objectEntityPos];
-        x       = entity->xpos;
-        y       = entity->ypos;
-
-        for (playerEntityPos = 0; playerEntityPos < ENTITY_COUNT; ++playerEntityPos) {
-            // Is this object even a player?
-            if (objectEntityList[playerEntityPos].loadObjects == false)
-                break;
-
-            // un-comment this when multi-camera support is added
-//            xScroll = xScrollOffset[playerEntityPos];
-//            yScroll = yScrollOffset[playerEntityPos];
-
-            switch (entity->priority) {
-                case PRIORITY_BOUNDS:
-                    processObjectFlag[objectEntityPos] |= x > xScroll - OBJECT_BORDER_X1 && x < xScroll + OBJECT_BORDER_X2
-                                                         && y > yScroll - OBJECT_BORDER_Y1 && y < yScroll + OBJECT_BORDER_Y2;
-                    break;
-
-                case PRIORITY_ACTIVE:
-                case PRIORITY_ALWAYS:
-                case PRIORITY_ACTIVE_SMALL: processObjectFlag[objectEntityPos] = true; break;
-
-                case PRIORITY_XBOUNDS:
-                    processObjectFlag[objectEntityPos] |= x > xScroll - OBJECT_BORDER_X1 && x < OBJECT_BORDER_X2 + xScroll;
-                    break;
-
-                case PRIORITY_XBOUNDS_DESTROY:
-                    processObjectFlag[objectEntityPos] |= x > xScroll - OBJECT_BORDER_X1 && x < xScroll + OBJECT_BORDER_X2;
-                    break;
-
-                case PRIORITY_INACTIVE: processObjectFlag[objectEntityPos] = false; break;
-                case PRIORITY_BOUNDS_SMALL:
-                    processObjectFlag[objectEntityPos] |= x > xScroll - OBJECT_BORDER_X3 && x < OBJECT_BORDER_X4 + xScroll
-                                                         && y > yScroll - OBJECT_BORDER_Y3 && y < yScroll + OBJECT_BORDER_Y4;
-                    break;
-
-                default: break;
-            }
-        }
-        if (!processObjectFlag[objectEntityPos] && entity->priority == PRIORITY_XBOUNDS_DESTROY) {
-            processObjectFlag[objectEntityPos] = false;
-            entity->type                       = OBJ_TYPE_BLANKOBJECT;
-        }
-        
-        if (processObjectFlag[objectEntityPos] && entity->type > OBJ_TYPE_BLANKOBJECT) {
-            ObjectScript *scriptInfo = &objectScriptList[entity->type];
-            if (scriptCode[scriptInfo->eventUpdate.scriptCodePtr] > 0)
-                ProcessScript(scriptInfo->eventUpdate.scriptCodePtr, scriptInfo->eventUpdate.jumpTablePtr, EVENT_MAIN);
-
-            if (entity->drawOrder < DRAWLAYER_COUNT)
-                drawListEntries[entity->drawOrder].entityRefs[drawListEntries[entity->drawOrder].listSize++] = objectEntityPos;
-        }
-    }
-
-    for (int i = 0; i < TYPEGROUP_COUNT; ++i) objectTypeGroupList[i].listSize = 0;
-
-    for (objectEntityPos = 0; objectEntityPos < ENTITY_COUNT; ++objectEntityPos) {
-        entity = &objectEntityList[objectEntityPos];
-        if (processObjectFlag[objectEntityPos] && entity->objectInteractions) {
-            // Custom Group
-            if (entity->groupID >= OBJECT_COUNT) {
-                TypeGroupList *listCustom                      = &objectTypeGroupList[objectEntityList[objectEntityPos].groupID];
-                listCustom->entityRefs[listCustom->listSize++] = objectEntityPos;
-            }
-
             // Type-Specific list
             TypeGroupList *listType                    = &objectTypeGroupList[objectEntityList[objectEntityPos].type];
             listType->entityRefs[listType->listSize++] = objectEntityPos;

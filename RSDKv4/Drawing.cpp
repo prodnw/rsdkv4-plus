@@ -27,8 +27,6 @@ float touchWidthF  = SCREEN_XSIZE;
 float touchHeightF = SCREEN_YSIZE;
 
 DrawListEntry drawListEntries[DRAWLAYER_COUNT];
-byte drawLayerDirection[DRAWLAYER_COUNT];
-byte screenDirection;
 
 int gfxDataPosition = 0;
 GFXSurface gfxSurface[SURFACE_COUNT];
@@ -714,6 +712,17 @@ void GenerateBlendLookupTable(void)
     }
 }
 
+void ClearGraphicsData()
+{
+    for (int i = 0; i < SURFACE_COUNT; ++i) MEM_ZERO(gfxSurface[i]);
+    gfxDataPosition = 0;
+    
+    for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+        for (int i = 0; i < DRAWLAYER_COUNT; ++i) camera[c].layerDir[i] = FLIP_NONE;
+        camera[c].direction = FLIP_NONE;
+    }
+}
+
 void ClearScreen(byte index)
 {
 #if RETRO_SOFTWARE_RENDER
@@ -1184,8 +1193,8 @@ void DrawObjectList(int Layer)
     // only flip if we need to!!
     // if the previous draw layer is flipped, dont flip again!!
     // this saves ram usage!!
-    if (Layer > 0 && drawLayerDirection[Layer - 1] != drawLayerDirection[Layer])
-        FlipFrameBuffer(drawLayerDirection[Layer]);
+    if (Layer > 0 && camera[currentCamera].layerDir[Layer - 1] != camera[currentCamera].layerDir[Layer])
+        FlipFrameBuffer(camera[currentCamera].layerDir[Layer]);
     
     int size = drawListEntries[Layer].listSize;
     for (int i = 0; i < size; ++i) {
@@ -1200,19 +1209,19 @@ void DrawObjectList(int Layer)
     // only flip again if we need to!!
     // if the next draw layer is flipped, dont flip again!!
     // this saves more ram usage!!
-    if (Layer == DRAWLAYER_COUNT - 1 || (Layer < DRAWLAYER_COUNT - 1 && drawLayerDirection[Layer + 1] != drawLayerDirection[Layer]))
-        FlipFrameBuffer(drawLayerDirection[Layer]);
+    if (Layer == DRAWLAYER_COUNT - 1 || (Layer < DRAWLAYER_COUNT - 1 && camera[currentCamera].layerDir[Layer + 1] != camera[currentCamera].layerDir[Layer]))
+        FlipFrameBuffer(camera[currentCamera].layerDir[Layer]);
 }
 void DrawStageGFX()
 {
-    waterDrawPos = waterLevel - yScrollOffset;
+    camera[currentCamera].waterDrawPos = camera[currentCamera].waterLevel - camera[currentCamera].yScrollOffset;
 
 #if RETRO_SOFTWARE_RENDER
-    if (waterDrawPos < 0)
-        waterDrawPos = 0;
+    if (camera[currentCamera].waterDrawPos < 0)
+        camera[currentCamera].waterDrawPos = 0;
 
-    if (waterDrawPos > SCREEN_YSIZE)
-        waterDrawPos = SCREEN_YSIZE;
+    if (camera[currentCamera].waterDrawPos > SCREEN_YSIZE)
+        camera[currentCamera].waterDrawPos = SCREEN_YSIZE;
 #endif
 
     if (tLayerMidPoint < 3) {
@@ -1484,7 +1493,7 @@ void DrawStageGFX()
         DrawDebugOverlays();
 #endif
 
-    FlipFrameBuffer(screenDirection);
+    FlipFrameBuffer(camera[currentCamera].direction);
 }
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -1497,8 +1506,8 @@ void DrawDebugOverlays()
             int y                 = info->ypos + (info->top << 16);
             int w                 = abs((info->xpos + (info->right << 16)) - x) >> 16;
             int h                 = abs((info->ypos + (info->bottom << 16)) - y) >> 16;
-            x                     = (x >> 16) - xScrollOffset;
-            y                     = (y >> 16) - yScrollOffset;
+            x                     = (x >> 16) - camera[currentCamera].xScrollOffset;
+            y                     = (y >> 16) - camera[currentCamera].yScrollOffset;
 
             switch (info->type) {
                 case H_TYPE_TOUCH:
@@ -1550,7 +1559,7 @@ void DrawDebugOverlays()
 
                 case H_TYPE_FINGER:
                     if (showHitboxes & 2)
-                        DrawRectangle(x + xScrollOffset, y + yScrollOffset, w, h, 0xF0, 0x00, 0xF0, 0x60);
+                        DrawRectangle(x + camera[currentCamera].xScrollOffset, y + camera[currentCamera].yScrollOffset, w, h, 0xF0, 0x00, 0xF0, 0x60);
                     break;
             }
         }
@@ -1593,7 +1602,7 @@ void DrawHLineScrollLayer(int layerID)
 
     int yscrollOffset = 0;
     if (activeTileLayers[layerID]) { // BG Layer
-        int yScroll    = yScrollOffset * layer->parallaxFactor >> 8;
+        int yScroll    = camera[currentCamera].yScrollOffset * layer->parallaxFactor >> 8;
         int fullheight = layerheight << 7;
         layer->scrollPos += layer->scrollSpeed;
         if (layer->scrollPos > fullheight << 16)
@@ -1602,22 +1611,22 @@ void DrawHLineScrollLayer(int layerID)
         layerheight      = fullheight >> 7;
         lineScroll       = layer->lineScroll;
         deformationData  = &bgDeformationData2[(byte)(yscrollOffset + layer->deformationOffset)];
-        deformationDataW = &bgDeformationData3[(byte)(yscrollOffset + waterDrawPos + layer->deformationOffsetW)];
+        deformationDataW = &bgDeformationData3[(byte)(yscrollOffset + camera[currentCamera].waterDrawPos + layer->deformationOffsetW)];
     }
     else { // FG Layer
         lastXSize     = layer->xsize;
-        yscrollOffset = yScrollOffset;
+        yscrollOffset = camera[currentCamera].yScrollOffset;
         lineScroll    = layer->lineScroll;
-        for (int i = 0; i < PARALLAX_COUNT; ++i) hParallax.linePos[i] = xScrollOffset;
+        for (int i = 0; i < PARALLAX_COUNT; ++i) hParallax.linePos[i] = camera[currentCamera].xScrollOffset;
         deformationData  = &bgDeformationData0[(byte)(yscrollOffset + layer->deformationOffset)];
-        deformationDataW = &bgDeformationData1[(byte)(yscrollOffset + waterDrawPos + layer->deformationOffsetW)];
+        deformationDataW = &bgDeformationData1[(byte)(yscrollOffset + camera[currentCamera].waterDrawPos + layer->deformationOffsetW)];
     }
 
     if (layer->type == LAYER_HSCROLL) {
         if (lastXSize != layerwidth) {
             int fullLayerwidth = layerwidth << 7;
             for (int i = 0; i < hParallax.entryCount; ++i) {
-                hParallax.linePos[i] = xScrollOffset * hParallax.parallaxFactor[i] >> 8;
+                hParallax.linePos[i] = camera[currentCamera].xScrollOffset * hParallax.parallaxFactor[i] >> 8;
                 if (hParallax.scrollPos[i] > fullLayerwidth << 16)
                     hParallax.scrollPos[i] -= fullLayerwidth << 16;
                 if (hParallax.scrollPos[i] < 0)
@@ -1643,7 +1652,7 @@ void DrawHLineScrollLayer(int layerID)
     int tileY         = (tileYPos & 0x7F) >> 4;
 
     // Draw Above Water (if applicable)
-    int drawableLines[2] = { waterDrawPos, SCREEN_YSIZE - waterDrawPos };
+    int drawableLines[2] = { camera[currentCamera].waterDrawPos, SCREEN_YSIZE - camera[currentCamera].waterDrawPos };
     for (int i = 0; i < 2; ++i) {
         while (drawableLines[i]--) {
             activePalette   = fullPalette[*lineBuffer];
@@ -2182,7 +2191,7 @@ void DrawVLineScrollLayer(int layerID)
 
     int xscrollOffset = 0;
     if (activeTileLayers[layerID]) { // BG Layer
-        int xScroll        = xScrollOffset * layer->parallaxFactor >> 8;
+        int xScroll        = camera[currentCamera].xScrollOffset * layer->parallaxFactor >> 8;
         int fullLayerwidth = layerwidth << 7;
         layer->scrollPos += layer->scrollSpeed;
         if (layer->scrollPos > fullLayerwidth << 16)
@@ -2194,18 +2203,18 @@ void DrawVLineScrollLayer(int layerID)
     }
     else { // FG Layer
         lastYSize            = layer->ysize;
-        xscrollOffset        = xScrollOffset;
+        xscrollOffset        = camera[currentCamera].xScrollOffset;
         lineScroll           = layer->lineScroll;
-        vParallax.linePos[0] = yScrollOffset;
+        vParallax.linePos[0] = camera[currentCamera].yScrollOffset;
         vParallax.deform[0]  = true;
-        deformationData      = &bgDeformationData0[(byte)(xScrollOffset + layer->deformationOffset)];
+        deformationData      = &bgDeformationData0[(byte)(camera[currentCamera].xScrollOffset + layer->deformationOffset)];
     }
 
     if (layer->type == LAYER_VSCROLL) {
         if (lastYSize != layerheight) {
             int fullLayerheight = layerheight << 7;
             for (int i = 0; i < vParallax.entryCount; ++i) {
-                vParallax.linePos[i] = yScrollOffset * vParallax.parallaxFactor[i] >> 8;
+                vParallax.linePos[i] = camera[currentCamera].yScrollOffset * vParallax.parallaxFactor[i] >> 8;
 
                 vParallax.scrollPos[i] += vParallax.scrollPos[i] << 16;
                 if (vParallax.scrollPos[i] > fullLayerheight << 16)

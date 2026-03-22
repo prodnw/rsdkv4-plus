@@ -555,6 +555,7 @@ void RenderScene()
         }
 
 #if RETRO_USING_OPENGL
+//        glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, 30);
         glDrawElements(GL_TRIANGLES, state->indexCount, GL_UNSIGNED_SHORT, state->indexPtr);
 #endif
     }

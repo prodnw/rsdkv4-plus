@@ -231,6 +231,9 @@ typedef unsigned int uint;
 #endif
 #endif
 
+// Amount of cameras & input slots to be created
+#define DEFAULT_LOCAL_PLAYER_COUNT (4)
+
 // Determines which revision to use (see defines below for specifics). Datafiles from REV00 and REV01 builds will not work on later revisions and vice versa.
 #ifndef RSDK_REVISION
 #define RSDK_REVISION (3)
