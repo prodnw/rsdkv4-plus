@@ -23,6 +23,18 @@ enum InputButtons {
     INPUT_BUTTONCOUNT,
 };
 
+enum ControllerTypes {
+    CONTROLLER_UNKNOWN,
+    CONTROLLER_KEYBOARD,
+    CONTROLLER_XBOX_360,
+    CONTROLLER_XBOX,
+    CONTROLLER_PS3,
+    CONTROLLER_PS4,
+    CONTROLLER_PS5,
+    CONTROLLER_SWITCH,
+    CONTROLLER_STEAM_DECK,
+};
+
 struct InputData {
     bool up;
     bool down;
@@ -91,6 +103,21 @@ extern int mouseHideTimer;
 extern int lastMouseX;
 extern int lastMouseY;
 #endif
+
+struct InputDevice {
+#if RETRO_USING_SDL2
+    // we need the controller index reported from SDL2's controller added event
+    int index;
+    SDL_GameController *devicePtr;
+    SDL_Haptic *hapticPtr;
+#endif
+#if RETRO_USING_SDL1
+    SDL_Joystick *devicePtr;
+#endif
+    int id;
+};
+
+extern std::vector<InputDevice> controllers;
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_USING_SDL2

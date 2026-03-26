@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (74 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (82 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -753,12 +753,10 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN", "3"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE", "4"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_SPLITSCREEN", "5"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_RUNNING_STEP", "6"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED_STEP", "7"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN_STEP", "8"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE_STEP", "9"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_SPLITSCREEN_STEP", "10"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_RUNNING_STEP", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_PAUSED_STEP", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_FROZEN_STEP", "7"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STAGE_2P_MODE_STEP", "8"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
@@ -856,7 +854,16 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_WP7", "6"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_UWP", "7"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_LINUX", "8"),
-    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_SWITCH", "9")
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_SWITCH", "9"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_UNKNOWN", "0"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_KEYBOARD", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_XBOX_360", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_XBOX", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_PS3", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_PS4", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_PS5", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_SWITCH", "7"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_STEAM_DECK", "8"),
 };
 // clang-format on
 
@@ -4803,84 +4810,71 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
                     case VAR_GAME_NETWORKPING: scriptEng.operands[i] = networkPing; break;
                     case VAR_CONTROLLER_DEVICE: {
-                        #if RETRO_USING_SDL2
-                            int deviceType = 0;  // 0 = no device
-                            int numJoysticks = SDL_NumJoysticks();
-                            for (int j = 0; j < numJoysticks; ++j) {
-                                const char* joystickName = SDL_JoystickNameForIndex(j);
-                                if (joystickName) {
-                                    if (strstr(joystickName, "Keyboard")) {
-                                        deviceType = 1;  // Keyboard
-                                        break;
+#if RETRO_USING_SDL2
+                        int deviceType = CONTROLLER_KEYBOARD;
+                        if (arrayVal && arrayVal <= controllers.size()) {
+                            SDL_GameController *controller = controllers[arrayVal - 1].devicePtr;
+                            if (controller) {
+                                const char* controllerName = SDL_GameControllerName(controller);
+                                if (controllerName) {
+                                    // Check for specific controller types
+                                    if (strstr(controllerName, "Xbox 360")) {
+                                        deviceType = CONTROLLER_XBOX_360;
                                     }
-                                }
-                                
-                                if (SDL_IsGameController(j)) {
-                                    const char* controllerName = SDL_GameControllerNameForIndex(j);
-                                    if (controllerName) {
-                                        // Check for specific controller types
-                                        if (strstr(controllerName, "Xbox 360")) {
-                                            deviceType = 2;  // Xbox 360
-                                        }
-                                        else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series")) {
-                                            deviceType = 3;  // Xbox One/Series
-                                        }
-                                        else if (strstr(controllerName, "PS3") || strstr(controllerName, "PlayStation 3")) {
-                                            deviceType = 4;  // PS3
-                                        }
-                                        else if (strstr(controllerName, "PS4") || strstr(controllerName, "PlayStation 4")) {
-                                            deviceType = 5;  // PS4
-                                        }
-                                        else if (strstr(controllerName, "PS5") || strstr(controllerName, "PlayStation 5")) {
-                                            deviceType = 6;  // PS5
-                                        }
-                                        else if (strstr(controllerName, "Nintendo") || strstr(controllerName, "Joy-Con") || strstr(controllerName, "Switch")) {
-                                            deviceType = 7;  // Nintendo Switch/Switch 2
-                                        }
-                                        else if (strstr(controllerName, "Steam Deck")) {
-                                            deviceType = 8;  // Steam Deck
-                                        }
-                                        else if (strstr(controllerName, "Xbox")) {
-                                            deviceType = 3;  // Whatever kind of funky xbox controller your using i guess
-                                        }
-                                        else {
-                                            deviceType = 9;  // Generic/Other
-                                        }
+                                    else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series")) {
+                                        deviceType = CONTROLLER_XBOX;  // Xbox One/Series
                                     }
-                                    break;
+                                    else if (strstr(controllerName, "PS3") || strstr(controllerName, "PlayStation 3")) {
+                                        deviceType = CONTROLLER_PS3;
+                                    }
+                                    else if (strstr(controllerName, "PS4") || strstr(controllerName, "PlayStation 4")) {
+                                        deviceType = CONTROLLER_PS4;
+                                    }
+                                    else if (strstr(controllerName, "PS5") || strstr(controllerName, "PlayStation 5")) {
+                                        deviceType = CONTROLLER_PS5;
+                                    }
+                                    else if (strstr(controllerName, "Nintendo") || strstr(controllerName, "Joy-Con") || strstr(controllerName, "Switch")) {
+                                        deviceType = CONTROLLER_SWITCH;  // Nintendo Switch/Switch 2
+                                    }
+                                    else if (strstr(controllerName, "Steam Deck")) {
+                                        deviceType = CONTROLLER_STEAM_DECK;  // Steam Deck
+                                    }
+                                    else if (strstr(controllerName, "Xbox")) {
+                                        deviceType = CONTROLLER_XBOX;  // Whatever kind of funky xbox controller your using i guess
+                                    }
+                                    else {
+                                        deviceType = CONTROLLER_UNKNOWN;  // Generic/Other
+                                    }
                                 }
                             }
-                            scriptEng.operands[i] = deviceType;
-                        #else
-                            scriptEng.operands[i] = 0;  // no sdl2? just default to 0 (keyboard)
-                        #endif
+                        }
+                        scriptEng.operands[i] = deviceType;
+#else
+                        scriptEng.operands[i] = CONTROLLER_KEYBOARD;  // no sdl2? just default to keyboard
+#endif
                         break;
                     }
                     case VAR_CONTROLLER_WIRED: {
-                        #if RETRO_USING_SDL2
-                            int isWired = 0;  // 0 = not wired (wireless), 1 = wired
-                            int numJoysticks = SDL_NumJoysticks();
-                            if (numJoysticks > 0) {
-                                SDL_GameController *controller = SDL_GameControllerOpen(0);
-                                if (controller) {
-                                    SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
-                                    if (joystick) {
-                                        SDL_JoystickPowerLevel powerLevel = SDL_JoystickCurrentPowerLevel(joystick);
-                                        // If power level is WIRED, then it's a wired controller
-                                        isWired = (powerLevel == SDL_JOYSTICK_POWER_WIRED) ? 1 : 0;
-                                    }
-                                    SDL_GameControllerClose(controller);
+                        bool isWired = false;  // 0 = not wired (wireless), 1 = wired
+                        if (arrayVal && arrayVal <= controllers.size()) {
+#if RETRO_USING_SDL2
+                            SDL_GameController *controller = controllers[arrayVal - 1].devicePtr;
+                            if (controller) {
+                                SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
+                                if (joystick) {
+                                    SDL_JoystickPowerLevel powerLevel = SDL_JoystickCurrentPowerLevel(joystick);
+                                    // If power level is WIRED, then it's a wired controller
+                                    isWired = (powerLevel == SDL_JOYSTICK_POWER_WIRED);
                                 }
                             }
-                            scriptEng.operands[i] = isWired;
-                        #else
-                            scriptEng.operands[i] = 0;  // Default to wireless if not using SDL2
-                        #endif
+#endif
+                        }
+                        scriptEng.operands[i] = isWired;
                         break;
                     }
                     case VAR_CONTROLLER_VIBRATIONENABLED:
-                        if (arrayVal > 0) 
-                            {scriptEng.operands[i] = ControllerVibration[arrayVal - 1];} 
+                        if (arrayVal && arrayVal < DEFAULT_INPUT_COUNT)
+                            scriptEng.operands[i] = ControllerVibration[arrayVal - 1];
                         break;
                     case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
                     case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;

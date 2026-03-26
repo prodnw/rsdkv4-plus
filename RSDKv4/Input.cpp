@@ -33,19 +33,6 @@ int lastMouseY     = 0;
 
 int gamepadCount = 0;
 
-struct InputDevice {
-#if RETRO_USING_SDL2
-    // we need the controller index reported from SDL2's controller added event
-    int index;
-    SDL_GameController *devicePtr;
-    SDL_Haptic *hapticPtr;
-#endif
-#if RETRO_USING_SDL1
-    SDL_Joystick *devicePtr;
-#endif
-    int id;
-};
-
 std::vector<InputDevice> controllers;
 
 #if RETRO_USING_SDL1
