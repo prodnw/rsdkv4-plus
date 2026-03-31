@@ -689,8 +689,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("PauseVoice", 1),
     FunctionInfo("ResumeVoice", 1),
     FunctionInfo("PauseAllSfx", 0),
-    FunctionInfo("PauseAllVoice", 0),
     FunctionInfo("ResumeAllSfx", 0),
+    FunctionInfo("PauseAllVoice", 0),
     FunctionInfo("ResumeAllVoice", 0),
     FunctionInfo("SetVoiceAttributes", 3),
 
@@ -1439,8 +1439,8 @@ enum ScrFunc {
     FUNC_PAUSEVOICE,
     FUNC_RESUMEVOICE,
     FUNC_PAUSEALLSFX,
-    FUNC_PAUSEALLVOICE,
     FUNC_RESUMEALLSFX,
+    FUNC_PAUSEALLVOICE,
     FUNC_RESUMEALLVOICE,
     FUNC_SETVOICEATTRIBUTES,
 
@@ -6173,25 +6173,25 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 PauseAllSfx();
                 break;
+            case FUNC_RESUMEALLSFX:
+                opcodeSize = 0;
+                ResumeAllSfx();
+                break;
             case FUNC_PAUSEALLVOICE:
                 opcodeSize = 0;
                 PauseAllVoice();
-                break;
-            case FUNC_RESUMEALLSFX:
-                opcodeSize = 0;
-                PauseAllSfx();
                 break;
             case FUNC_RESUMEALLVOICE:
                 opcodeSize = 0;
                 ResumeAllVoice();
                 break;
-            case FUNC_SETVOICEATTRIBUTES:
-                opcodeSize = 0;
-                SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
-                break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
                 SetSfxAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
+                break;
+            case FUNC_SETVOICEATTRIBUTES:
+                opcodeSize = 0;
+                SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
                 break;
             case FUNC_OBJECTTILECOLLISION:
                 opcodeSize = 0;
