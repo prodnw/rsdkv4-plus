@@ -268,6 +268,8 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
                 info->forcedGameType = GAME_PROJECT_SAP;
             else if (StrComp(typeBuf, "anatc") || StrComp(typeBuf, "anightatthecasino"))
                 info->forcedGameType = GAME_ANATC;
+            else if (StrComp(typeBuf, "fnatf") || StrComp(typeBuf, "fivenightsatteamforever"))
+                info->forcedGameType = GAME_FNATF;
         }
 
         // Discord GameAPI App ID
@@ -546,6 +548,10 @@ void RefreshEngine()
 
     if (strstr(Engine.gameWindowText, "A Night at the Casino")) {
         Engine.gameType = GAME_ANATC;
+    }
+
+    if (strstr(Engine.gameWindowText, "Five Nights At Team Forever")) {
+        Engine.gameType = GAME_FNATF;
     }
 
     // Feel free to insert your own games!

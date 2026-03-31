@@ -311,6 +311,7 @@ enum RetroGameType {
     GAME_SONICCDINFINITE = 10,
     GAME_PROJECT_SAP = 11,
     GAME_ANATC = 12,
+    GAME_FNATF = 13,
     // Feel free to insert your own games!
 };
 

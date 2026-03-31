@@ -525,6 +525,10 @@ void RetroEngine::Init()
         gameType = GAME_ANATC;
     }
 
+    if (strstr(gameWindowText, "Five Nights At Team Forever")) {
+        gameType = GAME_FNATF;
+    }
+
     // Feel free to insert your own games!
 
 #if !RETRO_USE_ORIGINAL_CODE

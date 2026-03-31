@@ -61,6 +61,9 @@ void API_Discord_SetAppID() {
         case GAME_ANATC:
             API_DISCORD_CLIENT_ID = 1465394350929477682; // A Night at the Casino ID
             break;
+        case GAME_FNATF:
+            API_DISCORD_CLIENT_ID = 1487952185261035641; // Five Nights at Team Forever ID
+            break;
         default:
             API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to V4+ ID
             break;
