@@ -204,10 +204,19 @@ inline void StopVoice(int sfx)
 }
 void PauseSfx(int sfx);
 void ResumeSfx(int sfx);
+void PauseVoice(int sfx);
+void ResumeVoice(int sfx);
+void PauseAllSfx();
+void PauseAllVoice();
+void ResumeAllSfx();
+void ResumeAllVoice();
+
 void PauseAnySfx();
-void SetSfxPitch(int sfxID, int pitchLevel);
+
+//void SetSfxPitch(int sfxID, int pitchLevel);
 
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan);
+void SetVoiceAttributes(int sfx, int loopCount, sbyte pan);
 
 void SetSfxName(const char *sfxName, int sfxID);
 

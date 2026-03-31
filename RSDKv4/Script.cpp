@@ -686,7 +686,14 @@ const FunctionInfo functions[] = {
     FunctionInfo("ResumeSfx", 1),
     FunctionInfo("PlayVoice", 2),
     FunctionInfo("StopVoice", 1),
-    
+    FunctionInfo("PauseVoice", 1),
+    FunctionInfo("ResumeVoice", 1),
+    FunctionInfo("PauseAllSfx", 0),
+    FunctionInfo("PauseAllVoice", 0),
+    FunctionInfo("ResumeAllSfx", 0),
+    FunctionInfo("ResumeAllVoice", 0),
+    FunctionInfo("SetVoiceAttributes", 3),
+
     // Strings
     FunctionInfo("IntToStr", 3),
     FunctionInfo("StrLength", 2),
@@ -1429,6 +1436,13 @@ enum ScrFunc {
     FUNC_RESUMESFX,
     FUNC_PLAYVOICE,
     FUNC_STOPVOICE,
+    FUNC_PAUSEVOICE,
+    FUNC_RESUMEVOICE,
+    FUNC_PAUSEALLSFX,
+    FUNC_PAUSEALLVOICE,
+    FUNC_RESUMEALLSFX,
+    FUNC_RESUMEALLVOICE,
+    FUNC_SETVOICEATTRIBUTES,
 
     // Strings
     FUNC_INTTOSTR,
@@ -6146,6 +6160,34 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_STOPVOICE:
                 opcodeSize = 0;
                 StopVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_PAUSEVOICE:
+                opcodeSize = 0;
+                PauseVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_RESUMEVOICE:
+                opcodeSize = 0;
+                ResumeVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_PAUSEALLSFX:
+                opcodeSize = 0;
+                PauseAllSfx();
+                break;
+            case FUNC_PAUSEALLVOICE:
+                opcodeSize = 0;
+                PauseAllVoice();
+                break;
+            case FUNC_RESUMEALLSFX:
+                opcodeSize = 0;
+                PauseAllSfx();
+                break;
+            case FUNC_RESUMEALLVOICE:
+                opcodeSize = 0;
+                ResumeAllVoice();
+                break;
+            case FUNC_SETVOICEATTRIBUTES:
+                opcodeSize = 0;
+                SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
                 break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
