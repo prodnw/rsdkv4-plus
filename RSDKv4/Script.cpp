@@ -700,7 +700,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetVariableByName", 2),
     FunctionInfo("ConvertStringToByte", 3),
     FunctionInfo("ConvertByteToString", 3),
-    FunctionInfo("GetTextInfo16", 5),
+    FunctionInfo("GetTextInfo16", 5),	
+    FunctionInfo("DrawString", 8),
 
     // Drawing (NOTE: The first 3 work exactly like their og counter-parts, although you just need to add the FX type on the end)
     FunctionInfo("DrawNumbersFX", 8),
@@ -1451,6 +1452,7 @@ enum ScrFunc {
     FUNC_CONVERTSTRINGTOBYTE,
     FUNC_CONVERTBYTETOSTRING,
     FUNC_GETTEXTINFO_16,
+    FUNC_DRAWSTRING,
 
     // Drawing
     FUNC_DRAWNUMBERSFX,
@@ -5678,6 +5680,57 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         break;
                 }
                 break;
+            }
+            case FUNC_DRAWSTRING: {
+				/*
+				0 - sprite
+				1- xpos
+				2 - ypos
+				
+				3 - width of space
+				4 - letter spacing
+				5 - vertical letter spacing
+				6 - menu
+				7 - menu line
+				
+				*/
+                opcodeSize = 0;
+                int charID = 0;
+				int wordoffset = 0;
+				int charxpos = scriptEng.operands[1];
+				int charypos = scriptEng.operands[2];
+
+				charID = 0;
+
+				TextMenu *tMenu = (TextMenu *)scriptEng.operands[6];
+				int id          = tMenu->entryStart[scriptEng.operands[7];
+
+				for (int i = 0; i < tMenu->entrySize[rowID]; ++i) {
+					int character = tMenu->textData[id];
+					if (character == 64) { //@ symbol line breaks
+						charxpos = scriptEng.operands[1];
+						charypos += scriptEng.operands[5];
+					}
+					else {						
+						if (character == ' ')
+							character = -1;							
+						if (character >= 192) //accented characters
+							character -= 120;
+						else if (character >= 33)
+							character -= 33;
+
+						if (character <= -1) {
+							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
+						}
+						else {
+							character += scriptEng.operands[0];
+							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+							DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+									   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+							charxpos += spriteFrame->width + scriptEng.operands[4];
+						}
+					}
+				}
             }
             case FUNC_DRAWMENU:
                 opcodeSize        = 0;
