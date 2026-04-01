@@ -1536,22 +1536,28 @@ static bool cursorHiddenByInput = false;
 
 void UpdateCursorVisibility(const SDL_Event* event)
 {
+    // For Five Nights at Team Forever, always hide the cursor
+    if (Engine.gameType == GAME_FNATF) {
+        SDL_ShowCursor(SDL_DISABLE); // Cursor hidden
+        return;
+    }
+
     // Enable cursor if mouse moves or keyboard key is pressed
     if (event->type == SDL_MOUSEMOTION || event->type == SDL_KEYDOWN) {
-        SDL_SetRelativeMouseMode(SDL_FALSE); // Cursor enabled (normal)
+        SDL_ShowCursor(SDL_ENABLE);
         cursorHiddenByInput = false;
         return;
     }
 
     // Disable cursor if controller input is pressed
     if (event->type == SDL_CONTROLLERBUTTONDOWN) {
-        SDL_SetRelativeMouseMode(SDL_TRUE); // Cursor disabled and locked
+        SDL_ShowCursor(SDL_DISABLE);
         cursorHiddenByInput = true;
         return;
     }
 
     // Keep cursor disabled if it was disabled by input
     if (cursorHiddenByInput) {
-        SDL_SetRelativeMouseMode(SDL_TRUE);
+        SDL_ShowCursor(SDL_DISABLE);
     }
 }
