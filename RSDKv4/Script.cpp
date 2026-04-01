@@ -5683,10 +5683,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             case FUNC_DRAWSTRING: {
 				/*
+				script operands
 				0 - sprite
 				1- xpos
-				2 - ypos
-				
+				2 - ypos				
 				3 - width of space
 				4 - letter spacing
 				5 - vertical letter spacing
@@ -5695,17 +5695,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 				
 				*/
                 opcodeSize = 0;
-                int charID = 0;
-				int wordoffset = 0;
+               // int charID = 0;
+				//int wordoffset = 0;
 				int charxpos = scriptEng.operands[1];
 				int charypos = scriptEng.operands[2];
+				int line = scriptEng.operands[7];
 
-				charID = 0;
+				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
+				int id          = tMenu->entryStart[line];
 
-				TextMenu *tMenu = (TextMenu *)scriptEng.operands[6];
-				int id          = tMenu->entryStart[scriptEng.operands[7];
-
-				for (int i = 0; i < tMenu->entrySize[rowID]; ++i) {
+				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
 					int character = tMenu->textData[id];
 					if (character == 64) { //@ symbol line breaks
 						charxpos = scriptEng.operands[1];
@@ -5715,7 +5714,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 						if (character == ' ')
 							character = -1;							
 						if (character >= 192) //accented characters
-							character -= 120;
+							character -= 94;
 						else if (character >= 33)
 							character -= 33;
 
@@ -5730,6 +5729,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 							charxpos += spriteFrame->width + scriptEng.operands[4];
 						}
 					}
+					id++;
 				}
             }
             case FUNC_DRAWMENU:
