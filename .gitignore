@@ -24,7 +24,6 @@ CMakeCache.txt
 x64/
 x86/
 bld/
-bin/
 [Bb]in/
 [Oo]bj/
 cmake/
@@ -426,3 +425,7 @@ android/local.properties
 flatpak/*.apk
 build-dir
 cmake-build.bat
+
+## AppImage
+AppImage/AppDir/.DirIcon
+AppImage/AppDir/usr/bin/*
