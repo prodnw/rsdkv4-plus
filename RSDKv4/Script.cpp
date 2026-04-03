@@ -5034,6 +5034,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
         }
 
+        // btw, if you ever see "opcodeSize = 0;", it means it WON'T change the variables that are set in the function
+        // so if you want to set a variable, remove it. otherwise add it!!
+
         // Functions
         switch (opcode) {
             default: break;
@@ -5044,7 +5047,18 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_INC: ++scriptEng.operands[0]; break;
             case FUNC_DEC: --scriptEng.operands[0]; break;
             case FUNC_MUL: scriptEng.operands[0] *= scriptEng.operands[1]; break;
-            case FUNC_DIV: scriptEng.operands[0] /= scriptEng.operands[1]; break;
+            case FUNC_DIV:
+                // if we divide by 0, itll crash!!
+                // so uhh, prevent it here ig? 
+                // the original doesnt do this, so it COULD be used for a v4+ lockout LOL
+                
+                // we could use a ternary operator, but this is cleaner
+                // (btw the ternary operator is the "value ? true : false" thing)
+                if (scriptEng.operands[1] == 0)
+                    scriptEng.operands[0] = 0;
+                else
+                    scriptEng.operands[0] /= scriptEng.operands[1];
+                break;
             case FUNC_SHR: scriptEng.operands[0] >>= scriptEng.operands[1]; break;
             case FUNC_SHL: scriptEng.operands[0] <<= scriptEng.operands[1]; break;
             case FUNC_AND: scriptEng.operands[0] &= scriptEng.operands[1]; break;
