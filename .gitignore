@@ -24,6 +24,7 @@ CMakeCache.txt
 x64/
 x86/
 bld/
+bin/
 [Bb]in/
 [Oo]bj/
 cmake/
