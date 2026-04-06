@@ -15,6 +15,7 @@ bool musicEnabled = 0;
 int musicStatus   = MUSIC_STOPPED;
 int musicStartPos = 0;
 int musicPosition = 0;
+int musicSeekPos  = -1;
 int musicRatio    = 0;
 TrackInfo musicTracks[TRACK_COUNT];
 SFXInfo sfxList[SFX_COUNT];
@@ -223,6 +224,18 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
     switch (musicStatus) {
         case MUSIC_READY:
         case MUSIC_PLAYING: {
+            // Properly sets the track position to a specific point (in samples)
+            if (musicSeekPos >= 0) {
+                ov_pcm_seek(&streamInfoPtr->vorbisFile, musicSeekPos);
+#if RETRO_USING_SDL2
+                if (streamInfoPtr->stream) {
+                    SDL_AudioStreamClear(streamInfoPtr->stream);
+                }
+#endif
+                musicPosition = musicSeekPos;
+                musicSeekPos = -1;
+            }
+
 #if RETRO_USING_SDL2
             while (musicStatus == MUSIC_PLAYING && streamInfoPtr->stream && SDL_AudioStreamAvailable(streamInfoPtr->stream) < bytes_wanted) {
                 // We need more samples: get some
