@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (82 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (85 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -446,7 +446,10 @@ const char variableNames[][0x20] = {
     "engine.usernameLength",
     "playtime.hours",
     "playtime.minutes",
-    "playtime.seconds"
+    "playtime.seconds",
+    "mouse.moved",
+    "mouse1.pressed",
+    "mouse2.pressed"
 };
 #endif
 
@@ -677,10 +680,6 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetControllerLEDColour", 4),
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
-    FunctionInfo("CheckMouseMoved", 0),
-    FunctionInfo("CheckMouseLeftPress", 0),
-    FunctionInfo("CheckMouseRightPress", 0),
-
     // Sound FX
     FunctionInfo("PauseSfx", 1),
     FunctionInfo("ResumeSfx", 1),
@@ -1240,6 +1239,9 @@ enum ScrVar {
     VAR_PLAYTIME_HOURS,
     VAR_PLAYTIME_MINUTES,
     VAR_PLAYTIME_SECONDS,
+    VAR_MOUSE_MOVED,
+    VAR_MOUSE1_PRESSED,
+    VAR_MOUSE2_PRESSED,
     VAR_MAX_CNT
 };
 
@@ -1428,9 +1430,6 @@ enum ScrFunc {
     FUNC_SETCONTROLLERLEDCOLOUR,
     FUNC_CHECKCONTROLLERCONNECT,
     FUNC_CHECKCONTROLLERDISCONNECT,
-    FUNC_CHECKMOUSEMOVED,
-    FUNC_CHECKMOUSE1PRESS,
-    FUNC_CHECKMOUSE2PRESS,
 
     // Sound FX
     FUNC_PAUSESFX,
@@ -4956,6 +4955,33 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_PLAYTIME_HOURS: scriptEng.operands[i] = GetPlaytimeSeconds() / 3600; break;
                     case VAR_PLAYTIME_MINUTES: scriptEng.operands[i] = (GetPlaytimeSeconds() % 3600) / 60; break;
                     case VAR_PLAYTIME_SECONDS: scriptEng.operands[i] = GetPlaytimeSeconds() % 60; break;
+                    case VAR_MOUSE_MOVED: {
+                        static int lastMouseX = -1;
+                        static int lastMouseY = -1;
+                        int mouseX, mouseY;
+
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
+                            scriptEng.operands[i] = 1; // Mouse moved
+                        } else {
+                            scriptEng.operands[i] = 0; // Not moved or first check
+                        }
+                        lastMouseX = mouseX;
+                        lastMouseY = mouseY;
+                        break;
+                    }
+
+                    case VAR_MOUSE1_PRESSED: {
+                        int mouseState = SDL_GetMouseState(NULL, NULL);
+                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
+                        break;
+                    }
+
+                    case VAR_MOUSE2_PRESSED: {
+                        int mouseState = SDL_GetMouseState(NULL, NULL);
+                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
+                        break;
+                    }
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -7084,38 +7110,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_CHECKMOUSEMOVED: {
-                opcodeSize = 0;
-                static int lastMouseX = -1;
-                static int lastMouseY = -1;
-                int mouseX, mouseY;
-
-                SDL_GetMouseState(&mouseX, &mouseY);
-                if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
-                    scriptEng.checkResult = 1; // Mouse moved
-                } else {
-                    scriptEng.checkResult = 0; // Not moved or first check
-                }
-                lastMouseX = mouseX;
-                lastMouseY = mouseY;
-                opcodeSize = 0;
-                break;
-            }
-
-            case FUNC_CHECKMOUSE1PRESS: {
-                opcodeSize = 0;
-                int mouseState = SDL_GetMouseState(NULL, NULL);
-                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
-                break;
-            }
-
-            case FUNC_CHECKMOUSE2PRESS: {
-                opcodeSize = 0;
-                int mouseState = SDL_GetMouseState(NULL, NULL);
-                scriptEng.checkResult = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
-                break;
-            }
-
             case FUNC_DRAWNUMBERSFX: {
                 opcodeSize = 0;
                 int i      = 10;
@@ -8813,6 +8807,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_PLAYTIME_HOURS: break;
                     case VAR_PLAYTIME_MINUTES: break;
                     case VAR_PLAYTIME_SECONDS: break;
+                    case VAR_MOUSE_MOVED: break;
+                    case VAR_MOUSE1_PRESSED: break;
+                    case VAR_MOUSE2_PRESSED: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
