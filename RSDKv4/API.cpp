@@ -144,9 +144,6 @@ void API_Discord_UpdatePresence()
     if (!__discord) return;
 
     // Check if any of the details have even changed, to stop potential rate limiting
-	SetGlobalVariableByName("player.score", RPCRatePause);
-	SetGlobalVariableByName("player.lives", RPCUpdated);
-
     if (!RPCUpdated || RPCRatePause < 120) return;
     RPCUpdated = false;
     RPCRatePause = 0;
