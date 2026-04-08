@@ -8,7 +8,7 @@ discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
 uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
-char prevPresence[PRESENCE_MAX][0x80];
+bool RPCChanged = true;
 
 void API_Discord_Init()
 {
@@ -82,7 +82,7 @@ void API_Discord_SetPresence(const char *text, int type)
 {
     if (!__discord) return;
 
-    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
+    RPCChanged = true;
 
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
@@ -100,7 +100,7 @@ void API_Discord_ClearPresenceType(int type)
 {
     if (!__discord) return;
 
-    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
+    RPCChanged = true;
 
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails("");  break;
@@ -118,7 +118,7 @@ void API_Discord_ClearAllPresence()
 {
     if (!__discord) return;
 
-    for (int i; i < PRESENCE_MAX; i++) StrCopy(prevPresence[i], API_Discord_GetPresence(i));
+    RPCChanged = false; // its already gonna change, so disallow any UpdatePresence() afterwards
 
     __activity.SetDetails("");
     __activity.SetState("");
@@ -138,10 +138,8 @@ void API_Discord_UpdatePresence()
 
 
     // Check if any of the details have even changed, to stop potential rate limiting
-    bool hasChanged = false;
-    for (int i; i < PRESENCE_MAX; i++) hasChanged |= !StrComp(prevPresence[i], API_Discord_GetPresence(i));
-
-    if (!hasChanged) return;
+    if (!RPCChanged) return;
+    RPCChanged = false;
 
     discord::ActivityTimestamps activityTimestamps = {};
     activityTimestamps.SetStart(time(nullptr));
