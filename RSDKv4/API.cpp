@@ -8,7 +8,7 @@ discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
 uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
-char *prevPresence[PRESENCE_MAX];
+char prevPresence[PRESENCE_MAX][0x80];
 
 void API_Discord_Init()
 {
