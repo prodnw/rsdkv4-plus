@@ -4655,12 +4655,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEPLAYERLISTPOS: scriptEng.operands[i] = playerListPos; break;
                     case VAR_STAGEDEBUGMODE: scriptEng.operands[i] = debugMode; break;
                     case VAR_STAGEENTITYPOS: scriptEng.operands[i] = objectEntityPos; break;
-                    // for some reason v5U has currentCamera here?? i mean sure ig
-                    case VAR_SCREENCAMERAENABLED: scriptEng.operands[i] = camera[curCam].enabled; break;
-                    case VAR_SCREENCAMERATARGET: scriptEng.operands[i] = camera[curCam].target; break;
-                    case VAR_SCREENCAMERASTYLE: scriptEng.operands[i] = camera[curCam].style; break;
-                    case VAR_SCREENCAMERAX: scriptEng.operands[i] = camera[curCam].xpos; break;
-                    case VAR_SCREENCAMERAY: scriptEng.operands[i] = camera[curCam].ypos; break;
+                    // for some reason v5U has currentCamera here?? they kinda break tho... but i mean origins uses camera[] anyway
+                    case VAR_SCREENCAMERAENABLED: scriptEng.operands[i] = camera[0].enabled; break;
+                    case VAR_SCREENCAMERATARGET: scriptEng.operands[i] = camera[0].target; break;
+                    case VAR_SCREENCAMERASTYLE: scriptEng.operands[i] = camera[0].style; break;
+                    case VAR_SCREENCAMERAX: scriptEng.operands[i] = camera[0].xpos; break;
+                    case VAR_SCREENCAMERAY: scriptEng.operands[i] = camera[0].ypos; break;
                     case VAR_SCREENDRAWLISTSIZE: scriptEng.operands[i] = drawListEntries[arrayVal].listSize; break;
                     case VAR_SCREENXCENTER: scriptEng.operands[i] = SCREEN_CENTERX; break;
                     case VAR_SCREENYCENTER: scriptEng.operands[i] = SCREEN_CENTERY; break;
@@ -8597,12 +8597,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_STAGEPLAYERLISTPOS: playerListPos = scriptEng.operands[i]; break;
                     case VAR_STAGEDEBUGMODE: debugMode = scriptEng.operands[i]; break;
                     case VAR_STAGEENTITYPOS: objectEntityPos = scriptEng.operands[i]; break;
-                    // v5U does have it here for these 5
-                    case VAR_SCREENCAMERAENABLED: camera[curCam].enabled = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERATARGET: camera[curCam].target = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERASTYLE: camera[curCam].style = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERAX: camera[curCam].xpos = scriptEng.operands[i]; break;
-                    case VAR_SCREENCAMERAY: camera[curCam].ypos = scriptEng.operands[i]; break;
+                    // v5U does have it here for these 5, but they break... also origins uses camera[] so like
+                    case VAR_SCREENCAMERAENABLED: camera[0].enabled = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERATARGET: camera[0].target = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERASTYLE: camera[0].style = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERAX: camera[0].xpos = scriptEng.operands[i]; break;
+                    case VAR_SCREENCAMERAY: camera[0].ypos = scriptEng.operands[i]; break;
                     case VAR_SCREENDRAWLISTSIZE: drawListEntries[arrayVal].listSize = scriptEng.operands[i]; break;
                     case VAR_SCREENXCENTER: break;
                     case VAR_SCREENYCENTER: break;
