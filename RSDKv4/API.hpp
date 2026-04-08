@@ -19,6 +19,7 @@ enum API_Discord_PresenceTypes {
     PRESENCE_ASSET_LARGETEXT,
     PRESENCE_ASSET_SMALLIMAGE,
     PRESENCE_ASSET_SMALLTEXT,
+    PRESENCE_MAX,
 };
 
 void API_Discord_Init();
@@ -29,6 +30,7 @@ void API_Discord_SetPresence(const char *text, int type);
 void API_Discord_ClearPresenceType(int type);
 void API_Discord_ClearAllPresence();
 void API_Discord_UpdatePresence();
+const char *API_Discord_GetPresence(int type);
 #endif
 
 // easier to just check if this is true

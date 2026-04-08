@@ -8,6 +8,7 @@ discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
 uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
+char *prevPresence[PRESENCE_MAX];
 
 void API_Discord_Init()
 {
@@ -72,14 +73,16 @@ void API_Discord_SetAppID() {
 
 void API_Discord_Update() // used in ProcessStage
 {
-    if (__discord)
-        __discord->RunCallbacks();
+    if (!__discord) return;
+
+    __discord->RunCallbacks();
 }
 
 void API_Discord_SetPresence(const char *text, int type)
 {
-    if (!__discord)
-        return;
+    if (!__discord) return;
+
+    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
 
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
@@ -97,9 +100,11 @@ void API_Discord_ClearPresenceType(int type)
 {
     if (!__discord) return;
 
+    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
+
     switch (type) {
-        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(""); break;
-        case PRESENCE_ACTIVITY_STATE:   __activity.SetState("");   break;
+        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails("");  break;
+        case PRESENCE_ACTIVITY_STATE:   __activity.SetState("");    break;
         case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(""); break;
         case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText("");  break;
         case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(""); break;
@@ -112,6 +117,8 @@ void API_Discord_ClearPresenceType(int type)
 void API_Discord_ClearAllPresence()
 {
     if (!__discord) return;
+
+    for (int i; i < PRESENCE_MAX; i++) StrCopy(prevPresence[i], API_Discord_GetPresence(i));
 
     __activity.SetDetails("");
     __activity.SetState("");
@@ -127,15 +134,40 @@ void API_Discord_ClearAllPresence()
 
 void API_Discord_UpdatePresence()
 {
-    if (__discord) {
-        discord::ActivityTimestamps activityTimestamps = {};
-        activityTimestamps.SetStart(time(nullptr));
+    if (!__discord) return;
 
-        __activity.GetTimestamps() = activityTimestamps;
-        __activity.GetAssets()     = __assets;
 
-        __discord->ActivityManager().UpdateActivity(__activity, [](discord::Result result) {});
+    // Check if any of the details have even changed, to stop potential rate limiting
+    bool hasChanged = false;
+    for (int i; i < PRESENCE_MAX; i++) hasChanged |= !StrComp(prevPresence[i], API_Discord_GetPresence(i));
+
+    if (!hasChanged) return;
+
+    discord::ActivityTimestamps activityTimestamps = {};
+    activityTimestamps.SetStart(time(nullptr));
+
+    __activity.GetTimestamps() = activityTimestamps;
+    __activity.GetAssets()     = __assets;
+
+    __discord->ActivityManager().UpdateActivity(__activity, [](discord::Result result) {});
+}
+
+const char *API_Discord_GetPresence(int type)
+{
+    if (!__discord) return "";
+
+    switch (type) {
+        case PRESENCE_ACTIVITY_DETAILS: return __activity.GetDetails();  break;
+        case PRESENCE_ACTIVITY_STATE:   return __activity.GetState();    break;
+        case PRESENCE_ASSET_LARGEIMAGE: return __assets.GetLargeImage(); break;
+        case PRESENCE_ASSET_LARGETEXT:  return __assets.GetLargeText();  break;
+        case PRESENCE_ASSET_SMALLIMAGE: return __assets.GetSmallImage(); break;
+        case PRESENCE_ASSET_SMALLTEXT:  return __assets.GetSmallText();  break;
+
+        default: break;
     }
+
+    return "";
 }
 #endif
 
