@@ -8,7 +8,9 @@ discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
 uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
-char prevPresence[PRESENCE_MAX][0x80];
+char prevPresence[0x80];
+bool RPCUpdated = true;
+int RPCRatePause = 0;
 
 void API_Discord_Init()
 {
@@ -75,6 +77,9 @@ void API_Discord_Update() // used in ProcessStage
 {
     if (!__discord) return;
 
+    if (RPCRatePause < 120)
+        RPCRatePause++;
+
     __discord->RunCallbacks();
 }
 
@@ -82,11 +87,12 @@ void API_Discord_SetPresence(const char *text, int type)
 {
     if (!__discord) return;
 
-    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
+    StrCopy(prevPresence, API_Discord_GetPresence(type));
+    RPCUpdated |= !StrComp(prevPresence, text);
 
     switch (type) {
-        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text); break;
-        case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);   break;
+        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text);  break;
+        case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);    break;
         case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(text); break;
         case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText(text);  break;
         case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(text); break;
@@ -100,7 +106,8 @@ void API_Discord_ClearPresenceType(int type)
 {
     if (!__discord) return;
 
-    StrCopy(prevPresence[type], API_Discord_GetPresence(type));
+    StrCopy(prevPresence, API_Discord_GetPresence(type));
+    RPCUpdated |= !StrComp(prevPresence, "");
 
     switch (type) {
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails("");  break;
@@ -118,7 +125,7 @@ void API_Discord_ClearAllPresence()
 {
     if (!__discord) return;
 
-    for (int i; i < PRESENCE_MAX; i++) StrCopy(prevPresence[i], API_Discord_GetPresence(i));
+    RPCUpdated = false;
 
     __activity.SetDetails("");
     __activity.SetState("");
@@ -136,12 +143,13 @@ void API_Discord_UpdatePresence()
 {
     if (!__discord) return;
 
-
     // Check if any of the details have even changed, to stop potential rate limiting
-    bool hasChanged = false;
-    for (int i; i < PRESENCE_MAX; i++) hasChanged |= !StrComp(prevPresence[i], API_Discord_GetPresence(i));
+	SetGlobalVariableByName("player.score", RPCRatePause);
+	SetGlobalVariableByName("player.lives", RPCUpdated);
 
-    if (!hasChanged) return;
+    if (!RPCUpdated || RPCRatePause < 120) return;
+    RPCUpdated = false;
+    RPCRatePause = 0;
 
     discord::ActivityTimestamps activityTimestamps = {};
     activityTimestamps.SetStart(time(nullptr));
