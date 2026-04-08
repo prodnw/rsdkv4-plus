@@ -353,6 +353,54 @@ void ScanModFolder(ModInfo *info)
         }
     }
 
+    // Check for Scripts/ replacements
+    fs::path scriptsPath = resolvePath(modDir + "/Scripts");
+
+    if (fs::exists(scriptsPath) && fs::is_directory(scriptsPath)) {
+        try {
+            auto data_rdi = fs::recursive_directory_iterator(scriptsPath);
+            for (auto &data_de : data_rdi) {
+                if (data_de.is_regular_file()) {
+                    char modBuf[0x100];
+                    StrCopy(modBuf, data_de.path().string().c_str());
+                    char folderTest[4][0x10] = {
+                        "Scripts/",
+                        "Scripts\\",
+                        "Scripts/",
+                        "Scripts\\",
+                    };
+                    int tokenPos = -1;
+                    for (int i = 0; i < 4; ++i) {
+                        tokenPos = FindLastStringToken(modBuf, folderTest[i]);
+                        if (tokenPos >= 0)
+                            break;
+                    }
+
+                    if (tokenPos >= 0) {
+                        char buffer[0x80];
+                        for (int i = StrLength(modBuf); i >= tokenPos; --i) {
+                            buffer[i - tokenPos] = modBuf[i] == '\\' ? '/' : modBuf[i];
+                        }
+
+                        // PrintLog(modBuf);
+                        std::string path(buffer);
+                        std::string modPath(modBuf);
+                        char pathLower[0x100];
+                        memset(pathLower, 0, sizeof(char) * 0x100);
+                        for (int c = 0; c < path.size(); ++c) {
+                            pathLower[c] = tolower(path.c_str()[c]);
+                        }
+
+                        info->fileMap.insert(std::pair<std::string, std::string>(pathLower, modBuf));
+                    }
+                }
+            }
+        } catch (fs::filesystem_error fe) {
+            PrintLog("Scripts Folder Scanning Error: ");
+            PrintLog(fe.what());
+        }
+    }
+
     // Check for Bytecode/ replacements
     fs::path bytecodePath = resolvePath(modDir + "/Bytecode");
 

@@ -706,8 +706,10 @@ const FunctionInfo functions[] = {
     FunctionInfo("DrawNumbersFX", 8),
     FunctionInfo("DrawActNameFX", 8),
     FunctionInfo("DrawMenuFX", 4),
+    FunctionInfo("SetClassicFade", 4), // alias of SetClassicFadeOut
     FunctionInfo("SetClassicFadeOut", 4),
     FunctionInfo("SetClassicFadeIn", 4),
+    FunctionInfo("ClassicTint", 8),    // alias of DrawClassicFadeOut
     FunctionInfo("DrawClassicFadeOut", 8),
     FunctionInfo("DrawClassicFadeIn", 8),
 
@@ -1457,8 +1459,10 @@ enum ScrFunc {
     FUNC_DRAWNUMBERSFX,
     FUNC_DRAWACTNAMEFX,
     FUNC_DRAWMENUFX,
+    FUNC_SETCLASSICFADE,
     FUNC_SETCLASSICFADEOUT,
     FUNC_SETCLASSICFADEIN,
+    FUNC_CLASSICTINT,
     FUNC_DRAWCLASSICOUT,
     FUNC_DRAWCLASSICIN,
 
@@ -3354,11 +3358,19 @@ void ParseScriptFile(char *scriptName, int scriptID)
 
     FileInfo info;
     char scriptPath[0x40];
+    bool scriptsFound = true;
 
     // Try the original script folder
     StrCopy(scriptPath, "Data/Scripts/");
     StrAdd(scriptPath, scriptName);
-    if (LoadFile(scriptPath, &info)) {
+    if (!LoadFile(scriptPath, &info)) {
+        // Try Scripts/ outside Data/
+        StrCopy(scriptPath, "Scripts/");
+        StrAdd(scriptPath, scriptName);
+        scriptsFound = LoadFile(scriptPath, &info);
+    }
+    
+    if (scriptsFound) {
         int readMode   = READMODE_NORMAL;
         int parseMode  = PARSEMODE_SCOPELESS;
         char prevChar  = 0;
@@ -5812,6 +5824,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 SetFade(1, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
+            case FUNC_SETCLASSICFADE:
             case FUNC_SETCLASSICFADEOUT:
                 opcodeSize = 0;
                 SetFade(2, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
@@ -6077,6 +6090,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 DrawRectangle(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
                 break;
+			case FUNC_CLASSICTINT:
 			case FUNC_DRAWCLASSICOUT:
                 opcodeSize = 0;
                 DrawClassicFadeOut(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
