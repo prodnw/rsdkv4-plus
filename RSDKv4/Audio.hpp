@@ -310,21 +310,9 @@ inline void ResumeSound()
         musicStatus = MUSIC_PLAYING;
 }
 
-inline void StopAllSfx()
-{
-#if !RETRO_USE_ORIGINAL_CODE
-    LockAudioDevice();
-#endif
+void StopAllSfx();
+void StopAllVoice();
 
-    for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        sfxChannels[i].sfxID = -1;
-        sfxChannels[i].paused = false;
-    }
-
-#if !RETRO_USE_ORIGINAL_CODE
-    UnlockAudioDevice();
-#endif
-}
 inline void ReleaseGlobalSfx()
 {
     for (int i = globalSFXCount - 1; i >= 0; --i) {

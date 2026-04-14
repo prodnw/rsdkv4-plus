@@ -1041,6 +1041,30 @@ void PauseAnySfx()
     }
     UnlockAudioDevice();
 }
+void StopAllSfx()
+{
+    LockAudioDevice();
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        sfxChannels[i].sfxID = -1;
+        sfxChannels[i].paused = false;
+    }
+
+    UnlockAudioDevice();
+}
+void StopAllVoice()
+{
+    LockAudioDevice();
+
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        if (sfxChannels[i].isVoice) {
+            sfxChannels[i].sfxID = -1;
+            sfxChannels[i].paused = false;
+        }
+    }
+
+    UnlockAudioDevice();
+}
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)
 {
     LockAudioDevice();

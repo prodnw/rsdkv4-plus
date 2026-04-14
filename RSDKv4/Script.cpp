@@ -680,6 +680,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetControllerLEDColour", 4),
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
+
     // Sound FX
     FunctionInfo("PauseSfx", 1),
     FunctionInfo("ResumeSfx", 1),
@@ -691,6 +692,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("ResumeAllSfx", 0),
     FunctionInfo("PauseAllVoice", 0),
     FunctionInfo("ResumeAllVoice", 0),
+    FunctionInfo("StopAllSfx", 0),
+    FunctionInfo("StopAllVoice", 0),
     FunctionInfo("SetVoiceAttributes", 3),
 
     // Strings
@@ -1445,6 +1448,8 @@ enum ScrFunc {
     FUNC_RESUMEALLSFX,
     FUNC_PAUSEALLVOICE,
     FUNC_RESUMEALLVOICE,
+    FUNC_STOPALLSFX,
+    FUNC_STOPALLVOICE,
     FUNC_SETVOICEATTRIBUTES,
 
     // Strings
@@ -6427,6 +6432,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_RESUMEALLVOICE:
                 opcodeSize = 0;
                 ResumeAllVoice();
+                break;
+            case FUNC_STOPALLSFX:
+                opcodeSize = 0;
+                StopAllSfx();
+                break;
+            case FUNC_STOPALLVOICE:
+                opcodeSize = 0;
+                StopAllVoice();
                 break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
