@@ -701,6 +701,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("ConvertByteToString", 3),
     FunctionInfo("GetTextInfo16", 5),	
     FunctionInfo("DrawString", 8),
+    FunctionInfo("DrawStringFX", 9),
 
     // Drawing (NOTE: The first 3 work exactly like their og counter-parts, although you just need to add the FX type on the end)
     FunctionInfo("DrawNumbersFX", 8),
@@ -1454,6 +1455,7 @@ enum ScrFunc {
     FUNC_CONVERTBYTETOSTRING,
     FUNC_GETTEXTINFO_16,
     FUNC_DRAWSTRING,
+    FUNC_DRAWSTRINGFX,
 
     // Drawing
     FUNC_DRAWNUMBERSFX,
@@ -5778,6 +5780,140 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
 							DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
 									   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+							charxpos += spriteFrame->width + scriptEng.operands[4];
+						}
+					}
+					id++;
+				}
+            }
+            case FUNC_DRAWSTRINGFX: {
+				/*
+				script operands
+				0 - sprite
+				1- xpos
+				2 - ypos				
+				3 - width of space
+				4 - letter spacing
+				5 - vertical letter spacing
+				6 - menu
+				7 - menu line
+                8 - effect flag
+				
+				*/
+                opcodeSize = 0;
+               // int charID = 0;
+				//int wordoffset = 0;
+				int charxpos = scriptEng.operands[1];
+				int charypos = scriptEng.operands[2];
+				int line = scriptEng.operands[7];
+
+				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
+				int id          = tMenu->entryStart[line];
+
+				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
+					int character = tMenu->textData[id];
+					if (character == 64) { //@ symbol line breaks
+						charxpos = scriptEng.operands[1];
+						charypos += scriptEng.operands[5];
+					}
+					else {						
+						if (character == ' ')
+							character = -1;							
+						if (character >= 192) //accented characters
+							character -= 94;
+						else if (character >= 33)
+							character -= 33;
+
+						if (character <= -1) {
+							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
+						}
+						else {
+							character += scriptEng.operands[0];
+							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+							
+							switch (scriptEng.operands[8]) {
+								case FX_SCALE:
+									DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+													scriptInfo->spriteSheetID);
+									break;
+								case FX_ROTATE:
+									DrawSpriteRotated(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													scriptInfo->spriteSheetID);
+									break;
+								case FX_ROTOZOOM:
+									DrawSpriteRotozoom(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
+									break;
+								case FX_INK:
+									switch (entity->inkEffect) {
+										case INK_NONE:
+											DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+											break;
+										case INK_BLEND:
+											DrawBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+											break;
+										case INK_ALPHA:
+											DrawAlphaBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+										case INK_ADD:
+											DrawAdditiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+										case INK_SUB:
+											DrawSubtractiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+									}
+									break;
+								case FX_TINT:
+									if (entity->inkEffect == INK_ALPHA) {
+										DrawScaledTintMask(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
+														spriteFrame->sprY, scriptInfo->spriteSheetID);
+									}
+									else {
+										DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+														scriptInfo->spriteSheetID);
+									}
+									break;
+								case FX_FLIP:
+									switch (entity->direction) {
+										default:
+										case FLIP_NONE:
+											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY, spriteFrame->width,
+													spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_X:
+											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_X, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_Y:
+											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos - spriteFrame->height - spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_XY:
+											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX,
+													charypos - spriteFrame->height - spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
+													spriteFrame->sprX, spriteFrame->sprY, FLIP_XY, scriptInfo->spriteSheetID);
+											break;
+									}
+									break;
+								default: // FX_ALL
+									DrawSpriteAllFX(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, 0);
+									break;
+							}
 							charxpos += spriteFrame->width + scriptEng.operands[4];
 						}
 					}
