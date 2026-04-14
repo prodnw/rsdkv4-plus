@@ -1046,8 +1046,11 @@ void StopAllSfx()
     LockAudioDevice();
 
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        sfxChannels[i].sfxID = -1;
-        sfxChannels[i].paused = false;
+        if (!sfxChannels[i].isVoice)
+        {
+            sfxChannels[i].sfxID = -1;
+            sfxChannels[i].paused = false;
+        }
     }
 
     UnlockAudioDevice();
