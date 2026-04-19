@@ -8913,14 +8913,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Origins Extras
                     // Due to using regular v4, these don't support array values like origins expects, so its always screen[0]
                     // Due to using v4+, these DO support array values like origins expects, so it can be any camera!!
-                    case VAR_SCREENCURRENTID: currentCamera = scriptEng.operands[i]; break;
+                    case VAR_SCREENCURRENTID: break;
                     case VAR_CAMERAENABLED: camera[arrayVal].enabled = scriptEng.operands[i]; break;
                     case VAR_CAMERATARGET: camera[arrayVal].target = scriptEng.operands[i]; break;
                     case VAR_CAMERASTYLE: camera[arrayVal].style = scriptEng.operands[i]; break;
                     case VAR_CAMERAXPOS: camera[arrayVal].xpos = scriptEng.operands[i]; break;
                     case VAR_CAMERAYPOS: camera[arrayVal].ypos = scriptEng.operands[i]; break;
-                    case VAR_CAMERAADJUSTY: scriptEng.operands[i] = camera[arrayVal].adjustY; break;
-                    case VAR_CAMERA_DIRECTION: scriptEng.operands[i] = camera[arrayVal].direction; break;
+                    case VAR_CAMERAADJUSTY: camera[arrayVal].adjustY = scriptEng.operands[i]; break;
+                    case VAR_CAMERA_DIRECTION: camera[arrayVal].direction = scriptEng.operands[i]; break;
                     // Optimisation by merging them all maybe
                     case VAR_CAMERA_DRAWLAYER0DIRECTION:
                     case VAR_CAMERA_DRAWLAYER1DIRECTION:
