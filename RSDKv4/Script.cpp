@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (85 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (92 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -665,6 +665,7 @@ const FunctionInfo functions[] = {
     // This ensures that these functions remain "callable" via script, instead of
     // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
     // ProcessScript instead
+    FunctionInfo("SetPresenceName", 1),
     FunctionInfo("SetPresenceDetails", 1),
     FunctionInfo("SetPresenceState", 1),
     FunctionInfo("SetPresenceLargeImage", 2), // SetPresenceLargeImage(image link/name, isLink)
@@ -773,6 +774,13 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RESET_GAME", "2"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "STANDARD", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "MOBILE", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_NAME", "0"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_DETAILS", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_STATE", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_LARGEIMAGE", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_LARGETEXT", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALLIMAGE", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALLTEXT", "6"),
 	//missing aliases for old syntax
 #if RETRO_ACCEPT_OLD_SYNTAX
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
@@ -1421,6 +1429,7 @@ enum ScrFunc {
     FUNC_LOADWEBSITE,
 
     // Discord presence
+    FUNC_SET_PRESENCE_NAME,
     FUNC_SET_PRESENCE_DETAILS,
     FUNC_SET_PRESENCE_STATE,
     FUNC_SET_PRESENCE_LARGEIMAGE,
@@ -7070,6 +7079,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            case FUNC_SET_PRESENCE_NAME: {
+                opcodeSize = 0;
+#if RETRO_USE_DISCORD_SDK
+                API_Discord_SetPresence(scriptText, PRESENCE_ACTIVITY_NAME);
+#endif
+                break;
+            }
+
             case FUNC_SET_PRESENCE_DETAILS: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7141,7 +7158,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_CLEAR_PRESENCE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
-                API_Discord_ClearAllPresence();
+                API_Discord_ClearPresence();
 #endif
                 break;
             }
@@ -7156,7 +7173,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // 3 - large text
                 // 4 - small image
                 // 5 - small text
-                API_Discord_ClearPresenceType(scriptEng.operands[0]);
+                API_Discord_SetPresence("", scriptEng.operands[0]);
 #endif
                 break;
             }

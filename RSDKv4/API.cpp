@@ -8,7 +8,6 @@ discord::Core *__discord = {};
 discord::Activity __activity = {};
 discord::ActivityAssets __assets = {};
 uint64_t API_DISCORD_CLIENT_ID = 1375887146057076747; // Default to v4+ ID
-char prevPresence[0x80];
 bool RPCUpdated = true;
 int RPCRatePause = 0;
 
@@ -87,10 +86,10 @@ void API_Discord_SetPresence(const char *text, int type)
 {
     if (!__discord) return;
 
-    StrCopy(prevPresence, API_Discord_GetPresence(type));
-    RPCUpdated |= !StrComp(prevPresence, text);
+    RPCUpdated |= !StrComp(API_Discord_GetPresence(type), text);
 
     switch (type) {
+        case PRESENCE_ACTIVITY_NAME:    __activity.SetName(text);     break;
         case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails(text);  break;
         case PRESENCE_ACTIVITY_STATE:   __activity.SetState(text);    break;
         case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(text); break;
@@ -102,31 +101,13 @@ void API_Discord_SetPresence(const char *text, int type)
     }
 }
 
-void API_Discord_ClearPresenceType(int type)
-{
-    if (!__discord) return;
-
-    StrCopy(prevPresence, API_Discord_GetPresence(type));
-    RPCUpdated |= !StrComp(prevPresence, "");
-
-    switch (type) {
-        case PRESENCE_ACTIVITY_DETAILS: __activity.SetDetails("");  break;
-        case PRESENCE_ACTIVITY_STATE:   __activity.SetState("");    break;
-        case PRESENCE_ASSET_LARGEIMAGE: __assets.SetLargeImage(""); break;
-        case PRESENCE_ASSET_LARGETEXT:  __assets.SetLargeText("");  break;
-        case PRESENCE_ASSET_SMALLIMAGE: __assets.SetSmallImage(""); break;
-        case PRESENCE_ASSET_SMALLTEXT:  __assets.SetSmallText("");  break;
-
-        default: break;
-    }
-}
-
-void API_Discord_ClearAllPresence()
+void API_Discord_ClearPresence()
 {
     if (!__discord) return;
 
     RPCUpdated = false;
 
+    // name isnt set here
     __activity.SetDetails("");
     __activity.SetState("");
     __assets.SetLargeImage("");
@@ -162,6 +143,7 @@ const char *API_Discord_GetPresence(int type)
     if (!__discord) return "";
 
     switch (type) {
+        case PRESENCE_ACTIVITY_NAME:    return __activity.GetName();     break;
         case PRESENCE_ACTIVITY_DETAILS: return __activity.GetDetails();  break;
         case PRESENCE_ACTIVITY_STATE:   return __activity.GetState();    break;
         case PRESENCE_ASSET_LARGEIMAGE: return __assets.GetLargeImage(); break;

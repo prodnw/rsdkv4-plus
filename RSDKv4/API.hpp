@@ -13,6 +13,7 @@ extern discord::Activity __activity;
 extern discord::ActivityAssets __assets;
 
 enum API_Discord_PresenceTypes {
+    PRESENCE_ACTIVITY_NAME,
     PRESENCE_ACTIVITY_DETAILS,
     PRESENCE_ACTIVITY_STATE,
     PRESENCE_ASSET_LARGEIMAGE,
@@ -27,8 +28,7 @@ void API_Discord_SetAppID();
 void API_Discord_Update();
 
 void API_Discord_SetPresence(const char *text, int type);
-void API_Discord_ClearPresenceType(int type);
-void API_Discord_ClearAllPresence();
+void API_Discord_ClearPresence();
 void API_Discord_UpdatePresence();
 const char *API_Discord_GetPresence(int type);
 #endif
