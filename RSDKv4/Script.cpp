@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (92 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (93 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -682,7 +682,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
 
-    // Sound FX
+    // Audio
     FunctionInfo("PauseSfx", 1),
     FunctionInfo("ResumeSfx", 1),
     FunctionInfo("PlayVoice", 2),
@@ -696,6 +696,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("StopAllSfx", 0),
     FunctionInfo("StopAllVoice", 0),
     FunctionInfo("SetVoiceAttributes", 3),
+    FunctionInfo("SetMusicModifier", 4),
 
     // Strings
     FunctionInfo("IntToStr", 3),
@@ -781,6 +782,7 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_LARGETEXT", "4"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALLIMAGE", "5"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALLTEXT", "6"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "AUDIO_MOD_SPEED", "1"),
 	//missing aliases for old syntax
 #if RETRO_ACCEPT_OLD_SYNTAX
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "FLIP_NONE", "0"),
@@ -1446,7 +1448,7 @@ enum ScrFunc {
     FUNC_CHECKCONTROLLERCONNECT,
     FUNC_CHECKCONTROLLERDISCONNECT,
 
-    // Sound FX
+    // Audio
     FUNC_PAUSESFX,
     FUNC_RESUMESFX,
     FUNC_PLAYVOICE,
@@ -1460,6 +1462,7 @@ enum ScrFunc {
     FUNC_STOPALLSFX,
     FUNC_STOPALLVOICE,
     FUNC_SETVOICEATTRIBUTES,
+    FUNC_SETMUSICMODIFIER,
 
     // Strings
     FUNC_INTTOSTR,
@@ -5060,7 +5063,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     scriptEng.operandStr[0][0] = '\0'; //Null-terminate the start of the string
                 break;
             }
-            case FUNC_INTTOSTR: //IntToStr(string store, int numToConvert, int conversionType)
+            case FUNC_INTTOSTR: // IntToStr(string store, int numToConvert, int conversionType)
                 switch (scriptEng.operands[2]) {
                     default: break;
                     case 0: sprintf(scriptEng.operandStr[0], "%d", scriptEng.operands[1]); break; //Decimal
@@ -5069,18 +5072,18 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 }
                 break;
             case FUNC_STRLENGTH: scriptEng.operands[0] = StrLength(scriptText); break; //StrLength(int store, string lengthOf)
-            case FUNC_SETVARIABLEBYNAME: //SetVariableByName(string varName, int value)
+            case FUNC_SETVARIABLEBYNAME: // SetVariableByName(string varName, int value)
                 for (int v = 0; v < globalVariablesCount; ++v) {
                     if (StrComp(scriptEng.operandStr[0], globalVariableNames[v])) {
                         globalVariables[v] = scriptEng.operands[1];
                     }
                 }
                 break;
-            case FUNC_CONVERTSTRINGTOBYTE: //ConvertStringToByte(string text, int index, int store)
+            case FUNC_CONVERTSTRINGTOBYTE: // ConvertStringToByte(string text, int index, int store)
                 if (scriptEng.operands[1] < StrLength(scriptText))
                     scriptEng.operands[2] = scriptEng.operandStr[0][scriptEng.operands[1]] + '\0';
                 break;
-            case FUNC_CONVERTBYTETOSTRING: //ConvertByteToString(string store, int index, int byte)
+            case FUNC_CONVERTBYTETOSTRING: // ConvertByteToString(string store, int index, int byte)
                 scriptEng.operandStr[0][scriptEng.operands[1]] = scriptEng.operands[2] + '\0';
                 
                 if (scriptEng.operands[1] >= StrLength(scriptText))
@@ -6457,6 +6460,17 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SETVOICEATTRIBUTES:
                 opcodeSize = 0;
                 SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
+                break;
+            case FUNC_SETMUSICMODIFIER:
+                // SetMusicModifier(int track, int modifier, int data1, int data2)
+                switch (scriptEng.operands[1]) {
+                        // MODIFIER PARAMS:
+                    case AUDIO_MOD_SPEED:
+                        // data1 = playback speed
+                        // (100 is regular speed, lower values are slower, and higher values are faster)
+                        musicTracks[scriptEng.operands[0]].mods.speed = scriptEng.operands[2];
+                        break;
+                }
                 break;
             case FUNC_OBJECTTILECOLLISION:
                 opcodeSize = 0;

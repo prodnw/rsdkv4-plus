@@ -37,10 +37,15 @@
 #define UnlockAudioDevice() ;
 #endif
 
+struct AudioModifiers {
+    int speed = 100;
+};
+
 struct TrackInfo {
     char fileName[0x40];
     bool trackLoop;
     uint loopPoint;
+    AudioModifiers mods;
 };
 
 struct StreamInfo {
@@ -79,6 +84,10 @@ struct StreamFile {
     byte buffer[MUSBUFFER_SIZE];
     int fileSize;
     int filePos;
+};
+
+enum AudioModifierTypes {
+    AUDIO_MOD_SPEED = 1,
 };
 
 enum MusicStatuses {

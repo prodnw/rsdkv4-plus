@@ -596,8 +596,11 @@ void LoadMusic(void *userdata)
             samples = (unsigned long long)ov_pcm_total(&strmInfo->vorbisFile, -1);
 
 #if RETRO_USING_SDL2
-            strmInfo->stream = SDL_NewAudioStream(AUDIO_S16, strmInfo->vorbisFile.vi->channels, (int)strmInfo->vorbisFile.vi->rate,
-                                                  audioDeviceFormat.format, audioDeviceFormat.channels, audioDeviceFormat.freq);
+            // make a percentage from of the set speed, and multiply it by the track rate
+            int trackRate = (strmInfo->vorbisFile.vi->rate * (musicTracks[currentMusicTrack].mods.speed / 100.0f));
+            
+            strmInfo->stream = SDL_NewAudioStream(AUDIO_S16, strmInfo->vorbisFile.vi->channels, trackRate, audioDeviceFormat.format,
+                                                  audioDeviceFormat.channels, audioDeviceFormat.freq);
             if (!strmInfo->stream)
                 PrintLog("Failed to create stream: %s", SDL_GetError());
 #endif
