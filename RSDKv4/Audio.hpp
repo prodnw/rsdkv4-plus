@@ -45,6 +45,7 @@ struct TrackInfo {
     char fileName[0x40];
     bool trackLoop;
     uint loopPoint;
+    uint endLoopPoint;
     AudioModifiers mods;
 };
 
@@ -60,6 +61,7 @@ struct StreamInfo {
     Sint16 buffer[MIX_BUFFER_SAMPLES];
     bool trackLoop;
     uint loopPoint;
+    uint endLoopPoint;
     bool loaded;
 };
 
@@ -175,6 +177,7 @@ inline void FreeMusInfo() { ov_clear(&streamInfo[currentStreamIndex].vorbisFile)
 
 void LoadMusic(void *userdata);
 void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint);
+void SetMusicTrackEx(const char *filePath, byte trackID, bool loop, uint loopPoint, uint endLoopPoint);
 void SwapMusicTrack(const char *filePath, byte trackID, uint loopPoint, uint ratio);
 bool PlayMusic(int track, int musStartPos);
 inline void StopMusic(bool setStatus)

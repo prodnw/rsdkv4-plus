@@ -334,6 +334,12 @@ void ProcessMusicStream(Sint32 *stream, size_t bytes_wanted)
 #endif
 
             musicPosition = ov_pcm_tell(&streamInfoPtr->vorbisFile);
+            
+            // Check if we've reached the end loop point
+            if (streamInfoPtr->trackLoop && streamInfoPtr->endLoopPoint > 0 && musicPosition >= streamInfoPtr->endLoopPoint) {
+                ov_pcm_seek(&streamInfoPtr->vorbisFile, streamInfoPtr->loopPoint);
+                musicPosition = streamInfoPtr->loopPoint;
+            }
             break;
         }
         case MUSIC_STOPPED:
@@ -592,6 +598,8 @@ void LoadMusic(void *userdata)
         if (error == 0) {
             strmInfo->vorbBitstream = -1;
             strmInfo->vorbisFile.vi = ov_info(&strmInfo->vorbisFile, -1);
+            strmInfo->loopPoint = musicTracks[currentMusicTrack].loopPoint;
+            strmInfo->endLoopPoint = musicTracks[currentMusicTrack].endLoopPoint;
 
             samples = (unsigned long long)ov_pcm_total(&strmInfo->vorbisFile, -1);
 
@@ -626,6 +634,7 @@ void LoadMusic(void *userdata)
             trackID             = currentMusicTrack;
             strmInfo->trackLoop = musicTracks[currentMusicTrack].trackLoop;
             strmInfo->loopPoint = musicTracks[currentMusicTrack].loopPoint;
+            strmInfo->endLoopPoint = musicTracks[currentMusicTrack].endLoopPoint;
             strmInfo->loaded    = true;
             streamFilePtr       = &streamFile[currentStreamIndex];
             streamInfoPtr       = &streamInfo[currentStreamIndex];
@@ -661,6 +670,19 @@ void SetMusicTrack(const char *filePath, byte trackID, bool loop, uint loopPoint
     StrAdd(track->fileName, filePath);
     track->trackLoop = loop;
     track->loopPoint = loopPoint;
+    track->endLoopPoint = 0;
+    UnlockAudioDevice();
+}
+
+void SetMusicTrackEx(const char *filePath, byte trackID, bool loop, uint loopPoint, uint endLoopPoint)
+{
+    LockAudioDevice();
+    TrackInfo *track = &musicTracks[trackID];
+    StrCopy(track->fileName, "Data/Music/");
+    StrAdd(track->fileName, filePath);
+    track->trackLoop = loop;
+    track->loopPoint = loopPoint;
+    track->endLoopPoint = endLoopPoint;
     UnlockAudioDevice();
 }
 

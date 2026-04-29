@@ -557,6 +557,7 @@ const FunctionInfo functions[] = {
 
     // Music
     FunctionInfo("SetMusicTrack", 3),
+    FunctionInfo("SetMusicTrackEx", 4),
     FunctionInfo("PlayMusic", 1),
     FunctionInfo("StopMusic", 0),
     FunctionInfo("PauseMusic", 0),
@@ -1345,6 +1346,7 @@ enum ScrFunc {
     FUNC_PROCESSANIMATION,
     FUNC_DRAWOBJECTANIMATION,
     FUNC_SETMUSICTRACK,
+    FUNC_SETMUSICTRACKEX,
     FUNC_PLAYMUSIC,
     FUNC_STOPMUSIC,
     FUNC_PAUSEMUSIC,
@@ -6353,6 +6355,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     SetMusicTrack(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0);
                 else
                     SetMusicTrack(scriptText, scriptEng.operands[1], true, scriptEng.operands[2]);
+                break;
+            case FUNC_SETMUSICTRACKEX:
+                opcodeSize = 0;
+                if (scriptEng.operands[2] <= 1)
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0, scriptEng.operands[3]);
+                else
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], true, scriptEng.operands[2], scriptEng.operands[3]);
                 break;
             case FUNC_PLAYMUSIC:
                 opcodeSize = 0;
