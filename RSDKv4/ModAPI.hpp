@@ -62,6 +62,7 @@ void SetModActive(uint *id, int *active);
 void MoveMod(uint *id, int *up);
 void GetModID(int *unused, const char *modName);
 void GetModAuthorURL(int *textMenu, int *highlight, uint *id, int *unused);
+void CompareModPriority(int *id1, int *id2);
 #endif
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE

@@ -743,6 +743,18 @@ void GetModAuthorURL(int *textMenu, int *highlight, uint *id, int *unused)
     menu->entryHighlight[menu->rowCount] = *highlight;
     AddTextMenuEntry(menu, modList[*id].authorURL.c_str());
 }
+
+void CompareModPriority(int *id1, int *id2)
+{
+    scriptEng.checkResult = -1;
+
+    if (*id1 < 0 || *id1 >= (int)modList.size() || *id2 < 0 || *id2 >= (int)modList.size()) {
+        return;
+    }
+
+    // Return 1 if id2 has higher priority or 0 if lower priority
+    scriptEng.checkResult = (*id2 < *id1) ? 1 : 0;
+}
 #endif
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE
