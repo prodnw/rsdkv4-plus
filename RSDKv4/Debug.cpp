@@ -168,19 +168,43 @@ void ProcessStageSelect()
     CheckKeyPress(keyPress);
 
 #if defined RETRO_USING_MOUSE || defined RETRO_USING_TOUCH
-    DrawSprite(32, 0x42, 16, 16, 78, 240, textMenuSurfaceNo);
-    DrawSprite(32, 0xB2, 16, 16, 95, 240, textMenuSurfaceNo);
-    DrawSprite(SCREEN_XSIZE - 32, SCREEN_YSIZE - 32, 16, 16, 112, 240, textMenuSurfaceNo);
+    int buttonY_Up      = 0x42;
+    int buttonY_Down    = 0xB2;
+    int buttonY_Start   = SCREEN_YSIZE - 32;
+    int buttonY_Back    = buttonY_Start - 32;
+#if RETRO_USE_MOD_LOADER
+    if (stageMode == DEVMENU_MODMENU) {
+        buttonY_Up      -= 32;
+        buttonY_Down    -= 32;
+        buttonY_Start   -= 48;
+        buttonY_Back   -= 48;
+    }
+#endif
+    DrawSprite(32, buttonY_Up, 16, 16, 78, 240, textMenuSurfaceNo);
+    DrawSprite(32, buttonY_Down, 16, 16, 95, 240, textMenuSurfaceNo);
+    DrawSprite(SCREEN_XSIZE - 32, buttonY_Start, 16, 16, 112, 240, textMenuSurfaceNo);
+    DrawSprite(SCREEN_XSIZE - 32, buttonY_Back, 16, 16, 61, 240, textMenuSurfaceNo);
 #endif
 
     if (!keyDown[0].start && !keyDown[0].up && !keyDown[0].down) {
         int tFlags = touchFlags;
         touchFlags = 0;
+        
+        // Determine Y threshold for button detection
+        int buttonThreshold_UpDown  = SCREEN_CENTERY;
+        int buttonThreshold_Start   = SCREEN_YSIZE - 32;
+
+#if RETRO_USE_MOD_LOADER
+        if (stageMode == DEVMENU_MODMENU) {
+            buttonThreshold_UpDown -= 32;
+            buttonThreshold_Start -= 48;
+        }
+#endif
 
         for (int t = 0; t < touches; ++t) {
             if (touchDown[t]) {
                 if (touchX[t] < SCREEN_CENTERX) {
-                    if (touchY[t] >= SCREEN_CENTERY) {
+                    if (touchY[t] >= buttonThreshold_UpDown) {
                         if (!(tFlags & 2))
                             keyPress[0].down = true;
                         else
@@ -194,7 +218,7 @@ void ProcessStageSelect()
                     }
                 }
                 else if (touchX[t] > SCREEN_CENTERX) {
-                    if (touchY[t] > SCREEN_CENTERY) {
+                    if (touchY[t] > buttonThreshold_Start) {
                         if (!(tFlags & 4))
                             keyPress[0].start = true;
                         else
@@ -623,6 +647,45 @@ void ProcessStageSelect()
 
             DrawTextMenu(&gameMenu[0], SCREEN_CENTERX - 4, 40);
             DrawTextMenu(&gameMenu[1], SCREEN_CENTERX + 100, 64);
+            
+            // Draw Mod Info
+
+            // Gray bar at bottom
+            int barHeight = 40;
+            int barY = SCREEN_YSIZE - barHeight;
+            DrawRectangle(0, barY, SCREEN_XSIZE, barHeight, 0x80, 0x80, 0x80, 0xFF);
+            
+            // Draw mod info for the currently highlighted mod
+            if (gameMenu[1].selection1 < modList.size()) {
+                ModInfo &selectedMod = modList[gameMenu[1].selection1];
+
+                SetupTextMenu(&gameMenu[2], 0);
+                gameMenu[2].alignment = MENU_ALIGN_LEFT;
+
+                char nameBuffer[0x200];
+                StrCopy(nameBuffer, "Name: ");
+                StrAdd(nameBuffer, selectedMod.name.c_str());
+                AddTextMenuEntry(&gameMenu[2], nameBuffer);
+
+                char authorBuffer[0x200];
+                StrCopy(authorBuffer, "Author: ");
+                StrAdd(authorBuffer, selectedMod.author.c_str());
+                AddTextMenuEntry(&gameMenu[2], authorBuffer);
+                
+                char versionBuffer[0x200];
+                StrCopy(versionBuffer, "Version: ");
+                StrAdd(versionBuffer, selectedMod.version.c_str());
+                AddTextMenuEntry(&gameMenu[2], versionBuffer);
+                
+                char descBuffer[0x200];
+                StrCopy(descBuffer, selectedMod.desc.c_str());
+                AddTextMenuEntry(&gameMenu[2], descBuffer);
+                
+                DrawTextMenuEntry(&gameMenu[2], 0, 4, barY + 4, false);
+                DrawTextMenuEntry(&gameMenu[2], 1, 4, barY + 12, false);
+                if (gameMenu[2].rowCount > 2) DrawTextMenuEntry(&gameMenu[2], 2, 4, barY + 20, false);
+                if (gameMenu[2].rowCount > 3) DrawTextMenuEntry(&gameMenu[2], 3, 4, barY + 28, false);
+            }
             break;
         }
 #endif

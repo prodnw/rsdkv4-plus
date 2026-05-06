@@ -168,7 +168,7 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         IniParser modSettings((modDir + "/mod.ini").c_str(), false);
 
         info->name                = "Unnamed Mod";
-        info->desc                = "";
+        info->desc                = "Unknown Description";
         info->author              = "Unknown Author";
         info->version             = "1.0.0";
         info->folder              = folder;
