@@ -34,11 +34,8 @@ option(RETRO_VANILLA_LIKE "Brings back the normal v4 limitations." OFF)
 
 set(RETRO_ICON_NAME "RSDKv4 Decomp Icon.ico" CACHE STRING "Icon filename to embed in the executable. Defaults to RSDKv4 Decomp Icon.")
 
-option(RETRO_USE_EOS "Adds Epic Online Services SDK support for multiple network features." OFF)  
-
 set(STEAMWORKS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/steamworks_sdk")
 set(DISCORD_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/discord_game_sdk")
-set(EOS_SDK_DIR "${CMAKE_SOURCE_DIR}/dependencies/all/eos_sdk")
 
 if(RETRO_ORIGINAL_CODE)
     set(RETRO_MOD_LOADER OFF)
@@ -258,14 +255,6 @@ if(RETRO_USE_CURL)
 	target_link_libraries(RetroEngine CURL::libcurl)
 endif()
 
-if(RETRO_USE_EOS)
-    if(RETRO_ARCH STREQUAL "64")
-        target_link_libraries(RetroEngine ${EOS_SDK_DIR}/Lib/EOSSDK-Win64-Shipping.lib)
-    elseif(RETRO_ARCH STREQUAL "32")
-        target_link_libraries(RetroEngine ${EOS_SDK_DIR}/Lib/EOSSDK-Win32-Shipping.lib)
-    endif()
-endif()
-
 target_include_directories(RetroEngine PRIVATE
     RSDKv4/
     RSDKv4/NativeObjects/
@@ -304,12 +293,6 @@ if(RETRO_USE_DISCORD)
 	target_sources(RetroEngine PRIVATE ${DISCORD_SRC})
 endif()
 
-if(RETRO_USE_EOS)
-    target_include_directories(RetroEngine PRIVATE
-        ${EOS_SDK_DIR}/Include
-    )
-endif()
-
 target_compile_definitions(RetroEngine PRIVATE
     RSDK_REVISION=${RETRO_REVISION}
     RETRO_USE_MOD_LOADER=$<BOOL:${RETRO_MOD_LOADER}>
@@ -323,7 +306,6 @@ target_compile_definitions(RetroEngine PRIVATE
     RETRO_CHECKUPDATE=$<BOOL:${RETRO_UPDATE_CHECKER}>
     RETRO_ACCEPT_OLD_SYNTAX=$<BOOL:${RETRO_ACCEPT_OLD_SYNTAX}>
     RETRO_VANILLA_LIKE=$<BOOL:${RETRO_VANILLA_LIKE}>
-    RETRO_USE_EOS_SDK=$<BOOL:${RETRO_USE_EOS}>
 
     RSDK_AUTOBUILD=$<BOOL:${RETRO_DISABLE_PLUS}>
 
