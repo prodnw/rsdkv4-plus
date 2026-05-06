@@ -612,6 +612,12 @@ void ProcessStageSelect()
                 StrAdd(buffer, (modList[gameMenu[1].selection1].active ? "  Active" : "Inactive"));
                 EditTextMenuEntry(&gameMenu[1], buffer, gameMenu[1].selection1);
             }
+            else if (keyPress[0].Y && gameMenu[1].selection1 < modList.size()) {
+                // Open author URL if available
+                if (modList[gameMenu[1].selection1].authorURL.length() > 0) {
+                    SDL_OpenURL(modList[gameMenu[1].selection1].authorURL.c_str());
+                }
+            }
             else if (keyDown[0].C && gameMenu[1].selection1 != preOption) {
                 int visibleOffset  = gameMenu[1].visibleRowOffset;
                 int option         = gameMenu[1].selection1;
