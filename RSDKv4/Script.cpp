@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (93 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (95 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -449,7 +449,9 @@ const char variableNames[][0x20] = {
     "playtime.seconds",
     "mouse.moved",
     "mouse1.pressed",
-    "mouse2.pressed"
+    "mouse2.pressed",
+    "options.devMenuFlag",
+    "options.engineDebugMode"
 };
 #endif
 
@@ -592,6 +594,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("TransformVertices", 3),
 
     FunctionInfo("CallFunction", 1),
+    FunctionInfo("CallFunctionObject", 2),
     FunctionInfo("return", 0),
 
     FunctionInfo("SetLayerDeformation", 6),
@@ -1258,6 +1261,8 @@ enum ScrVar {
     VAR_MOUSE_MOVED,
     VAR_MOUSE1_PRESSED,
     VAR_MOUSE2_PRESSED,
+    VAR_OPTIONS_DEVMENUFLAG,
+    VAR_OPTIONS_ENGINEDEBUGMODE,
     VAR_MAX_CNT
 };
 
@@ -1372,6 +1377,7 @@ enum ScrFunc {
 #endif
     FUNC_TRANSFORMVERTICES,
     FUNC_CALLFUNCTION,
+    FUNC_CALLFUNCTIONOBJECT,
     FUNC_RETURN,
     FUNC_SETLAYERDEFORMATION,
     FUNC_CHECKTOUCHRECT,
@@ -1508,6 +1514,8 @@ int scriptCode[SCRIPTCODE_COUNT];
 int jumpTable[JUMPTABLE_COUNT];
 int jumpTableStack[JUMPSTACK_COUNT];
 int functionStack[FUNCSTACK_COUNT];
+int entitySlotStack[FUNCSTACK_COUNT];
+byte functionTypeStack[FUNCSTACK_COUNT];
 int foreachStack[FORSTACK_COUNT];
 
 int scriptCodePos     = 0;
@@ -5013,6 +5021,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
                         break;
                     }
+
+                    case VAR_OPTIONS_DEVMENUFLAG: {
+                        scriptEng.operands[i] = Engine.devMenu;
+                        break;
+                    }
+
+                    case VAR_OPTIONS_ENGINEDEBUGMODE: {
+                        scriptEng.operands[i] = engineDebugMode;
+                        break;
+                    }
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -6617,9 +6635,26 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 functionStack[functionStackPos++] = scriptCodePtr;
                 functionStack[functionStackPos++] = jumpTableStart;
                 functionStack[functionStackPos++] = scriptCodeStart;
+                functionTypeStack[functionStackPos - 1] = 0;
                 scriptCodeStart                   = scriptFunctionList[scriptEng.operands[0]].ptr.scriptCodePtr;
                 jumpTableStart                    = scriptFunctionList[scriptEng.operands[0]].ptr.jumpTablePtr;
                 scriptCodePtr                     = scriptCodeStart;
+                break;
+            }
+            case FUNC_CALLFUNCTIONOBJECT: {
+                opcodeSize                        = 0;
+                functionStack[functionStackPos]   = scriptCodePtr;
+                entitySlotStack[functionStackPos] = objectEntityPos;
+                functionStackPos++;
+                functionStack[functionStackPos]   = jumpTableStart;
+                functionStackPos++;
+                functionStack[functionStackPos]   = scriptCodeStart;
+                functionTypeStack[functionStackPos] = 1;
+                functionStackPos++;
+                scriptCodeStart                   = scriptFunctionList[scriptEng.operands[0]].ptr.scriptCodePtr;
+                jumpTableStart                    = scriptFunctionList[scriptEng.operands[0]].ptr.jumpTablePtr;
+                scriptCodePtr                     = scriptCodeStart;
+                objectEntityPos                   = scriptEng.operands[1];
                 break;
             }
             case FUNC_RETURN:
@@ -6628,9 +6663,19 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     running = false;
                 }
                 else { // function, jump out
-                    scriptCodeStart = functionStack[--functionStackPos];
-                    jumpTableStart  = functionStack[--functionStackPos];
-                    scriptCodePtr   = functionStack[--functionStackPos];
+                    // Check if CallFunctionObject was used
+                    if (functionTypeStack[functionStackPos - 1] == 1) {
+                        // Restore entity slot for CallFunctionObject
+                        scriptCodeStart = functionStack[--functionStackPos];
+                        jumpTableStart  = functionStack[--functionStackPos];
+                        scriptCodePtr   = functionStack[--functionStackPos];
+                        objectEntityPos = entitySlotStack[functionStackPos];
+                    } else {
+                        // Normal CallFunction return
+                        scriptCodeStart = functionStack[--functionStackPos];
+                        jumpTableStart  = functionStack[--functionStackPos];
+                        scriptCodePtr   = functionStack[--functionStackPos];
+                    }
                 }
                 break;
             case FUNC_SETLAYERDEFORMATION:
@@ -9006,6 +9051,8 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_MOUSE_MOVED: break;
                     case VAR_MOUSE1_PRESSED: break;
                     case VAR_MOUSE2_PRESSED: break;
+                    case VAR_OPTIONS_DEVMENUFLAG: break;
+                    case VAR_OPTIONS_ENGINEDEBUGMODE: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
