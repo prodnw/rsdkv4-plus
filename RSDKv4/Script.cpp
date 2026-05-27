@@ -559,7 +559,6 @@ const FunctionInfo functions[] = {
 
     // Music
     FunctionInfo("SetMusicTrack", 3),
-    FunctionInfo("SetMusicTrackEx", 4),
     FunctionInfo("PlayMusic", 1),
     FunctionInfo("StopMusic", 0),
     FunctionInfo("PauseMusic", 0),
@@ -594,7 +593,6 @@ const FunctionInfo functions[] = {
     FunctionInfo("TransformVertices", 3),
 
     FunctionInfo("CallFunction", 1),
-    FunctionInfo("CallFunctionObject", 2),
     FunctionInfo("return", 0),
 
     FunctionInfo("SetLayerDeformation", 6),
@@ -661,6 +659,9 @@ const FunctionInfo functions[] = {
 
 //-------- New functions start here --------//
 
+    // Functions
+    FunctionInfo("CallFunctionObject", 2),
+
     // Website interaction
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
@@ -687,6 +688,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("CheckControllerDisconnect", 0),
 
     // Audio
+    FunctionInfo("SetMusicTrackEx", 4),
     FunctionInfo("PauseSfx", 1),
     FunctionInfo("ResumeSfx", 1),
     FunctionInfo("PlayVoice", 2),
@@ -726,8 +728,8 @@ const FunctionInfo functions[] = {
     // Video
     FunctionInfo("LoadVideo", 2),
     FunctionInfo("NextVideoFrame", 0),
-    
-    // Misc.
+
+    // Username
     FunctionInfo("GetUsername", 2),
     FunctionInfo("SetUsername", 2),
 };
@@ -1351,7 +1353,6 @@ enum ScrFunc {
     FUNC_PROCESSANIMATION,
     FUNC_DRAWOBJECTANIMATION,
     FUNC_SETMUSICTRACK,
-    FUNC_SETMUSICTRACKEX,
     FUNC_PLAYMUSIC,
     FUNC_STOPMUSIC,
     FUNC_PAUSEMUSIC,
@@ -1377,7 +1378,6 @@ enum ScrFunc {
 #endif
     FUNC_TRANSFORMVERTICES,
     FUNC_CALLFUNCTION,
-    FUNC_CALLFUNCTIONOBJECT,
     FUNC_RETURN,
     FUNC_SETLAYERDEFORMATION,
     FUNC_CHECKTOUCHRECT,
@@ -1433,6 +1433,9 @@ enum ScrFunc {
 
 //-------- New functions start here --------//
 
+    // Functions
+    FUNC_CALLFUNCTIONOBJECT,
+
     // Website interaction
     FUNC_CHECKUPDATES,
     FUNC_LOADWEBSITE,
@@ -1456,6 +1459,7 @@ enum ScrFunc {
     FUNC_CHECKCONTROLLERDISCONNECT,
 
     // Audio
+    FUNC_SETMUSICTRACKEX,
     FUNC_PAUSESFX,
     FUNC_RESUMESFX,
     FUNC_PLAYVOICE,
@@ -1496,7 +1500,7 @@ enum ScrFunc {
     FUNC_LOADVIDEO,
     FUNC_NEXTVIDEOFRAME,
 
-    // Misc.
+    // Username
     FUNC_GETUSERNAME,
     FUNC_SETUSERNAME,
 
@@ -6374,13 +6378,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 else
                     SetMusicTrack(scriptText, scriptEng.operands[1], true, scriptEng.operands[2]);
                 break;
-            case FUNC_SETMUSICTRACKEX:
-                opcodeSize = 0;
-                if (scriptEng.operands[2] <= 1)
-                    SetMusicTrackEx(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0, scriptEng.operands[3]);
-                else
-                    SetMusicTrackEx(scriptText, scriptEng.operands[1], true, scriptEng.operands[2], scriptEng.operands[3]);
-                break;
             case FUNC_PLAYMUSIC:
                 opcodeSize = 0;
                 PlayMusic(scriptEng.operands[0], 0);
@@ -6416,6 +6413,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_NEXTVIDEOFRAME:
                 opcodeSize = 0;
                 UpdateVideoFrame();
+                break;
+            case FUNC_SETMUSICTRACKEX:
+                opcodeSize = 0;
+                if (scriptEng.operands[2] <= 1)
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0, scriptEng.operands[3]);
+                else
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], true, scriptEng.operands[2], scriptEng.operands[3]);
                 break;
             case FUNC_PLAYSFX:
                 opcodeSize = 0;
@@ -6639,22 +6643,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 scriptCodeStart                   = scriptFunctionList[scriptEng.operands[0]].ptr.scriptCodePtr;
                 jumpTableStart                    = scriptFunctionList[scriptEng.operands[0]].ptr.jumpTablePtr;
                 scriptCodePtr                     = scriptCodeStart;
-                break;
-            }
-            case FUNC_CALLFUNCTIONOBJECT: {
-                opcodeSize                        = 0;
-                functionStack[functionStackPos]   = scriptCodePtr;
-                entitySlotStack[functionStackPos] = objectEntityPos;
-                functionStackPos++;
-                functionStack[functionStackPos]   = jumpTableStart;
-                functionStackPos++;
-                functionStack[functionStackPos]   = scriptCodeStart;
-                functionTypeStack[functionStackPos] = 1;
-                functionStackPos++;
-                scriptCodeStart                   = scriptFunctionList[scriptEng.operands[0]].ptr.scriptCodePtr;
-                jumpTableStart                    = scriptFunctionList[scriptEng.operands[0]].ptr.jumpTablePtr;
-                scriptCodePtr                     = scriptCodeStart;
-                objectEntityPos                   = scriptEng.operands[1];
                 break;
             }
             case FUNC_RETURN:
@@ -7115,6 +7103,25 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // None
 
                 break;
+
+//-------- New functions start here --------//
+
+            case FUNC_CALLFUNCTIONOBJECT: {
+                opcodeSize                        = 0;
+                functionStack[functionStackPos]   = scriptCodePtr;
+                entitySlotStack[functionStackPos] = objectEntityPos;
+                functionStackPos++;
+                functionStack[functionStackPos]   = jumpTableStart;
+                functionStackPos++;
+                functionStack[functionStackPos]   = scriptCodeStart;
+                functionTypeStack[functionStackPos] = 1;
+                functionStackPos++;
+                scriptCodeStart                   = scriptFunctionList[scriptEng.operands[0]].ptr.scriptCodePtr;
+                jumpTableStart                    = scriptFunctionList[scriptEng.operands[0]].ptr.jumpTablePtr;
+                scriptCodePtr                     = scriptCodeStart;
+                objectEntityPos                   = scriptEng.operands[1];
+                break;
+            }
 
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
@@ -8244,7 +8251,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             
             case FUNC_DRAWMENUFX: {
-                opcodeSize        = 0;
+                opcodeSize = 0;
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
                 DrawTextMenuFX(&gameMenu[scriptEng.operands[0]], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
