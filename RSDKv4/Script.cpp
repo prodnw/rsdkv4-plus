@@ -666,6 +666,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
     
+    // Discord
     // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
     // This ensures that these functions remain "callable" via script, instead of
     // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
@@ -732,6 +733,9 @@ const FunctionInfo functions[] = {
     // Username
     FunctionInfo("GetUsername", 2),
     FunctionInfo("SetUsername", 2),
+
+    // Misc.
+    FunctionInfo("CalculateTimeValue", 3),
 };
 
 #if RETRO_USE_COMPILER
@@ -1503,6 +1507,9 @@ enum ScrFunc {
     // Username
     FUNC_GETUSERNAME,
     FUNC_SETUSERNAME,
+    
+    // Misc
+    FUNC_CALCULATETIMEVALUE,
 
     // The End
     FUNC_MAX_CNT
@@ -8264,6 +8271,21 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_SETUSERNAME: {
                 SetUsername(scriptEng.operands, &scriptText[scriptEng.operands[1]]);
+                break;
+            }
+
+            case FUNC_CALCULATETIMEVALUE: {
+                int minutes         = scriptEng.operands[0];
+                int seconds         = scriptEng.operands[1];
+                int milliseconds    = scriptEng.operands[2];
+                int returnValue     = 0;
+                            
+                returnValue = minutes;
+                returnValue *= 60;
+                returnValue += seconds;
+                returnValue *= 100;
+                returnValue += milliseconds;
+                scriptEng.checkResult = returnValue;
                 break;
             }
         }
