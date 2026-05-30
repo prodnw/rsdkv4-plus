@@ -735,7 +735,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetUsername", 2),
 
     // Misc.
-    FunctionInfo("CalculateTimeValue", 3),
+    FunctionInfo("CalculateToTimeValue", 3),        // Mins, Seconds, Milliseconds
+    FunctionInfo("CalculateFromTimeValue", 4),      // Time value, stored minutes, stored seconds, stored milliseconds
 };
 
 #if RETRO_USE_COMPILER
@@ -1509,7 +1510,8 @@ enum ScrFunc {
     FUNC_SETUSERNAME,
     
     // Misc
-    FUNC_CALCULATETIMEVALUE,
+    FUNC_CALCULATETOTIMEVALUE,
+    FUNC_CALCULATEFROMTIMEVALUE,
 
     // The End
     FUNC_MAX_CNT
@@ -8274,7 +8276,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            case FUNC_CALCULATETIMEVALUE: {
+            case FUNC_CALCULATETOTIMEVALUE: {
                 int minutes         = scriptEng.operands[0];
                 int seconds         = scriptEng.operands[1];
                 int milliseconds    = scriptEng.operands[2];
@@ -8286,6 +8288,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 returnValue *= 100;
                 returnValue += milliseconds;
                 scriptEng.checkResult = returnValue;
+                break;
+            }
+
+            case FUNC_CALCULATEFROMTIMEVALUE: {
+                int timeValue = scriptEng.operands[0];
+
+                scriptEng.operands[1] = timeValue / 6000;             // minutes
+                scriptEng.operands[2] = (timeValue % 6000) / 100;     // seconds
+                scriptEng.operands[3] = timeValue % 100;              // milliseconds
                 break;
             }
         }
