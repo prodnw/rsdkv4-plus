@@ -734,9 +734,10 @@ const FunctionInfo functions[] = {
     FunctionInfo("GetUsername", 2),
     FunctionInfo("SetUsername", 2),
 
-    // Misc.
+    // Math
     FunctionInfo("CalculateToTimeValue", 3),        // Mins, Seconds, Milliseconds
     FunctionInfo("CalculateFromTimeValue", 4),      // Time value, stored minutes, stored seconds, stored milliseconds
+    FunctionInfo("CalculatePercentage", 2),         // Progress value, total value
 };
 
 #if RETRO_USE_COMPILER
@@ -1509,9 +1510,10 @@ enum ScrFunc {
     FUNC_GETUSERNAME,
     FUNC_SETUSERNAME,
     
-    // Misc
+    // Math
     FUNC_CALCULATETOTIMEVALUE,
     FUNC_CALCULATEFROMTIMEVALUE,
+    FUNC_CALCULATEPERCENTAGE,
 
     // The End
     FUNC_MAX_CNT
@@ -8298,6 +8300,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 scriptEng.operands[2] = (timeValue % 6000) / 100;     // seconds
                 scriptEng.operands[3] = timeValue % 100;              // milliseconds
                 break;
+            }
+
+            case FUNC_CALCULATEPERCENTAGE: {
+                int currentValue    = scriptEng.operands[0];
+                int totalValue      = scriptEng.operands[1];
+                
+                currentValue *= 100;
+                currentValue /= totalValue;
+                scriptEng.checkResult = currentValue;
             }
         }
 
