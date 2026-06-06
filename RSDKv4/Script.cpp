@@ -4751,9 +4751,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         int numKeys = 0;
                         const byte *keyboardState = SDL_GetKeyboardState(&numKeys);
                         static byte prevKeyboardState[512] = {};
-                        int keyPressed = (keyboardState[arrayVal] && !prevKeyboardState[arrayVal]) ? 1 : 0;
-                        // Update previous state
-                        memcpy(prevKeyboardState, keyboardState, numKeys);
+                        int keyPressed = 0;
+                        if (arrayVal >= 0 && arrayVal < numKeys) {
+                            keyPressed = keyboardState[arrayVal] && !prevKeyboardState[arrayVal];
+                            prevKeyboardState[arrayVal] = keyboardState[arrayVal];
+                        }
                         scriptEng.operands[i] = keyPressed;
                         break;
                     }
