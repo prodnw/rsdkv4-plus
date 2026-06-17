@@ -5838,6 +5838,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					id++;
 				}
             }
+            break;
             case FUNC_DRAWSTRINGFX: {
 				/*
 				script operands
@@ -5972,6 +5973,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					id++;
 				}
             }
+            break;
             case FUNC_DRAWMENU:
                 opcodeSize        = 0;
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
