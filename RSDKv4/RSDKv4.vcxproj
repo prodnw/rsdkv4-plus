@@ -217,6 +217,7 @@ copy /Y "$(SolutionDir)dependencies\windows\glew\bin\Release\$(Platform)\glew32.
   <ItemGroup>
     <ClCompile Include="..\dependencies\all\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Animation.cpp" />
+    <ClInclude Include="API.cpp" />
     <ClCompile Include="Audio.cpp" />
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="Debug.cpp" />
@@ -284,9 +285,11 @@ copy /Y "$(SolutionDir)dependencies\windows\glew\bin\Release\$(Platform)\glew32.
   <ItemGroup>
     <ClInclude Include="..\dependencies\all\tinyxml2\tinyxml2.h" />
     <ClInclude Include="Animation.hpp" />
+    <ClInclude Include="API.hpp" />
     <ClInclude Include="Audio.hpp" />
     <ClInclude Include="Collision.hpp" />
     <ClInclude Include="Debug.hpp" />
+    <ClCompile Include="DiscordHeaders.hpp" />
     <ClInclude Include="Drawing.hpp" />
     <ClInclude Include="Ini.hpp" />
     <ClInclude Include="ModAPI.hpp" />
