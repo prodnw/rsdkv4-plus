@@ -448,6 +448,7 @@ const char variableNames[][0x20] = {
     "playtime.minutes",
     "playtime.seconds",
     "mouse.moved",
+    "mouse.hide",
     "mouse1.pressed",
     "mouse2.pressed",
     "options.devMenuFlag",
@@ -1267,6 +1268,7 @@ enum ScrVar {
     VAR_PLAYTIME_MINUTES,
     VAR_PLAYTIME_SECONDS,
     VAR_MOUSE_MOVED,
+    VAR_MOUSE_HIDE,
     VAR_MOUSE1_PRESSED,
     VAR_MOUSE2_PRESSED,
     VAR_OPTIONS_DEVMENUFLAG,
@@ -5024,6 +5026,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         }
                         lastMouseX = mouseX;
                         lastMouseY = mouseY;
+                        break;
+                    }
+
+                    case VAR_MOUSE_HIDE: {
+                        if (scriptEng.operands[i] == 1) {
+                            SDL_ShowCursor(SDL_DISABLE);
+                        } else {
+                            SDL_ShowCursor(SDL_ENABLE);
+                        }
                         break;
                     }
 
@@ -9104,6 +9115,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_PLAYTIME_MINUTES: break;
                     case VAR_PLAYTIME_SECONDS: break;
                     case VAR_MOUSE_MOVED: break;
+                    case VAR_MOUSE_HIDE: break;
                     case VAR_MOUSE1_PRESSED: break;
                     case VAR_MOUSE2_PRESSED: break;
                     case VAR_OPTIONS_DEVMENUFLAG: break;
