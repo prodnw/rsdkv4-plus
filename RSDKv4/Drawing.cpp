@@ -5625,7 +5625,7 @@ void DrawTextMenuEntry(void *menu, int rowID, int XPos, int YPos, int textHighli
         id++;
     }
 }
-void DrawTextMenuEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int effect)
+void DrawTextMenuEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int direction, int scaleX, int scaleY, int rotation, int alpha, int effect)
 {
     TextMenu *tMenu = (TextMenu *)menu;
     int id          = tMenu->entryStart[rowID];
@@ -5634,29 +5634,7 @@ void DrawTextMenuEntryFX(void *menu, int rowID, int XPos, int YPos, int textHigh
         int sprX     = ((tMenu->textData[id] & 0xF) << 3);
         int sprY     = ((tMenu->textData[id] >> 4) << 3) + textHighlight;
 
-        switch (effect) {
-            case FX_SCALE:
-                DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                break;
-            case FX_ROTATE:
-                DrawSpriteRotated(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, textMenuSurfaceNo);
-                break;
-            case FX_ROTOZOOM:
-                DrawSpriteRotozoom(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo);
-                break;
-            case FX_INK:
-                DrawBlendedSprite(xDrawPos, YPos, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                break;
-            case FX_TINT:
-                DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                break;
-            case FX_FLIP:
-                DrawSpriteFlipped(xDrawPos, YPos, 8, 8, sprX, sprY, FLIP_NONE, textMenuSurfaceNo);
-                break;
-            default:
-                DrawSpriteAllFX(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo, 0xFF, 0, FX_ALL);
-                break;
-        }
+        DrawSpriteAllFX(direction, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, rotation, scaleX, scaleY, textMenuSurfaceNo, alpha, effect, FX_ALL);
 
         id++;
     }
@@ -5676,7 +5654,7 @@ void DrawStageTextEntry(void *menu, int rowID, int XPos, int YPos, int textHighl
         id++;
     }
 }
-void DrawStageTextEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int effect)
+void DrawStageTextEntryFX(void *menu, int rowID, int XPos, int YPos, int textHighlight, int direction, int scaleX, int scaleY, int rotation, int alpha, int effect)
 {
     TextMenu *tMenu = (TextMenu *)menu;
     int id          = tMenu->entryStart[rowID];
@@ -5687,56 +5665,12 @@ void DrawStageTextEntryFX(void *menu, int rowID, int XPos, int YPos, int textHig
 
         if (i == tMenu->entrySize[rowID] - 1) {
             // Last entry - no textHighlight, apply effects
-            switch (effect) {
-                case FX_SCALE:
-                    DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_ROTATE:
-                    DrawSpriteRotated(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, textMenuSurfaceNo);
-                    break;
-                case FX_ROTOZOOM:
-                    DrawSpriteRotozoom(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo);
-                    break;
-                case FX_INK:
-                    DrawBlendedSprite(xDrawPos, YPos, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_TINT:
-                    DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_FLIP:
-                    DrawSpriteFlipped(xDrawPos, YPos, 8, 8, sprX, sprY, FLIP_NONE, textMenuSurfaceNo);
-                    break;
-                default:
-                    DrawSpriteAllFX(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo, 0xFF, 0, FX_ALL);
-                    break;
-            }
+            DrawSpriteAllFX(direction, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, rotation, scaleX, scaleY, textMenuSurfaceNo, alpha, effect, FX_ALL);
         }
         else {
             // Other entries - add textHighlight, apply effects
             sprY += textHighlight;
-            switch (effect) {
-                case FX_SCALE:
-                    DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_ROTATE:
-                    DrawSpriteRotated(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, textMenuSurfaceNo);
-                    break;
-                case FX_ROTOZOOM:
-                    DrawSpriteRotozoom(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo);
-                    break;
-                case FX_INK:
-                    DrawBlendedSprite(xDrawPos, YPos, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_TINT:
-                    DrawSpriteScaled(FLIP_NONE, xDrawPos, YPos, 0, 0, 0x100, 0x100, 8, 8, sprX, sprY, textMenuSurfaceNo);
-                    break;
-                case FX_FLIP:
-                    DrawSpriteFlipped(xDrawPos, YPos, 8, 8, sprX, sprY, FLIP_NONE, textMenuSurfaceNo);
-                    break;
-                default:
-                    DrawSpriteAllFX(FLIP_NONE, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, 0, 0x100, 0x100, textMenuSurfaceNo, 0xFF, 0, FX_ALL);
-                    break;
-            }
+            DrawSpriteAllFX(direction, xDrawPos, YPos, 0, 0, sprX, sprY, 8, 8, rotation, scaleX, scaleY, textMenuSurfaceNo, alpha, effect, FX_ALL);
         }
 
         id++;
@@ -5871,7 +5805,7 @@ void DrawTextMenu(void *menu, int XPos, int YPos)
         default: break;
     }
 }
-void DrawTextMenuFX(void *menu, int XPos, int YPos, int effect)
+void DrawTextMenuFX(void *menu, int XPos, int YPos, int direction, int scaleX, int scaleY, int rotation, int alpha, int effect)
 {
     TextMenu *tMenu = (TextMenu *)menu;
     int cnt         = 0;
@@ -5899,26 +5833,26 @@ void DrawTextMenuFX(void *menu, int XPos, int YPos, int effect)
                 switch (tMenu->selectionCount) {
                     case 1:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
 
                     case 2:
                         if (i == tMenu->selection1 || i == tMenu->selection2)
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
 
                     case 3:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, XPos, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
 
                         if (i == tMenu->selection2 && i != tMenu->selection1)
-                            DrawStageTextEntryFX(tMenu, i, XPos, YPos, 128, effect);
+                            DrawStageTextEntryFX(tMenu, i, XPos, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
                 }
                 YPos += 8;
@@ -5931,26 +5865,26 @@ void DrawTextMenuFX(void *menu, int XPos, int YPos, int effect)
                 switch (tMenu->selectionCount) {
                     case 1:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
 
                     case 2:
                         if (i == tMenu->selection1 || i == tMenu->selection2)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
 
                     case 3:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
 
                         if (i == tMenu->selection2 && i != tMenu->selection1)
-                            DrawStageTextEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawStageTextEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
                 }
                 YPos += 8;
@@ -5963,24 +5897,24 @@ void DrawTextMenuFX(void *menu, int XPos, int YPos, int effect)
                 switch (tMenu->selectionCount) {
                     case 1:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
                     case 2:
                         if (i == tMenu->selection1 || i == tMenu->selection2)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
                     case 3:
                         if (i == tMenu->selection1)
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         else
-                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, effect);
+                            DrawTextMenuEntryFX(tMenu, i, entryX, YPos, 0, direction, scaleX, scaleY, rotation, alpha, effect);
 
                         if (i == tMenu->selection2 && i != tMenu->selection1)
-                            DrawStageTextEntryFX(tMenu, i, entryX, YPos, 128, effect);
+                            DrawStageTextEntryFX(tMenu, i, entryX, YPos, 128, direction, scaleX, scaleY, rotation, alpha, effect);
                         break;
                 }
                 YPos += 8;
