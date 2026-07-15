@@ -179,8 +179,8 @@ void InitUserdata();
 void WriteSettings();
 void ReadUserdata();
 void WriteUserdata();
-void GetUsername(int *unused, int *textMenu);
-void SetUsername(int *unused, const char *newUsername);
+void GetUsername(int *textMenu);
+void SetUsername(const char *newUsername);
 
 inline void AddAchievement(const char *name, const char *description)
 {

@@ -1232,7 +1232,7 @@ void GetAchievement(uint *id, void *unused)
 }
 #endif
 
-void GetUsername(int *unused, int *textMenu)
+void GetUsername(int *textMenu)
 {
     TextMenu *menu                       = &gameMenu[*textMenu];
     menu->entryHighlight[menu->rowCount] = false;
@@ -1248,7 +1248,7 @@ void GetUsername(int *unused, int *textMenu)
     AddTextMenuEntryW(menu, usernameWide);
 }
 
-void SetUsername(int *unused, const char *newUsername)
+void SetUsername(const char *newUsername)
 {
     if (newUsername && newUsername[0] != 0) {
         StrCopy(username, newUsername);

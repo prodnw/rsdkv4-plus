@@ -8289,12 +8289,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
 
             case FUNC_GETUSERNAME: {
-                GetUsername(scriptEng.operands, scriptEng.operands + 1);
+                GetUsername(scriptEng.operands + 1);
                 break;
             }
 
             case FUNC_SETUSERNAME: {
-                SetUsername(scriptEng.operands, &scriptText[scriptEng.operands[1]]);
+                SetUsername(&scriptText[scriptEng.operands[1]]);
                 break;
             }
 
