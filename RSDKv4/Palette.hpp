@@ -1,7 +1,11 @@
 #ifndef PALETTE_H
 #define PALETTE_H
 
+#if RETRO_VANILLA_LIKE
 #define PALETTE_COUNT       (0x8)
+#else
+#define PALETTE_COUNT       (0x10)
+#endif
 #define PALETTE_COLOR_COUNT (0x100)
 
 struct Color {

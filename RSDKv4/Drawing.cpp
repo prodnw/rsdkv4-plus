@@ -1581,7 +1581,11 @@ void DrawDebugOverlays()
 
     if (Engine.showPaletteOverlay) {
         for (int p = 0; p < PALETTE_COUNT; ++p) {
+#if RETRO_VANILLA_LIKE
             int x = (SCREEN_XSIZE - (0x10 << 3));
+#else
+            int x = (SCREEN_XSIZE - (0x20 << 3));
+#endif
             int y = (SCREEN_YSIZE - (0x10 << 2));
             for (int c = 0; c < PALETTE_COLOR_COUNT; ++c) {
                 int g = fullPalette32[p][c].g;

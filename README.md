@@ -4,6 +4,9 @@ A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (20
 
 This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones
 
+# **RIGHT HERE IS A FORK OF THE RSDK WIKI, FEATURING DOCUMENTATION FOR THIS FORK OF THE RSDKV4 ENGINE. IF YOU'RE A MODDER WISHING TO USE WHAT THE ENGINE HAS TO OFFER, PLEASE TAKE A LOOK.**
+https://github.com/prodnw/RSDK-Modding-Wiki-v4-Plus
+
 # **LIST OF THE NEW FEATURES & CHANGES (A MORE DETAILED CHANGELOG WILL BE PROVIDED SOON)**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](#compiling))
   * Custom Discord RPC has been added (I'll probably make a guide on how it works, no promises though.) You'll have to make your own [Discord Application](https://discord.com/developers/applications) and add your own art. For the images, links also works. The new functions include:
