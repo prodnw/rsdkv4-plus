@@ -28,7 +28,8 @@ else()
     option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
 endif()
 
-set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL2 and SDL1, defaults to SDL2")
+# note: sdl3 isn't actually in the engine BUT it is something I would like after looking at the features
+set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL3, SDL2 and SDL1, defaults to SDL2")
 
 option(RETRO_VANILLA_LIKE "Brings back the normal v4 limitations." OFF)
 

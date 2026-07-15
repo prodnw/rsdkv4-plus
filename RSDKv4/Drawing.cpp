@@ -210,9 +210,12 @@ int InitRenderDevice()
 
     SDL_GL_SetSwapInterval(Engine.vsync ? 1 : 0);
 
-#if RETRO_PLATFORM != RETRO_ANDROID && RETRO_PLATFORM != RETRO_OSX
+#if RETRO_PLATFORM == RETRO_SWITCH
+    // Should probably add error
+    gladLoadGL();
+#elif RETRO_PLATFORM != RETRO_ANDROID && RETRO_PLATFORM != RETRO_OSX
     GLenum err = glewInit();
-    if (err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY) {
+    if (err != GLEW_OK) {
         PrintLog("glew init error:");
         PrintLog((const char *)glewGetErrorString(err));
         return false;
@@ -306,6 +309,7 @@ void FlipScreen()
 {
 #if !RETRO_USE_ORIGINAL_CODE
     float dimAmount = 1.0;
+#if RETRO_PLATFORM != RETRO_SWITCH //switch doesn't need this it's builtin
     if ((!Engine.masterPaused || Engine.frameStep) && !drawStageGFXHQ) {
         if (Engine.dimTimer < Engine.dimLimit) {
             if (Engine.dimPercent < 1.0) {
@@ -320,7 +324,7 @@ void FlipScreen()
 
         dimAmount = Engine.dimMax * Engine.dimPercent;
     }
-
+#endif //! RETRO_PLATFORM != RETRO_SWITCH
 #if RETRO_USING_OPENGL
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -532,6 +536,7 @@ void FlipScreen()
         // no change here
         SDL_RenderPresent(Engine.renderer);
     }
+	SDL_ShowWindow(Engine.window);
 #endif
 
 #if RETRO_USING_SDL1
@@ -670,6 +675,8 @@ void ReleaseRenderDevice(bool refresh)
         ClearMeshData();
         ClearTextures(false);
     }
+	else
+		CURRENT_DISP_SCREEN = SDL_GetWindowDisplayIndex(Engine.window);
 
 #if !RETRO_USE_ORIGINAL_CODE
 #if RETRO_SOFTWARE_RENDER
@@ -705,6 +712,7 @@ void ReleaseRenderDevice(bool refresh)
 
 void GenerateBlendLookupTable(void)
 {
+	//this is still used by DrawFace, DrawFadedFace, DrawRectangle, and SetHQFade
     for (int y = 0; y < 0x100; y++) {
         for (int x = 0; x < 0x20; x++) {
             blendLookupTable[x + (0x20 * y)]    = y * x >> 8;
