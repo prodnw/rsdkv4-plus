@@ -91,7 +91,7 @@ This project is a fork of RSDKv4, which was used to develop the mobile remakes o
   * PLEASE MESSAGE ME ON DISCORD IF YOU ARE HAVING ANY TROUBLE WITH GETTING THESE FUNCTIONS WORKING - MY USERNAME IS prodnw.
 
 ## The link below is a link which leads to a fork of the RSDK Wiki, featuring documentation on v4+. If you wish to use this engine then please take a look at what we have to offer. Do note that it is still WIP and will be updated overtime.
-https://github.com/prodnw/RSDK-Modding-Wiki-v4-Plus
+https://prodnw.github.io/RSDK-Modding-Wiki-v4-Plus/
 
 # Fork Credits
  * ProdNW - Code porting, new functions, other fixes
