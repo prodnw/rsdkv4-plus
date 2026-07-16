@@ -47,7 +47,7 @@ if(RETRO_UPDATE_CHECKER)
 	set(RETRO_USE_CURL ON)
 endif()
 
-set(RETRO_OUTPUT_NAME "RSDKv4" CACHE STRING "The exported name of the executable.")
+set(RETRO_OUTPUT_NAME "RSDKv4+" CACHE STRING "The exported name of the executable.")
 
 set(RETRO_FILES
     dependencies/all/tinyxml2/tinyxml2.cpp
