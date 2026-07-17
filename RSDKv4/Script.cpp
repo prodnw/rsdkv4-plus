@@ -7276,13 +7276,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_CLEAR_PRESENCE_TYPE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
-                // value = presence type
-                // 0 - details
-                // 1 - state
-                // 2 - large image
-                // 3 - large text
-                // 4 - small image
-                // 5 - small text
+                // value = presence type   
+                // 0 - name
+                // 1 - details
+                // 2 - state
+                // 3 - large image
+                // 4 - large text
+                // 5 - small image
+                // 6 - small text
                 API_Discord_SetPresence("", scriptEng.operands[0]);
 #endif
                 break;

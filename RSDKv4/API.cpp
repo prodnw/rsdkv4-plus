@@ -86,7 +86,10 @@ void API_Discord_SetPresence(const char *text, int type)
 {
     if (!__discord) return;
 
-    RPCUpdated |= !StrComp(API_Discord_GetPresence(type), text);
+    //RPCUpdated |= !StrComp(API_Discord_GetPresence(type), text);
+
+    // experimental
+    RPCUpdated = true;
 
     switch (type) {
         case PRESENCE_ACTIVITY_NAME:    __activity.SetName(text);     break;
@@ -124,8 +127,11 @@ void API_Discord_UpdatePresence()
 {
     if (!__discord) return;
 
-    // Check if any of the details have even changed, to stop potential rate limiting
-    if (!RPCUpdated || RPCRatePause < 120) return;
+    //if (!RPCUpdated || RPCRatePause < 120) return;
+
+    // Only send an update when something has actually updated (experimental)
+    if (!RPCUpdated) return;
+
     RPCUpdated = false;
     RPCRatePause = 0;
 
