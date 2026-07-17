@@ -13,7 +13,7 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (95 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (102 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
 
 #include "Userdata.hpp"
@@ -884,6 +884,7 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "TILELAYER_3DSKY", "4"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "GROUP_ALL", "0"),
 #endif
+    // Device IDs
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_WIN", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_OSX", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_XBOX_360", "2"),
@@ -894,6 +895,8 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_UWP", "7"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_LINUX", "8"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "RETRO_SWITCH", "9"),
+
+    // Input IDs
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_UNKNOWN", "0"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_KEYBOARD", "1"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_XBOX_360", "2"),
@@ -903,6 +906,15 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_PS5", "6"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_SWITCH", "7"),
     ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "INPUT_STEAM_DECK", "8"),
+
+    // Discord Presence Types
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_TITLE", "0"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_DETAILS", "1"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_STATE", "2"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_LARGE_IMAGE", "3"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_LARGE_TEXT", "4"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALL_IMAGE", "5"),
+    ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRESENCE_SMALL_TEXT", "6"),
 };
 // clang-format on
 
