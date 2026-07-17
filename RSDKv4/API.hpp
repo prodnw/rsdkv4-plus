@@ -31,6 +31,7 @@ void API_Discord_SetPresence(const char *text, int type);
 void API_Discord_ClearPresence();
 void API_Discord_UpdatePresence();
 const char *API_Discord_GetPresence(int type);
+void API_Discord_Shutdown();
 #endif
 
 // easier to just check if this is true
@@ -42,6 +43,7 @@ extern bool hasPlusDLC;
 #define API_STEAM_SONIC_ORIGINS_PLUS_DLC_ID (2343200)
 
 void API_Steam_Init();
+void API_Steam_Shutdown();
 #endif
 
 void API_Init();
