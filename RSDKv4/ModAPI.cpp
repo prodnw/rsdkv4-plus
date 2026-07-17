@@ -1,4 +1,5 @@
 #include "RetroEngine.hpp"
+#include "Userdata.hpp"
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE
 char savePath[0x100];
@@ -14,7 +15,9 @@ int activeMod = -1;
 char modsPath[0x100];
 
 bool redirectSave = false;
+bool modUseDiscordRPC = false;
 std::string discordGameClientID;
+bool modUseSteam = false;
 
 char modTypeNames[OBJECT_COUNT][0x40];
 char modScriptPaths[OBJECT_COUNT][0x40];
@@ -144,6 +147,8 @@ void InitMods()
 
     ReadSaveRAMData();
     ReadUserdata();
+
+    API_Status_Check();
 }
 bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool active)
 {
@@ -192,6 +197,13 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
         modSettings.GetString("", "Author", infoBuf);
         if (!StrComp(infoBuf, ""))
             info->author = infoBuf;
+
+        // Author URL
+        StrCopy(infoBuf, "");
+        modSettings.GetString("", "AuthorURL", infoBuf);
+        if (!StrComp(infoBuf, "")) {
+            info->authorURL = infoBuf;
+        }
 
         // Version
         StrCopy(infoBuf, "");
@@ -272,19 +284,23 @@ bool LoadMod(ModInfo *info, std::string modsPath, std::string folder, bool activ
                 info->forcedGameType = GAME_FNATF;
         }
 
+        // Force Discord RPC
+        info->modUseDiscordRPC = false;
+        info->modUseDiscordRPCSpecified = modSettings.GetBool("", "UseDiscordRPC", &info->modUseDiscordRPC);
+
+        // Force Steam
+        // Note: When you turn on a mod that uses this, then turn it off then 
+        // Steam will still say Origins is running. Idk what to do to fix this 
+        // if it's even possible, but just a small note.
+        info->modUseSteam = false;
+        info->modUseSteamSpecified = modSettings.GetBool("", "UseSteam", &info->modUseSteam);
+
         // Discord GameAPI App ID
         StrCopy(infoBuf, "");
         modSettings.GetString("", "DiscordGameClientID", infoBuf);
         if (!StrComp(infoBuf, "")) {
             discordGameClientID = infoBuf;
             info->discordGameClientID = infoBuf;
-        }
-
-        // Author URL
-        StrCopy(infoBuf, "");
-        modSettings.GetString("", "AuthorURL", infoBuf);
-        if (!StrComp(infoBuf, "")) {
-            info->authorURL = infoBuf;
         }
         return true;
     }
@@ -644,6 +660,9 @@ void RefreshEngine()
 
     ReadSaveRAMData();
     ReadUserdata();
+
+    API_Status_Check();
+    API_Init();
 }
 
 void GetModCount() { scriptEng.checkResult = (int)modList.size(); }
@@ -754,6 +773,32 @@ void CompareModPriority(int *id1, int *id2)
 
     // Return 1 if id2 has higher priority or 0 if lower priority
     scriptEng.checkResult = (*id2 < *id1) ? 1 : 0;
+}
+
+// Misc
+void API_Status_Check()
+{
+#if RETRO_USE_STEAMWORKS
+    for (int m = 0; m < modList.size(); ++m) {
+        if (!modList[m].active)
+            continue;
+        if (modList[m].modUseSteamSpecified && modList[m].modUseSteam) {
+            useSteam = true;
+            modUseSteam = true;
+        }
+    }
+#endif
+
+#if RETRO_USE_DISCORD_SDK
+    for (int m = 0; m < modList.size(); ++m) {
+        if (!modList[m].active)
+            continue;
+        if (modList[m].modUseDiscordRPCSpecified && modList[m].modUseDiscordRPC) {
+            useDiscordRPC = true;
+            modUseDiscordRPC = true;
+        }
+    }
+#endif
 }
 #endif
 

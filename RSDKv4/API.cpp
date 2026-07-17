@@ -162,6 +162,15 @@ const char *API_Discord_GetPresence(int type)
 
     return "";
 }
+
+void API_Discord_Shutdown()
+{
+    if (!__discord) return;
+
+    PrintLog("Shutting down Discord API");
+    __discord->ActivityManager().ClearActivity([](discord::Result result) {});
+    __discord = nullptr;
+}
 #endif
 
 // Steam
@@ -170,8 +179,13 @@ bool hasPlusDLC = false;
 #if RETRO_USE_STEAMWORKS
 #include "steam/steam_api.h"
 
+bool steamInitialized = false;
+
 void API_Steam_Init()
 {
+    if (steamInitialized)
+        return;
+
     SteamErrMsg errMsg;
     PrintLog("Initializing steam...");
 
@@ -196,8 +210,20 @@ void API_Steam_Init()
             PrintLog("Sonic Origins Plus is installed! Plus DLC is active!");
         else
             PrintLog("User does not own Sonic Origins Plus, defaulting to no DLC.");
-
     }
+
+    steamInitialized = true;
+}
+
+void API_Steam_Shutdown()
+{
+    if (!steamInitialized)
+        return;
+
+    PrintLog("Shutting down Steam API");
+    SteamAPI_Shutdown();
+    steamInitialized = false;
+    hasPlusDLC = false;
 }
 #endif
 
@@ -207,9 +233,15 @@ void API_Init()
     extern bool useDiscordRPC;
     if (useDiscordRPC)
         API_Discord_Init();
+    else
+        API_Discord_Shutdown();
 #endif
 
 #if RETRO_USE_STEAMWORKS
-    API_Steam_Init();
+    extern bool useSteam;
+    if (useSteam)
+        API_Steam_Init();
+    else
+        API_Steam_Shutdown();
 #endif
 }

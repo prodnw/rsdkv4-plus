@@ -171,6 +171,10 @@ inline int GetGlobalVariableID(const char *name)
     }
 
 extern bool useSGame;
+extern bool useSteam;
+extern bool useSteam_Config;
+extern bool useDiscordRPC;
+extern bool useDiscordRPC_Config;
 bool ReadSaveRAMData();
 bool WriteSaveRAMData();
 

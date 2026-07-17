@@ -25,6 +25,10 @@ struct ModInfo {
     std::string savePath;
     bool forceSonic1;
     bool active;
+    bool modUseDiscordRPC;
+    bool modUseDiscordRPCSpecified;
+    bool modUseSteam;
+    bool modUseSteamSpecified;
     std::string discordGameClientID;
     int forcedGameType;
 };
@@ -63,6 +67,8 @@ void MoveMod(uint *id, int *up);
 void GetModID(int *unused, const char *modName);
 void GetModAuthorURL(int *textMenu, int *highlight, uint *id, int *unused);
 void CompareModPriority(int *id1, int *id2);
+
+void API_Status_Check();
 #endif
 
 #if RETRO_USE_MOD_LOADER || !RETRO_USE_ORIGINAL_CODE
