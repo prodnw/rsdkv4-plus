@@ -136,6 +136,40 @@ extern int VibrationIntensity[DEFAULT_INPUT_COUNT];
 extern int forcePlatform;
 extern int forceDeviceType;
 
+// Button Mappings (Keyboard)
+extern int KEYBOARD_MAPPING_UP;
+extern int KEYBOARD_MAPPING_DOWN;
+extern int KEYBOARD_MAPPING_LEFT;
+extern int KEYBOARD_MAPPING_RIGHT;
+extern int KEYBOARD_MAPPING_A;
+extern int KEYBOARD_MAPPING_B;
+extern int KEYBOARD_MAPPING_C;
+extern int KEYBOARD_MAPPING_X;
+extern int KEYBOARD_MAPPING_Y;
+extern int KEYBOARD_MAPPING_Z;
+extern int KEYBOARD_MAPPING_L;
+extern int KEYBOARD_MAPPING_R;
+extern int KEYBOARD_MAPPING_START;
+extern int KEYBOARD_MAPPING_SELECT;
+extern int KEYBOARD_MAPPING_UNKNOWN;
+
+// Button Mappings (Controller)
+extern int CONTROLLER_MAPPING_UP;
+extern int CONTROLLER_MAPPING_DOWN;
+extern int CONTROLLER_MAPPING_LEFT;
+extern int CONTROLLER_MAPPING_RIGHT;
+extern int CONTROLLER_MAPPING_A;
+extern int CONTROLLER_MAPPING_B;
+extern int CONTROLLER_MAPPING_C;
+extern int CONTROLLER_MAPPING_X;
+extern int CONTROLLER_MAPPING_Y;
+extern int CONTROLLER_MAPPING_Z;
+extern int CONTROLLER_MAPPING_L;
+extern int CONTROLLER_MAPPING_R;
+extern int CONTROLLER_MAPPING_START;
+extern int CONTROLLER_MAPPING_SELECT;
+extern int CONTROLLER_MAPPING_UNKNOWN;
+
 inline int GetGlobalVariableByName(const char *name)
 {
     for (int v = 0; v < globalVariablesCount; ++v) {
