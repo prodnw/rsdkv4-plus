@@ -636,6 +636,7 @@ const FunctionInfo functions[] = {
 
     FunctionInfo("CallNativeFunction", 1),
     FunctionInfo("CallNativeFunction2", 3),
+    FunctionInfo("CallNativeFunction3", 4),
     FunctionInfo("CallNativeFunction4", 5),
 
     FunctionInfo("SetObjectRange", 1),
@@ -1434,6 +1435,7 @@ enum ScrFunc {
     FUNC_ABS,
     FUNC_CALLNATIVEFUNCTION,
     FUNC_CALLNATIVEFUNCTION2,
+    FUNC_CALLNATIVEFUNCTION3,
     FUNC_CALLNATIVEFUNCTION4,
     FUNC_SETOBJECTRANGE,
 #if RETRO_REV02
@@ -6936,6 +6938,20 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         void (*func)(int *, int *) = (void (*)(int *, int *))nativeFunction[scriptEng.operands[0]];
                         if (func)
                             func(&scriptEng.operands[1], &scriptEng.operands[2]);
+                    }
+                }
+                break;
+            case FUNC_CALLNATIVEFUNCTION3:
+                if (scriptEng.operands[0] >= 0 && scriptEng.operands[0] < NATIIVEFUNCTION_COUNT) {
+                    if (StrLength(scriptText)) {
+                        void (*func)(int *, char *, int *) = (void (*)(int *, char *, int *))nativeFunction[scriptEng.operands[0]];
+                        if (func)
+                            func(&scriptEng.operands[2], scriptText, &scriptEng.operands[3]);
+                    }
+                    else {
+                        void (*func)(int *, int *, int *) = (void (*)(int *, int *, int *))nativeFunction[scriptEng.operands[0]];
+                        if (func)
+                            func(&scriptEng.operands[1], &scriptEng.operands[2], &scriptEng.operands[3]);
                     }
                 }
                 break;
