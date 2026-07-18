@@ -979,7 +979,7 @@ void WriteSettings()
     ini.SetComment("Window", "VSComment",
                    "Determines if VSync will be active or not (not recommended as the engine is built around running at 60 FPS)");
     ini.SetBool("Window", "VSync", Engine.vsync);
-    ini.SetComment("Window", "SMComment", "Determines what scaling is used. 0 is nearest neighbour, 1 is linear");
+    ini.SetComment("Window", "SMComment", "Determines what scaling is used. 0=nearest, 1=integer, 2=sharp bilinear, 3=regular bilinear");
     ini.SetInteger("Window", "ScalingMode", Engine.scalingMode);
     ini.SetComment("Window", "WSComment", "How big the window will be");
     ini.SetInteger("Window", "WindowScale", Engine.windowScale);

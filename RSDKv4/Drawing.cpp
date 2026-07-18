@@ -346,25 +346,34 @@ void FlipScreen()
     SDL_Rect destScreenPos_scaled, destScreenPosRect;
     SDL_Texture *texTarget = NULL;
 
+    bool useScaleMode = Engine.scalingMode == 0 || Engine.scalingMode == 1 || Engine.scalingMode == 2;
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, useScaleMode ? "nearest" : "linear");
+    if (Engine.screenBuffer) {
+        SDL_SetTextureScaleMode(Engine.screenBuffer, useScaleMode ? SDL_ScaleModeNearest : SDL_ScaleModeLinear);
+    }
+    if (Engine.screenBuffer2x) {
+        SDL_SetTextureScaleMode(Engine.screenBuffer2x, useScaleMode ? SDL_ScaleModeNearest : SDL_ScaleModeLinear);
+    }
+
     switch (Engine.scalingMode) {
         // reset to default if value is invalid.
         default: Engine.scalingMode = 0; //let this continue down to apply nearest scaling immediately
         case 0: // nearest
 			integerScaling = false;
 			bilinearScaling = false;
-			break;                         
+			break;
         case 1: // integer scaling
 			integerScaling = true;
 			bilinearScaling = false;
-			break;  
+			break;
         case 2: // sharp bilinear
 			integerScaling = false;
 			bilinearScaling = false;
-			break;                         
+			break;
         case 3: // regular old bilinear
 			integerScaling = false;
 			bilinearScaling = true;
-			break; 
+			break;
     }
 
     SDL_GetWindowSize(Engine.window, &Engine.windowXSize, &Engine.windowYSize);
