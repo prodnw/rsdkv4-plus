@@ -13,6 +13,9 @@ int RPCRatePause = 0;
 
 void API_Discord_Init()
 {
+    if (__discord)
+        return;
+
     PrintLog("Initializing Discord API");
     API_Discord_SetAppID();
     discord::Core::Create(API_DISCORD_CLIENT_ID, DiscordCreateFlags_NoRequireDiscord, &__discord);
@@ -72,7 +75,7 @@ void API_Discord_SetAppID() {
     }
 }
 
-void API_Discord_Update() // used in ProcessStage
+void API_Discord_Update() // used in RetroGameLoop_Main
 {
     if (!__discord) return;
 
@@ -203,6 +206,7 @@ void API_Steam_Init()
         return;
     }
     else {
+        // Check for Origins Plus
         PrintLog("Do we have Sonic Origins Plus?");
 
         hasPlusDLC = SteamApps()->BIsDlcInstalled(API_STEAM_SONIC_ORIGINS_PLUS_DLC_ID);
@@ -224,6 +228,24 @@ void API_Steam_Shutdown()
     SteamAPI_Shutdown();
     steamInitialized = false;
     hasPlusDLC = false;
+}
+
+bool API_Steam_GetDisplayName(char *nameBuffer, int maxLen)
+{
+    if (!steamInitialized || !nameBuffer || maxLen <= 0)
+        return false;
+
+    const char *displayName = SteamFriends()->GetPersonaName();
+    if (!displayName)
+        return false;
+
+    int i = 0;
+    for (; i < maxLen - 1 && displayName[i]; ++i)
+        nameBuffer[i] = displayName[i];
+
+    nameBuffer[i] = '\0';
+
+    return true;
 }
 #endif
 

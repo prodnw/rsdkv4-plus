@@ -682,7 +682,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("UpdatePresence", 0),
     FunctionInfo("ClearPresence", 0),
     FunctionInfo("ClearPresenceType", 1),
-    
+
     // Controller management
     FunctionInfo("VibrateController", 3), // VibrateController(controllerID, intensity, duration)
     FunctionInfo("SetControllerLEDColour", 4),
@@ -7189,6 +7189,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            // Discord
             case FUNC_SET_PRESENCE_NAME: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7289,6 +7290,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            // Controller Functions
             case FUNC_VIBRATECONTROLLER: {
                 opcodeSize = 0;
 
@@ -8302,7 +8304,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
 
             case FUNC_GETUSERNAME: {
+#if RETRO_USE_STEAMWORKS
+                GetSteamUsername(scriptEng.operands + 1);
+#else
                 GetUsername(scriptEng.operands + 1);
+#endif
                 break;
             }
 

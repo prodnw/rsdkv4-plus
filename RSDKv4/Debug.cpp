@@ -124,6 +124,20 @@ void InitDevMenu()
     render3DEnabled = false;
     UpdateHardwareTextures();
 #endif
+
+// heavy team fortress 2
+#if RETRO_USE_DISCORD_SDK
+    // Clear anything
+    API_Discord_SetPresence("", PRESENCE_ACTIVITY_STATE);
+    API_Discord_SetPresence("", PRESENCE_ASSET_SMALLIMAGE);
+    API_Discord_SetPresence("", PRESENCE_ASSET_SMALLTEXT);
+    API_Discord_SetPresence("", PRESENCE_ASSET_LARGEIMAGE);
+    API_Discord_SetPresence("", PRESENCE_ASSET_LARGETEXT);
+
+    // Set the actual presence
+    API_Discord_SetPresence("In the Dev Menu", PRESENCE_ACTIVITY_DETAILS);
+    API_Discord_UpdatePresence();
+#endif
 }
 void InitErrorMessage()
 {

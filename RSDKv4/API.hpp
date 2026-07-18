@@ -44,6 +44,7 @@ extern bool hasPlusDLC;
 
 void API_Steam_Init();
 void API_Steam_Shutdown();
+bool API_Steam_GetDisplayName(char *nameBuffer, int maxLen);
 #endif
 
 void API_Init();

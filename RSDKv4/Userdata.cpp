@@ -328,14 +328,15 @@ void InitUserdata()
         ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates = true);
         ini.SetInteger("Game", "ForcePlatform", forcePlatform = -1);
         ini.SetInteger("Game", "ForceDeviceType", forceDeviceType = -1);
+        ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
+        StrCopy(username, "IntegerGeorge802");
+
 #if RETRO_USE_STEAMWORKS
         ini.SetBool("Game", "UseSteam", useSteam = false);
 #endif
 #if RETRO_USE_DISCORD_SDK
         ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
 #endif
-        ini.SetString("Game", "Username", (char *)"IntegerGeorge802");
-        StrCopy(username, "IntegerGeorge802");
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -558,6 +559,7 @@ void InitUserdata()
         PrintLog("Engine.gameDeviceType == %d", Engine.gameDeviceType);
         if (!ini.GetString("Game", "Username", username))
             StrCopy(username, "IntegerGeorge802");
+
 #if RETRO_USE_STEAMWORKS
         if (!ini.GetBool("Game", "UseSteam", &useSteam))
             useSteam = false;
@@ -952,6 +954,8 @@ void WriteSettings()
     ini.SetInteger("Game", "ForcePlatform", forcePlatform);
     ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts (-1 = use the current platform type, 0 = Standalone, 1 = Mobile)");
     ini.SetInteger("Game", "ForceDeviceType", forceDeviceType);
+    ini.SetComment("Game", "UsernameComment", "The username stored locally for the game");
+    ini.SetString("Game", "Username", username);
 #if RETRO_USE_STEAMWORKS
     ini.SetComment("Game", "UseSteamComment", "Enable this flag to enable Steam, giving you access to Plus content if you own it");
     ini.SetBool("Game", "UseSteam", useSteam_Config);
@@ -960,8 +964,6 @@ void WriteSettings()
     ini.SetComment("Game", "UseDiscordRPCComment", "Enable this flag to enable the use of Discord Rich Presence");
     ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC_Config);
 #endif
-    ini.SetComment("Game", "UsernameComment", "The username stored locally for the game");
-    ini.SetString("Game", "Username", username);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to");
@@ -1261,6 +1263,38 @@ void GetUsername(int *textMenu)
     usernameWide[pos] = 0;
     
     AddTextMenuEntryW(menu, usernameWide);
+}
+
+// Literally just GetUsername but it stores your steam name and even sets it to that, your welcome lmao
+void GetSteamUsername(int *textMenu)
+{
+#if RETRO_USE_STEAMWORKS
+    TextMenu *menu                       = &gameMenu[*textMenu];
+    menu->entryHighlight[menu->rowCount] = false;
+
+    PrintLog("Getting Steam Username...");
+
+    char steamName[0x100];
+
+    if (API_Steam_GetDisplayName(steamName, sizeof(steamName))) {
+        SetUsername(steamName);
+        PrintLog("Steam username found! Now known as %s", steamName);
+    }
+    else {
+        StrCopy(steamName, username);
+    }
+
+    ushort steamNameWide[0x100];
+    int pos = 0;
+    for (int i = 0; steamName[i] && pos < 0xFF; i++, pos++) {
+        steamNameWide[pos] = (ushort)steamName[i];
+    }
+    steamNameWide[pos] = 0;
+    
+    AddTextMenuEntryW(menu, steamNameWide);
+#else
+    PrintLog("Steam isn't enabled!");
+#endif
 }
 
 void SetUsername(const char *newUsername)

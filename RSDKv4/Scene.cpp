@@ -112,10 +112,6 @@ void ProcessStage(void)
     debugHitboxCount = 0;
 #endif
 
-#if RETRO_USE_DISCORD_SDK
-    API_Discord_Update();
-#endif
-
     switch (stageMode) {
         case STAGEMODE_LOAD: // Startup
 			ClearGraphicsData();

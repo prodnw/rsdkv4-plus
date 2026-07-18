@@ -184,6 +184,7 @@ void WriteSettings();
 void ReadUserdata();
 void WriteUserdata();
 void GetUsername(int *textMenu);
+void GetSteamUsername(int *textMenu);
 void SetUsername(const char *newUsername);
 
 inline void AddAchievement(const char *name, const char *description)
