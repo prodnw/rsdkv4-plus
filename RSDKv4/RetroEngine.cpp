@@ -237,6 +237,19 @@ bool ProcessEvents()
                         }
                         break;
 
+#if RETRO_PLATFORM != RETRO_OSX
+                    case SDLK_F6:
+                        if (Engine.devMenu) {
+                            playerListPos++;
+                            if (playerListPos > playerCount) {
+                                playerListPos = 0;
+                            }
+                            stageMode       = STAGEMODE_LOAD;
+                            Engine.gameMode = ENGINE_MAINGAME;
+                        }
+                        break;
+#endif
+
                     case SDLK_F8:
                         if (Engine.devMenu)
                             showHitboxes ^= 2;
