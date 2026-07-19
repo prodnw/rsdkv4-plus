@@ -306,4 +306,15 @@ void SetWindowBrightness(int *brightness, int *unused);
 void ApplyWindowChanges();
 int CheckUpdates(char website[]);
 
+// Remapping
+void GetKeyboardMapping(int *deviceID, int *input, int *storeScanCode, int *unused);
+void SetKeyboardMapping(int *deviceID, int *input, int *scanCode, int *unused);
+void CheckKeyboardPress(int *deviceID, int *buttonID, int *unused1, int *unused2);
+
+void GetControllerMapping(int *deviceID, int *input, int *storeButton, int *unused);
+void SetControllerMapping(int *deviceID, int *input, int *controllerButton, int *unused);
+void CheckControllerPress(int *deviceID, int *buttonID, int *unused1, int *unused2);
+
+void SaveInputMapping();
+
 #endif //! USERDATA_H

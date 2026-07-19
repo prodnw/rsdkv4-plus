@@ -1515,6 +1515,14 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("CompareModPriority", CompareModPriority);
 #endif
 
+    // Remapping
+    AddNativeFunction("GetKeyboardMapping", GetKeyboardMapping);
+    AddNativeFunction("SetKeyboardMapping", SetKeyboardMapping);
+    AddNativeFunction("CheckKeyboardPress", CheckKeyboardPress);
+    AddNativeFunction("GetControllerMapping", GetControllerMapping);
+    AddNativeFunction("SetControllerMapping", SetControllerMapping);
+    AddNativeFunction("CheckControllerPress", CheckControllerPress);
+
 #if !RETRO_USE_ORIGINAL_CODE
     if (strlen(Engine.startSceneFolder) && strlen(Engine.startSceneID)) {
         SceneInfo *scene = &stageList[STAGELIST_BONUS][0xFE]; // slot 0xFF is used for "none" startStage

@@ -1033,7 +1033,7 @@ void WriteSettings()
 		sprintf(buf[0], "Keyboard %d", i + 1);
 		sprintf(buf[1], "IK%dComment", i + 1);
 #if RETRO_USING_SDL2
-		sprintf(buf[2], "Keyboard Mappings for P%d (Based on: https://wiki.libsdl.org/SDL2/SDLScancodeLookup)", i + 1);
+		sprintf(buf[2], "Keyboard Mappings for P%d (Based on: https://wiki.libsdl.org/SDL2/SDL_Scancode)", i + 1);
 #elif RETRO_USING_SDL1
 		sprintf(buf[2], "Keyboard Mappings for P%d (Based on: https://www.libsdl.org/release/SDL-1.2.15/docs/html/sdlkey.html)", i + 1);
 #else
@@ -1874,4 +1874,56 @@ int CheckUpdates(char website[]) {
 	curl_global_cleanup();
 #endif
 	return scriptEng.checkResult;
+}
+
+// Remapping stuff
+
+// Keyboard
+void GetKeyboardMapping(int *deviceID, int *input, int *storeScanCode, int *unused)
+{
+    int device = *deviceID;
+    int button = *input;
+    *storeScanCode = inputDevice[device][button].keyMappings;
+}
+
+void SetKeyboardMapping(int *deviceID, int *input, int *scanCode, int *unused)
+{
+    int device = *deviceID;
+    int button = *input;
+    inputDevice[device][button].keyMappings = *scanCode;
+
+    SaveInputMapping();
+}
+
+void CheckKeyboardPress(int *deviceID, int *buttonID, int *unused1, int *unused2)
+{   
+
+}
+
+// Controller
+void GetControllerMapping(int *deviceID, int *input, int *storeButton, int *unused)
+{
+    int device = *deviceID;
+    int button = *input;
+    *storeButton = inputDevice[device][button].contMappings;
+}
+
+void SetControllerMapping(int *deviceID, int *input, int *controllerButton, int *unused)
+{
+    int device = *deviceID;
+    int button = *input;
+    inputDevice[device][button].contMappings = *controllerButton;
+
+    SaveInputMapping();
+}
+
+void CheckControllerPress(int *deviceID, int *buttonID, int *unused1, int *unused2)
+{   
+
+}
+
+// Save everything
+void SaveInputMapping()
+{
+    WriteSettings();
 }
