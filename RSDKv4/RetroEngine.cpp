@@ -203,6 +203,8 @@ bool ProcessEvents()
                             Engine.gameMode = ENGINE_MAINGAME;
                             SetGlobalVariableByName("lampPostID", 0); // For S1
                             SetGlobalVariableByName("starPostID", 0); // For S2
+                            
+                            SetGlobalVariableByName("Warp.XPos", 0);
                         }
                         break;
 
@@ -222,6 +224,8 @@ bool ProcessEvents()
                             Engine.gameMode = ENGINE_MAINGAME;
                             SetGlobalVariableByName("lampPostID", 0); // For S1
                             SetGlobalVariableByName("starPostID", 0); // For S2
+                            
+                            SetGlobalVariableByName("Warp.XPos", 0);
                         }
                         break;
 

@@ -509,6 +509,8 @@ const FunctionInfo functions[] = {
     FunctionInfo("Cos", 2),
     FunctionInfo("Sin256", 2),
     FunctionInfo("Cos256", 2),
+    FunctionInfo("SinChange", 5),
+    FunctionInfo("CosChange", 5),
     FunctionInfo("ATan2", 3),
     FunctionInfo("Interpolate", 4),
     FunctionInfo("InterpolateXY", 7),
@@ -1339,6 +1341,8 @@ enum ScrFunc {
     FUNC_COS,
     FUNC_SIN256,
     FUNC_COS256,
+    FUNC_SINCHANGE,
+    FUNC_COSCHANGE,
     FUNC_ATAN2,
     FUNC_INTERPOLATE,
     FUNC_INTERPOLATEXY,
@@ -5403,6 +5407,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             case FUNC_COS256: {
                 scriptEng.operands[0] = Cos256(scriptEng.operands[1]);
+                break;
+            }
+            case FUNC_SINCHANGE: {
+                scriptEng.operands[0] = scriptEng.operands[3] + (Sin512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
+                break;
+            }
+            case FUNC_COSCHANGE: {
+                scriptEng.operands[0] = scriptEng.operands[3] + (Cos512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
                 break;
             }
             case FUNC_ATAN2: {
