@@ -439,6 +439,7 @@ const char variableNames[][0x20] = {
     "system.timeHour",
     "system.timeMinute",
     "system.timeSecond",
+    "system.timeDayOfWeek", // if this doesn't make sense, then it's the days of the week so monday, tuesday, etc
     "engine.gameType",
     "discord.enableRPC",
     "gamepad.batteryLevel",
@@ -1279,6 +1280,7 @@ enum ScrVar {
     VAR_SYSTEM_TIMEHOUR,
     VAR_SYSTEM_TIMEMINUTE,
     VAR_SYSTEM_TIMESECOND,
+    VAR_SYSTEM_TIMEDAYOFWEEK,
     VAR_ENGINE_GAMETYPE,
     VAR_DISCORD_ENABLERPC,
     VAR_GAMEPAD_BATTERYLEVEL,
@@ -4994,6 +4996,19 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         time_t now = time(NULL);
                         struct tm *tm_now = localtime(&now);
                         scriptEng.operands[i] = tm_now->tm_mon + 1;
+                        
+                        // 0 - December
+                        // 1 - January
+                        // 2 - February
+                        // 3 - March
+                        // 4 - April
+                        // 5 - May
+                        // 6 - June
+                        // 7 - July
+                        // 8 - August
+                        // 9 - September
+                        // 10 - October
+                        // 11 - November
                         break;
                     }
                     case VAR_SYSTEM_TIMEDAY: {
@@ -5018,6 +5033,20 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         time_t now = time(NULL);
                         struct tm *tm_now = localtime(&now);
                         scriptEng.operands[i] = tm_now->tm_sec;
+                        break;
+                    }
+                    case VAR_SYSTEM_TIMEDAYOFWEEK: {
+                        time_t now = time(NULL);
+                        struct tm *tm_now = localtime(&now);
+                        scriptEng.operands[i] = tm_now->tm_wday;
+
+                        // 0 - Sunday
+                        // 1 - Monday
+                        // 2 - Tuesday
+                        // 3 - Wednesday
+                        // 4 - Thursday
+                        // 5 - Friday
+                        // 6 - Saturday
                         break;
                     }
                     case VAR_ENGINE_GAMETYPE: scriptEng.operands[i] = Engine.gameType; break;
@@ -9165,6 +9194,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SYSTEM_TIMEHOUR: break;
                     case VAR_SYSTEM_TIMEMINUTE: break;
                     case VAR_SYSTEM_TIMESECOND: break;
+                    case VAR_SYSTEM_TIMEDAYOFWEEK: break;
                     case VAR_ENGINE_GAMETYPE: break;
                     case VAR_DISCORD_ENABLERPC: useDiscordRPC = scriptEng.operands[i]; break;
                     case VAR_GAMEPAD_BATTERYLEVEL: break;
