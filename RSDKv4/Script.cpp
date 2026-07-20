@@ -719,7 +719,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("DrawString", 8),
     FunctionInfo("DrawStringFX", 9),
 
-    // Drawing (NOTE: The first 3 work exactly like their og counter-parts, although you just need to add the FX type on the end)
+    // Graphics (NOTE: The first 3 work exactly like their og counter-parts, although you just need to add the FX type on the end)
     FunctionInfo("DrawNumbersFX", 8),
     FunctionInfo("DrawActNameFX", 8),
     FunctionInfo("DrawMenuFX", 4),
@@ -729,6 +729,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("ClassicTint", 8),    // alias of DrawClassicFadeOut
     FunctionInfo("DrawClassicFadeOut", 8),
     FunctionInfo("DrawClassicFadeIn", 8),
+    FunctionInfo("SetTintTable", 6),
 
     // Video
     FunctionInfo("LoadVideo", 2),
@@ -1525,6 +1526,7 @@ enum ScrFunc {
     FUNC_CLASSICTINT,
     FUNC_DRAWCLASSICOUT,
     FUNC_DRAWCLASSICIN,
+    FUNC_SETTINTTABLE,
 
     // Video
     FUNC_LOADVIDEO,
@@ -6331,6 +6333,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 DrawClassicFadeIn(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
+                break;
+            case FUNC_SETTINTTABLE:
+                opcodeSize = 0;
+                GenerateTintTable(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                             scriptEng.operands[5]);
                 break;
             case FUNC_RESETOBJECTENTITY: {
                 opcodeSize     = 0;

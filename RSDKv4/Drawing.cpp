@@ -735,6 +735,11 @@ void GenerateBlendLookupTable(void)
     }
 }
 
+void GenerateTintTable(short alpha, short a2, byte type, byte a4, byte a5, byte tableID) 
+{
+
+}
+
 void ClearGraphicsData()
 {
     for (int i = 0; i < SURFACE_COUNT; ++i) MEM_ZERO(gfxSurface[i]);

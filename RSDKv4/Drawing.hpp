@@ -101,6 +101,7 @@ void RenderFromRetroBuffer();
 void ReleaseRenderDevice(bool refresh = false);
 
 void GenerateBlendLookupTable();
+void GenerateTintTable(short alpha, short a2, byte type, byte a4, byte a5, byte tableID);
 
 void ClearGraphicsData();
 void ClearScreen(byte index);
