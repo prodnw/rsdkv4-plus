@@ -228,6 +228,7 @@ void ResumeAllVoice();
 void PauseAnySfx();
 
 void SetSfxPitch(int sfxID, int pitchLevel);
+void SetVoicePitch(int sfxID, int pitchLevel);
 
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan);
 void SetVoiceAttributes(int sfx, int loopCount, sbyte pan);
