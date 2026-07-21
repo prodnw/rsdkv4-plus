@@ -433,6 +433,7 @@ const char variableNames[][0x20] = {
     "tempStr8",
     "tempStr9",
     "tempStr10",
+    "tempStrUsername",
     "system.timeYear",
     "system.timeMonth",
     "system.timeDay",
@@ -693,22 +694,28 @@ const FunctionInfo functions[] = {
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
 
-    // Audio
+    // Music
     FunctionInfo("SetMusicTrackEx", 4),
+    FunctionInfo("SetMusicModifier", 4),
+
+    // Sound
     FunctionInfo("PauseSfx", 1),
     FunctionInfo("ResumeSfx", 1),
+    FunctionInfo("PauseAllSfx", 0),
+    FunctionInfo("ResumeAllSfx", 0),
+    FunctionInfo("StopAllSfx", 0),
+    FunctionInfo("SetSfxPitch", 2),
+
+    // Voice
     FunctionInfo("PlayVoice", 2),
     FunctionInfo("StopVoice", 1),
     FunctionInfo("PauseVoice", 1),
     FunctionInfo("ResumeVoice", 1),
-    FunctionInfo("PauseAllSfx", 0),
-    FunctionInfo("ResumeAllSfx", 0),
     FunctionInfo("PauseAllVoice", 0),
     FunctionInfo("ResumeAllVoice", 0),
-    FunctionInfo("StopAllSfx", 0),
     FunctionInfo("StopAllVoice", 0),
     FunctionInfo("SetVoiceAttributes", 3),
-    FunctionInfo("SetMusicModifier", 4),
+    FunctionInfo("SetVoicePitch", 2),
 
     // Strings
     FunctionInfo("IntToStr", 3),
@@ -1274,6 +1281,7 @@ enum ScrVar {
 	VAR_TEMPSTR8,
 	VAR_TEMPSTR9,
 	VAR_TEMPSTR10,
+    VAR_TEMPSTRUSERNAME,
     VAR_SYSTEM_TIMEYEAR,
     VAR_SYSTEM_TIMEMONTH,
     VAR_SYSTEM_TIMEDAY,
@@ -1491,22 +1499,28 @@ enum ScrFunc {
     FUNC_CHECKCONTROLLERCONNECT,
     FUNC_CHECKCONTROLLERDISCONNECT,
 
-    // Audio
+    // Music
     FUNC_SETMUSICTRACKEX,
+    FUNC_SETMUSICMODIFIER,
+
+    // Sound
     FUNC_PAUSESFX,
     FUNC_RESUMESFX,
+    FUNC_PAUSEALLSFX,
+    FUNC_RESUMEALLSFX,
+    FUNC_STOPALLSFX,
+    FUNC_SETSFXPITCH,
+
+    // Voice
     FUNC_PLAYVOICE,
     FUNC_STOPVOICE,
     FUNC_PAUSEVOICE,
     FUNC_RESUMEVOICE,
-    FUNC_PAUSEALLSFX,
-    FUNC_RESUMEALLSFX,
     FUNC_PAUSEALLVOICE,
     FUNC_RESUMEALLVOICE,
-    FUNC_STOPALLSFX,
     FUNC_STOPALLVOICE,
     FUNC_SETVOICEATTRIBUTES,
-    FUNC_SETMUSICMODIFIER,
+    FUNC_SETVOICEPITCH,
 
     // Strings
     FUNC_INTTOSTR,
@@ -4986,6 +5000,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
                     case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
                     case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
+                    case VAR_TEMPSTRUSERNAME: {
+                        StrCopy(scriptText, username);
+                        StrCopy(scriptEng.operandStr[i], username);
+                        break;
+                    }
                     case VAR_SYSTEM_TIMEYEAR: {
                         time_t now = time(NULL);
                         struct tm *tm_now = localtime(&now);
@@ -6587,6 +6606,14 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         musicTracks[scriptEng.operands[0]].mods.speed = scriptEng.operands[2];
                         break;
                 }
+                break;
+            case FUNC_SETSFXPITCH:
+                opcodeSize = 0;
+                SetSfxPitch(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+            case FUNC_SETVOICEPITCH:
+                opcodeSize = 0;
+                SetVoicePitch(scriptEng.operands[0], scriptEng.operands[1]);
                 break;
             case FUNC_OBJECTTILECOLLISION:
                 opcodeSize = 0;
@@ -9188,6 +9215,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]); break;
                     case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]); break;
                     case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTRUSERNAME: break;
                     case VAR_SYSTEM_TIMEYEAR: break;
                     case VAR_SYSTEM_TIMEMONTH: break;
                     case VAR_SYSTEM_TIMEDAY: break;

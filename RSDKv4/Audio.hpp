@@ -80,6 +80,7 @@ struct ChannelInfo {
     sbyte pan;
     bool isVoice;
     bool paused;
+    int pitch;
 };
 
 struct StreamFile {
@@ -226,7 +227,7 @@ void ResumeAllVoice();
 
 void PauseAnySfx();
 
-//void SetSfxPitch(int sfxID, int pitchLevel);
+void SetSfxPitch(int sfxID, int pitchLevel);
 
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan);
 void SetVoiceAttributes(int sfx, int loopCount, sbyte pan);

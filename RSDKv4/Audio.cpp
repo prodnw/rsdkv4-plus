@@ -939,6 +939,7 @@ void PlaySfx(int sfx, bool loop)
     sfxInfo->loopSFX      = loop;
     sfxInfo->pan          = 0;
     sfxInfo->isVoice      = false;
+    sfxInfo->pitch        = 100;
     UnlockAudioDevice();
 }
 void PlayVoice(int sfx, bool loop)
@@ -959,6 +960,7 @@ void PlayVoice(int sfx, bool loop)
     sfxInfo->loopSFX      = loop;
     sfxInfo->pan          = 0;
     sfxInfo->isVoice      = true;
+    sfxInfo->pitch        = 100;
     UnlockAudioDevice();
 }
 void PauseSfx(int sfx)
@@ -1093,6 +1095,34 @@ void StopAllVoice()
 
     UnlockAudioDevice();
 }
+void SetSfxPitch(int sfxID, int pitchLevel)
+{
+    if (pitchLevel < 1)
+        pitchLevel = 1;
+
+    LockAudioDevice();
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        if (sfxChannels[i].sfxID == sfxID) {
+            sfxChannels[i].pitch = pitchLevel;
+        }
+    }
+    UnlockAudioDevice();
+}
+
+void SetVoicePitch(int voiceID, int pitchLevel)
+{
+    if (pitchLevel < 1)
+        pitchLevel = 1;
+
+    LockAudioDevice();
+    for (int i = 0; i < CHANNEL_COUNT; ++i) {
+        if (sfxChannels[i].isVoice && sfxChannels[i].sfxID == voiceID) {
+            sfxChannels[i].pitch = pitchLevel;
+        }
+    }
+    UnlockAudioDevice();
+}
+
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan)
 {
     LockAudioDevice();
