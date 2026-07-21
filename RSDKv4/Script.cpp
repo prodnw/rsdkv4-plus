@@ -5055,9 +5055,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINE_WINDOWFOCUSED: {
                         #if RETRO_USING_SDL2
                             Uint32 flags = SDL_GetWindowFlags(Engine.window);
-                            Engine.windowFocused = (flags & SDL_WINDOW_INPUT_FOCUS) ? 0 : 1;
+                            Engine.windowFocused = (flags & SDL_WINDOW_INPUT_FOCUS) ? 1 : 0;
                         #else
-                            Engine.windowFocused = 0;  // Always focused if not using SDL2
+                            Engine.windowFocused = 0;  // No SDL2 so can't check for anything
                         #endif
                         scriptEng.operands[i] = Engine.windowFocused;
                         break;
