@@ -1515,6 +1515,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowBorderless", SetWindowBorderless);
     AddNativeFunction("GetWindowVSync", GetWindowVSync);
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
+    AddNativeFunction("SetWindowOpacity", SetWindowOpacity);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options

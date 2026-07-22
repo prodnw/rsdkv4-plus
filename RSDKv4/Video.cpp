@@ -138,7 +138,7 @@ void PlayVideoFile(char *filePath, int audioTrack)
         SetupVideoBuffer(videoWidth, videoHeight);
         vidBaseticks = SDL_GetTicks();
         vidFrameMS   = (videoVidData->fps == 0.0) ? 0 : ((Uint32)(1000.0 / videoVidData->fps));
-        videoPlaying = 1; // playing ogv
+        videoPlaying = VIDEOSTATUS_PLAYING_OGV; // playing ogv
         trackID      = TRACK_COUNT - 1;
 
         videoSkipped    = false;
@@ -151,7 +151,7 @@ void PlayVideoFile(char *filePath, int audioTrack)
 
 void UpdateVideoFrame()
 {
-    if (videoPlaying == 2) {
+    if (videoPlaying == VIDEOSTATUS_PLAYING_RSV) {
         if (currentVideoFrame < videoFrameCount) {
             GFXSurface *surface = &gfxSurface[videoSurface];
             byte fileBuffer     = 0;
@@ -206,7 +206,7 @@ void UpdateVideoFrame()
 
 int ProcessVideo()
 {
-    if (videoPlaying == 1) {
+    if (videoPlaying == VIDEOSTATUS_PLAYING_OGV) {
         CheckKeyPress(keyPress);
 
         if (videoSkipped && fadeMode < 0xFF) {
@@ -317,7 +317,7 @@ int QuitVideo()
 
 void StopVideoPlayback()
 {
-    if (videoPlaying == 1) {
+    if (videoPlaying == VIDEOSTATUS_PLAYING_OGV) {
         // `videoPlaying` and `videoDecoder` are read by
         // the audio thread, so lock it to prevent a race
         // condition that results in invalid memory accesses.
@@ -336,7 +336,7 @@ void StopVideoPlayback()
         }
 
         CloseVideoBuffer();
-        videoPlaying = 0;
+        videoPlaying = VIDEOSTATUS_NOTPLAYING;
 
         SDL_UnlockAudio();
     }
@@ -392,7 +392,7 @@ void InitVideoBuffer(int width, int height)
 
 void CloseVideoBuffer()
 {
-    if (videoPlaying == 1) {
+    if (videoPlaying == VIDEOSTATUS_PLAYING_OGV) {
 #if RETRO_USING_OPENGL
         if (videoBuffer > 0) {
             glDeleteTextures(1, &videoBuffer);

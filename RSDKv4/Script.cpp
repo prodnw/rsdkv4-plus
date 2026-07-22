@@ -85,9 +85,6 @@ const char variableNames[][0x20] = {
     "temp5",
     "temp6",
     "temp7",
-    "temp8",
-    "temp9",
-    "temp10",
     "checkResult",
     "arrayPos0",
     "arrayPos1",
@@ -257,7 +254,6 @@ const char variableNames[][0x20] = {
     "screen.shakeX",
     "screen.shakeY",
     "screen.adjustCameraY",
-    "screen.tintTable",
 
     "touchscreen.down",
     "touchscreen.xpos",
@@ -297,10 +293,6 @@ const char variableNames[][0x20] = {
     "keyPress.buttonR",
     "keyPress.start",
     "keyPress.select",
-    "key.pressed",
-    "key.down",
-    "controller.pressed",
-    "controller.down",
 
 #if RETRO_ACCEPT_OLD_SYNTAX
     "inputDown.up",
@@ -335,8 +327,6 @@ const char variableNames[][0x20] = {
     // Menu Properties
     "menu1.selection",
     "menu2.selection",
-    "menu3.selection",
-    "menu4.selection",
 
     // Tile Layer Properties
     "tileLayer.xsize",
@@ -389,13 +379,12 @@ const char variableNames[][0x20] = {
     "engine.language",
     "engine.onlineActive",
     "engine.sfxVolume",
-    "engine.voiceVolume",
     "engine.bgmVolume",
     "engine.platformID",
     "engine.trialMode",
     "engine.deviceType",
 
-// Extras
+    // Extras
     "screen.currentID",
     "camera.enabled",
     "camera.target",
@@ -403,26 +392,20 @@ const char variableNames[][0x20] = {
     "camera.xpos",
     "camera.ypos",
     "camera.adjustY",
-    
-    "camera.direction",
-    "camera.drawLayer0Direction",
-    "camera.drawLayer1Direction",
-    "camera.drawLayer2Direction",
-    "camera.drawLayer3Direction",
-    "camera.drawLayer4Direction",
-    "camera.drawLayer5Direction",
-    "camera.drawLayer6Direction",
-    "camera.drawLayer7Direction",
 
 // Haptics
 #if RETRO_USE_HAPTICS
     "engine.hapticsEnabled",
 #endif
-    "game.checkForUpdates",
-    "game.networkPing",
-    "controller.device",
-    "controller.wired",
-    "controller.vibrationEnabled",
+
+//-------- New values start here --------//
+
+    // More Internal Script Values
+    "temp8",
+    "temp9",
+    "temp10",
+
+    // Strings
     "tempStr0",
     "tempStr1",
     "tempStr2",
@@ -434,7 +417,43 @@ const char variableNames[][0x20] = {
     "tempStr8",
     "tempStr9",
     "tempStr10",
-    "tempStrUsername",
+
+    // Keyboard
+    "key.pressed",
+    "key.down",
+
+    // Controller
+    "controller.vibrationEnabled",
+    "controller.pressed",
+    "controller.down",
+    "controller.device",
+    "controller.wired",
+    "controller.batteryLevel",
+
+    // Mouse
+    "mouse.moved",
+    "mouse.hide",
+    "mouse1.pressed",
+    "mouse2.pressed",
+
+    // Audio
+    "engine.voiceVolume",
+
+    // Screen
+    "screen.tintTable",
+
+    // Camera
+    "camera.direction",
+    "camera.drawLayer0Direction",
+    "camera.drawLayer1Direction",
+    "camera.drawLayer2Direction",
+    "camera.drawLayer3Direction",
+    "camera.drawLayer4Direction",
+    "camera.drawLayer5Direction",
+    "camera.drawLayer6Direction",
+    "camera.drawLayer7Direction",
+
+    // System/Device
     "system.timeYear",
     "system.timeMonth",
     "system.timeDay",
@@ -442,20 +461,36 @@ const char variableNames[][0x20] = {
     "system.timeMinute",
     "system.timeSecond",
     "system.timeDayOfWeek", // if this doesn't make sense, then it's the days of the week so monday, tuesday, etc
-    "engine.gameType",
+
+    // Settings/Engine
+    "game.checkForUpdates",
     "discord.enableRPC",
-    "gamepad.batteryLevel",
-    "engine.windowFocused",
-    "engine.usernameLength",
+    "options.devMenuFlag",      // From a global variable to an engine variable
+    "options.engineDebugMode",  // From a global variable to an engine variable
+    "engine.gameType",
+
+    // Playtime
     "playtime.hours",
     "playtime.minutes",
     "playtime.seconds",
-    "mouse.moved",
-    "mouse.hide",
-    "mouse1.pressed",
-    "mouse2.pressed",
-    "options.devMenuFlag",
-    "options.engineDebugMode"
+
+    // Network
+    "game.networkPing",
+
+    // Window
+    "engine.windowFocused",
+
+    // Menu
+    "menu3.selection",
+    "menu4.selection",
+    "menu5.selection",
+    "menu6.selection",
+    "menu7.selection",
+    "menu8.selection",
+
+    // Username
+    "tempStrUsername",
+    "engine.usernameLength"
 };
 #endif
 
@@ -512,8 +547,6 @@ const FunctionInfo functions[] = {
     FunctionInfo("Cos", 2),
     FunctionInfo("Sin256", 2),
     FunctionInfo("Cos256", 2),
-    FunctionInfo("SinChange", 5),
-    FunctionInfo("CosChange", 5),
     FunctionInfo("ATan2", 3),
     FunctionInfo("Interpolate", 4),
     FunctionInfo("InterpolateXY", 7),
@@ -641,7 +674,6 @@ const FunctionInfo functions[] = {
 
     FunctionInfo("CallNativeFunction", 1),
     FunctionInfo("CallNativeFunction2", 3),
-    FunctionInfo("CallNativeFunction3", 4),
     FunctionInfo("CallNativeFunction4", 5),
 
     FunctionInfo("SetObjectRange", 1),
@@ -666,14 +698,15 @@ const FunctionInfo functions[] = {
 
 //-------- New functions start here --------//
 
-    // Functions
+    // Function calling
     FunctionInfo("CallFunctionObject", 2),
+    FunctionInfo("CallNativeFunction3", 4),
 
     // Website interaction
     FunctionInfo("CheckUpdates", 1),
     FunctionInfo("LoadWebsite", 1),
     
-    // Discord
+    // Discord presence
     // Note - these are here regardless if RETRO_USE_DISCORD_SDK is on or off.
     // This ensures that these functions remain "callable" via script, instead of
     // throwing a scripting error. The RETRO_USE_DISCORD_SDK checks are in
@@ -690,7 +723,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("ClearPresenceType", 1),
 
     // Controller management
-    FunctionInfo("VibrateController", 3), // VibrateController(controllerID, intensity, duration)
+    FunctionInfo("VibrateController", 3),
     FunctionInfo("SetControllerLEDColour", 4),
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
@@ -749,6 +782,16 @@ const FunctionInfo functions[] = {
     FunctionInfo("SetUsername", 2),
 
     // Math
+    FunctionInfo("Tan", 2),
+    FunctionInfo("Tan256", 5),
+    FunctionInfo("SinChange", 5),
+    FunctionInfo("CosChange", 5),
+    FunctionInfo("TanChange", 5),
+    FunctionInfo("ASin", 2),
+    FunctionInfo("ACos", 2),
+    FunctionInfo("ATan", 2),
+    FunctionInfo("Clamp", 4),
+    FunctionInfo("SquareRoot", 1),
     FunctionInfo("CalculateToTimeValue", 3),        // Mins, Seconds, Milliseconds
     FunctionInfo("CalculateFromTimeValue", 4),      // Time value, stored minutes, stored seconds, stored milliseconds
     FunctionInfo("CalculatePercentage", 2),         // Progress value, total value
@@ -957,9 +1000,6 @@ enum ScrVar {
     VAR_TEMP5,
     VAR_TEMP6,
     VAR_TEMP7,
-    VAR_TEMP8,
-    VAR_TEMP9,
-    VAR_TEMP10,
     VAR_CHECKRESULT,
     VAR_ARRAYPOS0,
     VAR_ARRAYPOS1,
@@ -1121,7 +1161,6 @@ enum ScrVar {
     VAR_SCREENSHAKEX,
     VAR_SCREENSHAKEY,
     VAR_SCREENADJUSTCAMERAY,
-    VAR_SCREENTINTTABLE,
     VAR_TOUCHSCREENDOWN,
     VAR_TOUCHSCREENXPOS,
     VAR_TOUCHSCREENYPOS,
@@ -1156,10 +1195,6 @@ enum ScrVar {
     VAR_KEYPRESSBUTTONR,
     VAR_KEYPRESSSTART,
     VAR_KEYPRESSSELECT,
-    VAR_KEY_PRESSED,
-    VAR_KEY_DOWN,
-    VAR_CONTROLLER_PRESSED,
-    VAR_CONTROLLER_DOWN,
 #if RETRO_ACCEPT_OLD_SYNTAX
     VAR_INPUTDOWNUP,
     VAR_INPUTDOWNDOWN,
@@ -1192,8 +1227,6 @@ enum ScrVar {
 #endif
     VAR_MENU1SELECTION,
     VAR_MENU2SELECTION,
-    VAR_MENU3SELECTION,
-    VAR_MENU4SELECTION,
     VAR_TILELAYERXSIZE,
     VAR_TILELAYERYSIZE,
     VAR_TILELAYERTYPE,
@@ -1239,7 +1272,6 @@ enum ScrVar {
     VAR_ENGINELANGUAGE,
     VAR_ENGINEONLINEACTIVE,
     VAR_ENGINESFXVOLUME,
-    VAR_ENGINEVOICEVOLUME,
     VAR_ENGINEBGMVOLUME,
     VAR_ENGINEPLATFORMID, // v3-style device type aka Windows/Mac/Android/etc
     VAR_ENGINETRIALMODE,
@@ -1253,25 +1285,18 @@ enum ScrVar {
     VAR_CAMERAXPOS,
     VAR_CAMERAYPOS,
     VAR_CAMERAADJUSTY,
-    
-    VAR_CAMERA_DIRECTION,
-    VAR_CAMERA_DRAWLAYER0DIRECTION,
-    VAR_CAMERA_DRAWLAYER1DIRECTION,
-    VAR_CAMERA_DRAWLAYER2DIRECTION,
-    VAR_CAMERA_DRAWLAYER3DIRECTION,
-    VAR_CAMERA_DRAWLAYER4DIRECTION,
-    VAR_CAMERA_DRAWLAYER5DIRECTION,
-    VAR_CAMERA_DRAWLAYER6DIRECTION,
-    VAR_CAMERA_DRAWLAYER7DIRECTION,
-
 #if RETRO_USE_HAPTICS
     VAR_HAPTICSENABLED,
 #endif
-    VAR_GAME_CHECKFORUPDATES,
-    VAR_GAME_NETWORKPING,
-    VAR_CONTROLLER_DEVICE,
-    VAR_CONTROLLER_WIRED,
-    VAR_CONTROLLER_VIBRATIONENABLED,
+
+//-------- New values start here --------//
+
+    // More Internal Script Values
+    VAR_TEMP8,
+    VAR_TEMP9,
+    VAR_TEMP10,
+
+    // Strings
 	VAR_TEMPSTR0,
 	VAR_TEMPSTR1,
 	VAR_TEMPSTR2,
@@ -1283,7 +1308,43 @@ enum ScrVar {
 	VAR_TEMPSTR8,
 	VAR_TEMPSTR9,
 	VAR_TEMPSTR10,
-    VAR_TEMPSTRUSERNAME,
+
+    // Keyboard
+    VAR_KEY_PRESSED,
+    VAR_KEY_DOWN,
+
+    // Controller
+    VAR_CONTROLLER_VIBRATIONENABLED,
+    VAR_CONTROLLER_PRESSED,
+    VAR_CONTROLLER_DOWN,
+    VAR_CONTROLLER_DEVICE,
+    VAR_CONTROLLER_WIRED,
+    VAR_CONTROLLER_BATTERYLEVEL,
+
+    // Mouse
+    VAR_MOUSE_MOVED,
+    VAR_MOUSE_HIDE,
+    VAR_MOUSE1_PRESSED,
+    VAR_MOUSE2_PRESSED,
+
+    // Audio
+    VAR_ENGINEVOICEVOLUME,
+
+    // Screen
+    VAR_SCREENTINTTABLE,
+
+    // Camera
+    VAR_CAMERA_DIRECTION,
+    VAR_CAMERA_DRAWLAYER0DIRECTION,
+    VAR_CAMERA_DRAWLAYER1DIRECTION,
+    VAR_CAMERA_DRAWLAYER2DIRECTION,
+    VAR_CAMERA_DRAWLAYER3DIRECTION,
+    VAR_CAMERA_DRAWLAYER4DIRECTION,
+    VAR_CAMERA_DRAWLAYER5DIRECTION,
+    VAR_CAMERA_DRAWLAYER6DIRECTION,
+    VAR_CAMERA_DRAWLAYER7DIRECTION,
+
+    // System/Device
     VAR_SYSTEM_TIMEYEAR,
     VAR_SYSTEM_TIMEMONTH,
     VAR_SYSTEM_TIMEDAY,
@@ -1291,20 +1352,38 @@ enum ScrVar {
     VAR_SYSTEM_TIMEMINUTE,
     VAR_SYSTEM_TIMESECOND,
     VAR_SYSTEM_TIMEDAYOFWEEK,
-    VAR_ENGINE_GAMETYPE,
+
+    // Settings/Engine
+    VAR_GAME_CHECKFORUPDATES,
     VAR_DISCORD_ENABLERPC,
-    VAR_GAMEPAD_BATTERYLEVEL,
-    VAR_ENGINE_WINDOWFOCUSED, // 0 = focused, 1 = not focused
-    VAR_ENGINE_USERNAMELENGTH,
+    VAR_OPTIONS_DEVMENUFLAG,
+    VAR_OPTIONS_ENGINEDEBUGMODE,
+    VAR_ENGINE_GAMETYPE,
+
+    // Playtime
     VAR_PLAYTIME_HOURS,
     VAR_PLAYTIME_MINUTES,
     VAR_PLAYTIME_SECONDS,
-    VAR_MOUSE_MOVED,
-    VAR_MOUSE_HIDE,
-    VAR_MOUSE1_PRESSED,
-    VAR_MOUSE2_PRESSED,
-    VAR_OPTIONS_DEVMENUFLAG,
-    VAR_OPTIONS_ENGINEDEBUGMODE,
+
+    // Network
+    VAR_GAME_NETWORKPING,
+
+    // Window
+    VAR_ENGINE_WINDOWFOCUSED,
+
+    // Menu
+    VAR_MENU3SELECTION,
+    VAR_MENU4SELECTION,
+    VAR_MENU5SELECTION,
+    VAR_MENU6SELECTION,
+    VAR_MENU7SELECTION,
+    VAR_MENU8SELECTION,
+
+    // Username
+    VAR_TEMPSTRUSERNAME,
+    VAR_ENGINE_USERNAMELENGTH,
+
+    // Max variable count
     VAR_MAX_CNT
 };
 
@@ -1354,8 +1433,6 @@ enum ScrFunc {
     FUNC_COS,
     FUNC_SIN256,
     FUNC_COS256,
-    FUNC_SINCHANGE,
-    FUNC_COSCHANGE,
     FUNC_ATAN2,
     FUNC_INTERPOLATE,
     FUNC_INTERPOLATEXY,
@@ -1452,7 +1529,6 @@ enum ScrFunc {
     FUNC_ABS,
     FUNC_CALLNATIVEFUNCTION,
     FUNC_CALLNATIVEFUNCTION2,
-    FUNC_CALLNATIVEFUNCTION3,
     FUNC_CALLNATIVEFUNCTION4,
     FUNC_SETOBJECTRANGE,
 #if RETRO_REV02
@@ -1476,8 +1552,9 @@ enum ScrFunc {
 
 //-------- New functions start here --------//
 
-    // Functions
+    // Function Calling
     FUNC_CALLFUNCTIONOBJECT,
+    FUNC_CALLNATIVEFUNCTION3,
 
     // Website interaction
     FUNC_CHECKUPDATES,
@@ -1534,7 +1611,7 @@ enum ScrFunc {
     FUNC_DRAWSTRING,
     FUNC_DRAWSTRINGFX,
 
-    // Drawing
+    // Graphics
     FUNC_DRAWNUMBERSFX,
     FUNC_DRAWACTNAMEFX,
     FUNC_DRAWMENUFX,
@@ -1555,6 +1632,16 @@ enum ScrFunc {
     FUNC_SETUSERNAME,
     
     // Math
+    FUNC_TAN,
+    FUNC_TAN256,
+    FUNC_SINCHANGE,
+    FUNC_COSCHANGE,
+    FUNC_TANCHANGE,
+    FUNC_ASIN,
+    FUNC_ACOS,
+    FUNC_ATAN,
+    FUNC_CLAMP,
+    FUNC_SQUAREROOT,
     FUNC_CALCULATETOTIMEVALUE,
     FUNC_CALCULATEFROMTIMEVALUE,
     FUNC_CALCULATEPERCENTAGE,
@@ -4167,9 +4254,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP5: scriptEng.operands[i] = scriptEng.temp[5]; break;
                     case VAR_TEMP6: scriptEng.operands[i] = scriptEng.temp[6]; break;
                     case VAR_TEMP7: scriptEng.operands[i] = scriptEng.temp[7]; break;
-                    case VAR_TEMP8: scriptEng.operands[i] = scriptEng.temp[8]; break;
-                    case VAR_TEMP9: scriptEng.operands[i] = scriptEng.temp[9]; break;
-                    case VAR_TEMP10: scriptEng.operands[i] = scriptEng.temp[10]; break;
                     case VAR_CHECKRESULT: scriptEng.operands[i] = scriptEng.checkResult; break;
                     case VAR_ARRAYPOS0: scriptEng.operands[i] = scriptEng.arrayPosition[0]; break;
                     case VAR_ARRAYPOS1: scriptEng.operands[i] = scriptEng.arrayPosition[1]; break;
@@ -4757,7 +4841,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SCREENSHAKEX: scriptEng.operands[i] = camera[0].shakeX; break;
                     case VAR_SCREENSHAKEY: scriptEng.operands[i] = camera[0].shakeY; break;
                     case VAR_SCREENADJUSTCAMERAY: scriptEng.operands[i] = camera[0].adjustY; break;
-                    case VAR_SCREENTINTTABLE: scriptEng.operands[i] = currentTintTable; break;
                     case VAR_TOUCHSCREENDOWN: scriptEng.operands[i] = touchDown[arrayVal]; break;
                     case VAR_TOUCHSCREENXPOS: scriptEng.operands[i] = touchX[arrayVal]; break;
                     case VAR_TOUCHSCREENYPOS: scriptEng.operands[i] = touchY[arrayVal]; break;
@@ -4792,25 +4875,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_KEYPRESSBUTTONR: scriptEng.operands[i] = keyPress[inputCheck].R; break;
                     case VAR_KEYPRESSSTART: scriptEng.operands[i] = keyPress[inputCheck].start; break;
                     case VAR_KEYPRESSSELECT: scriptEng.operands[i] = keyPress[inputCheck].select; break;
-                    case VAR_KEY_PRESSED: {
-                        int numKeys = 0;
-                        const byte *keyboardState = SDL_GetKeyboardState(&numKeys);
-                        static byte prevKeyboardState[512] = {};
-                        int keyPressed = 0;
-                        if (arrayVal >= 0 && arrayVal < numKeys) {
-                            keyPressed = keyboardState[arrayVal] && !prevKeyboardState[arrayVal];
-                            prevKeyboardState[arrayVal] = keyboardState[arrayVal];
-                        }
-                        scriptEng.operands[i] = keyPressed;
-                        break;
-                    }
-                    case VAR_KEY_DOWN: {
-                        const byte *keyboardState = SDL_GetKeyboardState(NULL);
-                        scriptEng.operands[i] = keyboardState[arrayVal];
-                        break;
-                    }
-                    case VAR_CONTROLLER_PRESSED: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].press; break;
-                    case VAR_CONTROLLER_DOWN: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].down(); break;
 #if RETRO_ACCEPT_OLD_SYNTAX
                     case VAR_INPUTDOWNUP: scriptEng.operands[i] = keyDown[inputCheck].up; break;
                     case VAR_INPUTDOWNDOWN: scriptEng.operands[i] = keyDown[inputCheck].down; break;
@@ -4843,8 +4907,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                     case VAR_MENU1SELECTION: scriptEng.operands[i] = gameMenu[0].selection1; break;
                     case VAR_MENU2SELECTION: scriptEng.operands[i] = gameMenu[1].selection1; break;
-                    case VAR_MENU3SELECTION: scriptEng.operands[i] = gameMenu[2].selection1; break;
-                    case VAR_MENU4SELECTION: scriptEng.operands[i] = gameMenu[3].selection1; break;
                     case VAR_TILELAYERXSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].xsize; break;
                     case VAR_TILELAYERYSIZE: scriptEng.operands[i] = stageLayouts[arrayVal].ysize; break;
                     case VAR_TILELAYERTYPE: scriptEng.operands[i] = stageLayouts[arrayVal].type; break;
@@ -4890,7 +4952,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINELANGUAGE: scriptEng.operands[i] = Engine.language; break;
                     case VAR_ENGINEONLINEACTIVE: scriptEng.operands[i] = Engine.onlineActive; break;
                     case VAR_ENGINESFXVOLUME: scriptEng.operands[i] = sfxVolume; break;
-                    case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
                     case VAR_ENGINEBGMVOLUME: scriptEng.operands[i] = bgmVolume; break;
                     case VAR_ENGINEPLATFORMID: scriptEng.operands[i] = Engine.gamePlatformID; break;
                     case VAR_ENGINETRIALMODE: scriptEng.operands[i] = Engine.trialMode; break;
@@ -4906,31 +4967,56 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_CAMERAXPOS: scriptEng.operands[i] = camera[arrayVal].xpos; break;
                     case VAR_CAMERAYPOS: scriptEng.operands[i] = camera[arrayVal].ypos; break;
                     case VAR_CAMERAADJUSTY: scriptEng.operands[i] = camera[arrayVal].adjustY; break;
-                    case VAR_CAMERA_DIRECTION: scriptEng.operands[i] = camera[arrayVal].direction; break;
-                    // Optimisation by merging them all maybe
-                    case VAR_CAMERA_DRAWLAYER0DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER1DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER2DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER3DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER4DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER5DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER6DIRECTION:
-                    case VAR_CAMERA_DRAWLAYER7DIRECTION:
-                        if (arrayVal < DRAWLAYER_COUNT)
-                            scriptEng.operands[i] = camera[arrayVal].layerDir[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION];
-                        break;
-
 #if RETRO_USE_HAPTICS
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
-                    case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
-                    case VAR_GAME_NETWORKPING:
-#if RETRO_USE_NETWORKING
-                        scriptEng.operands[i] = networkPing;
-#else
-                        scriptEng.operands[i] = 0;
-#endif
+
+                    //-------- New values start here --------//
+
+                    // More Internal Script Values
+                    case VAR_TEMP8: scriptEng.operands[i] = scriptEng.temp[8]; break;
+                    case VAR_TEMP9: scriptEng.operands[i] = scriptEng.temp[9]; break;
+                    case VAR_TEMP10: scriptEng.operands[i] = scriptEng.temp[10]; break;
+
+                    // Strings
+                    case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
+                    case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
+                    case VAR_TEMPSTR2:  StrCopy(scriptText, scriptEng.tempStr[2]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[2]);  break;
+                    case VAR_TEMPSTR3:  StrCopy(scriptText, scriptEng.tempStr[3]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[3]);  break;
+                    case VAR_TEMPSTR4:  StrCopy(scriptText, scriptEng.tempStr[4]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[4]);  break;
+                    case VAR_TEMPSTR5:  StrCopy(scriptText, scriptEng.tempStr[5]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[5]);  break;
+                    case VAR_TEMPSTR6:  StrCopy(scriptText, scriptEng.tempStr[6]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[6]);  break;
+                    case VAR_TEMPSTR7:  StrCopy(scriptText, scriptEng.tempStr[7]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[7]);  break;
+                    case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
+                    case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
+                    case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
+
+                    // Keyboard
+                    case VAR_KEY_PRESSED: {
+                        int numKeys = 0;
+                        const byte *keyboardState = SDL_GetKeyboardState(&numKeys);
+                        static byte prevKeyboardState[512] = {};
+                        int keyPressed = 0;
+                        if (arrayVal >= 0 && arrayVal < numKeys) {
+                            keyPressed = keyboardState[arrayVal] && !prevKeyboardState[arrayVal];
+                            prevKeyboardState[arrayVal] = keyboardState[arrayVal];
+                        }
+                        scriptEng.operands[i] = keyPressed;
                         break;
+                    }
+                    case VAR_KEY_DOWN: {
+                        const byte *keyboardState = SDL_GetKeyboardState(NULL);
+                        scriptEng.operands[i] = keyboardState[arrayVal];
+                        break;
+                    }
+
+                    // Controller
+                    case VAR_CONTROLLER_VIBRATIONENABLED:
+                        if (arrayVal && arrayVal < DEFAULT_INPUT_COUNT)
+                            scriptEng.operands[i] = ControllerVibration[arrayVal - 1];
+                        break;
+                    case VAR_CONTROLLER_PRESSED: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].press; break;
+                    case VAR_CONTROLLER_DOWN: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].down(); break;
                     case VAR_CONTROLLER_DEVICE: {
 #if RETRO_USING_SDL2
                         int deviceType = CONTROLLER_KEYBOARD;
@@ -4943,7 +5029,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                     if (strstr(controllerName, "Xbox 360")) {
                                         deviceType = CONTROLLER_XBOX_360;
                                     }
-                                    else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series")) {
+                                    else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series") || strstr(controllerName, "Xbox")) {
                                         deviceType = CONTROLLER_XBOX;  // Xbox One/Series
                                     }
                                     else if (strstr(controllerName, "PS3") || strstr(controllerName, "PlayStation 3")) {
@@ -4960,9 +5046,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                                     }
                                     else if (strstr(controllerName, "Steam Deck")) {
                                         deviceType = CONTROLLER_STEAM_DECK;  // Steam Deck
-                                    }
-                                    else if (strstr(controllerName, "Xbox")) {
-                                        deviceType = CONTROLLER_XBOX;  // Whatever kind of funky xbox controller your using i guess
                                     }
                                     else {
                                         deviceType = CONTROLLER_UNKNOWN;  // Generic/Other
@@ -4994,26 +5077,68 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = isWired;
                         break;
                     }
-                    case VAR_CONTROLLER_VIBRATIONENABLED:
-                        if (arrayVal && arrayVal < DEFAULT_INPUT_COUNT)
-                            scriptEng.operands[i] = ControllerVibration[arrayVal - 1];
-                        break;
-                    case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
-                    case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
-                    case VAR_TEMPSTR2:  StrCopy(scriptText, scriptEng.tempStr[2]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[2]);  break;
-                    case VAR_TEMPSTR3:  StrCopy(scriptText, scriptEng.tempStr[3]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[3]);  break;
-                    case VAR_TEMPSTR4:  StrCopy(scriptText, scriptEng.tempStr[4]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[4]);  break;
-                    case VAR_TEMPSTR5:  StrCopy(scriptText, scriptEng.tempStr[5]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[5]);  break;
-                    case VAR_TEMPSTR6:  StrCopy(scriptText, scriptEng.tempStr[6]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[6]);  break;
-                    case VAR_TEMPSTR7:  StrCopy(scriptText, scriptEng.tempStr[7]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[7]);  break;
-                    case VAR_TEMPSTR8:  StrCopy(scriptText, scriptEng.tempStr[8]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[8]);  break;
-                    case VAR_TEMPSTR9:  StrCopy(scriptText, scriptEng.tempStr[9]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[9]);  break;
-                    case VAR_TEMPSTR10: StrCopy(scriptText, scriptEng.tempStr[10]); StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[10]); break;
-                    case VAR_TEMPSTRUSERNAME: {
-                        StrCopy(scriptText, username);
-                        StrCopy(scriptEng.operandStr[i], username);
+                    case VAR_CONTROLLER_BATTERYLEVEL: scriptEng.operands[i] = GetGamepadBatteryLevel(); break;
+                
+                    // Mouse
+                    case VAR_MOUSE_MOVED: {
+                        static int lastMouseX = -1;
+                        static int lastMouseY = -1;
+                        int mouseX, mouseY;
+
+                        SDL_GetMouseState(&mouseX, &mouseY);
+                        if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
+                            scriptEng.operands[i] = 1; // Mouse moved
+                        } else {
+                            scriptEng.operands[i] = 0; // Not moved or first check
+                        }
+                        lastMouseX = mouseX;
+                        lastMouseY = mouseY;
                         break;
                     }
+
+                    case VAR_MOUSE_HIDE: {
+                        if (scriptEng.operands[i] == 1) {
+                            SDL_ShowCursor(SDL_DISABLE);
+                        } else {
+                            SDL_ShowCursor(SDL_ENABLE);
+                        }
+                        break;
+                    }
+
+                    case VAR_MOUSE1_PRESSED: {
+                        int mouseState = SDL_GetMouseState(NULL, NULL);
+                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
+                        break;
+                    }
+
+                    case VAR_MOUSE2_PRESSED: {
+                        int mouseState = SDL_GetMouseState(NULL, NULL);
+                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
+                        break;
+                    }
+
+                    // Audio
+                    case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
+
+                    // Screen
+                    case VAR_SCREENTINTTABLE: scriptEng.operands[i] = currentTintTable; break;
+
+                    // Camera
+                    case VAR_CAMERA_DIRECTION: scriptEng.operands[i] = camera[arrayVal].direction; break;
+                    // Optimisation by merging them all maybe
+                    case VAR_CAMERA_DRAWLAYER0DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER1DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER2DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER3DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER4DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER5DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER6DIRECTION:
+                    case VAR_CAMERA_DRAWLAYER7DIRECTION:
+                        if (arrayVal < DRAWLAYER_COUNT)
+                            scriptEng.operands[i] = camera[arrayVal].layerDir[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION];
+                        break;
+
+                    // System/Device
                     case VAR_SYSTEM_TIMEYEAR: {
                         time_t now = time(NULL);
                         struct tm *tm_now = localtime(&now);
@@ -5077,9 +5202,29 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         // 6 - Saturday
                         break;
                     }
-                    case VAR_ENGINE_GAMETYPE: scriptEng.operands[i] = Engine.gameType; break;
+
+                    // Settings/Engine
+                    case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
                     case VAR_DISCORD_ENABLERPC: scriptEng.operands[i] = useDiscordRPC; break;
-                    case VAR_GAMEPAD_BATTERYLEVEL: scriptEng.operands[i] = GetGamepadBatteryLevel(); break;
+                    case VAR_OPTIONS_DEVMENUFLAG: scriptEng.operands[i] = Engine.devMenu; break;
+                    case VAR_OPTIONS_ENGINEDEBUGMODE: scriptEng.operands[i] = engineDebugMode; break;
+                    case VAR_ENGINE_GAMETYPE: scriptEng.operands[i] = Engine.gameType; break;
+
+                    // Playtime
+                    case VAR_PLAYTIME_HOURS: scriptEng.operands[i] = GetPlaytimeSeconds() / 3600; break;
+                    case VAR_PLAYTIME_MINUTES: scriptEng.operands[i] = (GetPlaytimeSeconds() % 3600) / 60; break;
+                    case VAR_PLAYTIME_SECONDS: scriptEng.operands[i] = GetPlaytimeSeconds() % 60; break;
+
+                    // Network
+                    case VAR_GAME_NETWORKPING:
+#if RETRO_USE_NETWORKING
+                        scriptEng.operands[i] = networkPing;
+#else
+                        scriptEng.operands[i] = 0;
+#endif
+                        break;
+
+                    // Window
                     case VAR_ENGINE_WINDOWFOCUSED: {
                         #if RETRO_USING_SDL2
                             Uint32 flags = SDL_GetWindowFlags(Engine.window);
@@ -5090,56 +5235,18 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = Engine.windowFocused;
                         break;
                     }
+
+                    // Menu
+                    case VAR_MENU3SELECTION: scriptEng.operands[i] = gameMenu[2].selection1; break;
+                    case VAR_MENU4SELECTION: scriptEng.operands[i] = gameMenu[3].selection1; break;
+                    case VAR_MENU5SELECTION: scriptEng.operands[i] = gameMenu[4].selection1; break;
+                    case VAR_MENU6SELECTION: scriptEng.operands[i] = gameMenu[5].selection1; break;
+                    case VAR_MENU7SELECTION: scriptEng.operands[i] = gameMenu[6].selection1; break;
+                    case VAR_MENU8SELECTION: scriptEng.operands[i] = gameMenu[7].selection1; break;
+
+                    // Username
+                    case VAR_TEMPSTRUSERNAME:  StrCopy(scriptText, username); StrCopy(scriptEng.operandStr[i], username); break;
                     case VAR_ENGINE_USERNAMELENGTH: scriptEng.operands[i] = StrLength(username); break;
-                    case VAR_PLAYTIME_HOURS: scriptEng.operands[i] = GetPlaytimeSeconds() / 3600; break;
-                    case VAR_PLAYTIME_MINUTES: scriptEng.operands[i] = (GetPlaytimeSeconds() % 3600) / 60; break;
-                    case VAR_PLAYTIME_SECONDS: scriptEng.operands[i] = GetPlaytimeSeconds() % 60; break;
-                    case VAR_MOUSE_MOVED: {
-                        static int lastMouseX = -1;
-                        static int lastMouseY = -1;
-                        int mouseX, mouseY;
-
-                        SDL_GetMouseState(&mouseX, &mouseY);
-                        if (lastMouseX != -1 && lastMouseY != -1 && (mouseX != lastMouseX || mouseY != lastMouseY)) {
-                            scriptEng.operands[i] = 1; // Mouse moved
-                        } else {
-                            scriptEng.operands[i] = 0; // Not moved or first check
-                        }
-                        lastMouseX = mouseX;
-                        lastMouseY = mouseY;
-                        break;
-                    }
-
-                    case VAR_MOUSE_HIDE: {
-                        if (scriptEng.operands[i] == 1) {
-                            SDL_ShowCursor(SDL_DISABLE);
-                        } else {
-                            SDL_ShowCursor(SDL_ENABLE);
-                        }
-                        break;
-                    }
-
-                    case VAR_MOUSE1_PRESSED: {
-                        int mouseState = SDL_GetMouseState(NULL, NULL);
-                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
-                        break;
-                    }
-
-                    case VAR_MOUSE2_PRESSED: {
-                        int mouseState = SDL_GetMouseState(NULL, NULL);
-                        scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
-                        break;
-                    }
-
-                    case VAR_OPTIONS_DEVMENUFLAG: {
-                        scriptEng.operands[i] = Engine.devMenu;
-                        break;
-                    }
-
-                    case VAR_OPTIONS_ENGINEDEBUGMODE: {
-                        scriptEng.operands[i] = engineDebugMode;
-                        break;
-                    }
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -5466,14 +5573,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             case FUNC_COS256: {
                 scriptEng.operands[0] = Cos256(scriptEng.operands[1]);
-                break;
-            }
-            case FUNC_SINCHANGE: {
-                scriptEng.operands[0] = scriptEng.operands[3] + (Sin512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
-                break;
-            }
-            case FUNC_COSCHANGE: {
-                scriptEng.operands[0] = scriptEng.operands[3] + (Cos512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
                 break;
             }
             case FUNC_ATAN2: {
@@ -5887,193 +5986,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 }
                 break;
             }
-            case FUNC_DRAWSTRING: {
-				/*
-				script operands
-				0 - sprite
-				1- xpos
-				2 - ypos				
-				3 - width of space
-				4 - letter spacing
-				5 - vertical letter spacing
-				6 - menu
-				7 - menu line
-				
-				*/
-                opcodeSize = 0;
-               // int charID = 0;
-				//int wordoffset = 0;
-				int charxpos = scriptEng.operands[1];
-				int charypos = scriptEng.operands[2];
-				int line = scriptEng.operands[7];
-
-				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
-				int id          = tMenu->entryStart[line];
-
-				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
-					int character = tMenu->textData[id];
-					if (character == 64) { //@ symbol line breaks
-						charxpos = scriptEng.operands[1];
-						charypos += scriptEng.operands[5];
-					}
-					else {						
-						if (character == ' ')
-							character = -1;							
-						if (character >= 192) //accented characters
-							character -= 94;
-						else if (character >= 33)
-							character -= 33;
-
-						if (character <= -1) {
-							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
-						}
-						else {
-							character += scriptEng.operands[0];
-							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
-							DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-									   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
-							charxpos += spriteFrame->width + scriptEng.operands[4];
-						}
-					}
-					id++;
-				}
-            }
-            break;
-            case FUNC_DRAWSTRINGFX: {
-				/*
-				script operands
-				0 - sprite
-				1- xpos
-				2 - ypos				
-				3 - width of space
-				4 - letter spacing
-				5 - vertical letter spacing
-				6 - menu
-				7 - menu line
-                8 - effect flag
-				
-				*/
-                opcodeSize = 0;
-               // int charID = 0;
-				//int wordoffset = 0;
-				int charxpos = scriptEng.operands[1];
-				int charypos = scriptEng.operands[2];
-				int line = scriptEng.operands[7];
-
-				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
-				int id          = tMenu->entryStart[line];
-
-				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
-					int character = tMenu->textData[id];
-					if (character == 64) { //@ symbol line breaks
-						charxpos = scriptEng.operands[1];
-						charypos += scriptEng.operands[5];
-					}
-					else {						
-						if (character == ' ')
-							character = -1;							
-						if (character >= 192) //accented characters
-							character -= 94;
-						else if (character >= 33)
-							character -= 33;
-
-						if (character <= -1) {
-							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
-						}
-						else {
-							character += scriptEng.operands[0];
-							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
-							
-							switch (scriptEng.operands[8]) {
-								case FX_SCALE:
-									DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-													entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
-													scriptInfo->spriteSheetID);
-									break;
-								case FX_ROTATE:
-									DrawSpriteRotated(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-													scriptInfo->spriteSheetID);
-									break;
-								case FX_ROTOZOOM:
-									DrawSpriteRotozoom(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-													entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
-									break;
-								case FX_INK:
-									switch (entity->inkEffect) {
-										case INK_NONE:
-											DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
-											break;
-										case INK_BLEND:
-											DrawBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
-											break;
-										case INK_ALPHA:
-											DrawAlphaBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
-													scriptInfo->spriteSheetID);
-											break;
-										case INK_ADD:
-											DrawAdditiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
-													scriptInfo->spriteSheetID);
-											break;
-										case INK_SUB:
-											DrawSubtractiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
-													scriptInfo->spriteSheetID);
-											break;
-									}
-									break;
-								case FX_TINT:
-									if (entity->inkEffect == INK_ALPHA) {
-										DrawScaledTintMask(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
-														spriteFrame->sprY, scriptInfo->spriteSheetID);
-									}
-									else {
-										DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
-														scriptInfo->spriteSheetID);
-									}
-									break;
-								case FX_FLIP:
-									switch (entity->direction) {
-										default:
-										case FLIP_NONE:
-											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY, spriteFrame->width,
-													spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE, scriptInfo->spriteSheetID);
-											break;
-										case FLIP_X:
-											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX, charypos + spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_X, scriptInfo->spriteSheetID);
-											break;
-										case FLIP_Y:
-											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos - spriteFrame->height - spriteFrame->pivotY,
-													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y, scriptInfo->spriteSheetID);
-											break;
-										case FLIP_XY:
-											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX,
-													charypos - spriteFrame->height - spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
-													spriteFrame->sprX, spriteFrame->sprY, FLIP_XY, scriptInfo->spriteSheetID);
-											break;
-									}
-									break;
-								default: // FX_ALL
-									DrawSpriteAllFX(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
-													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
-													entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, 0);
-									break;
-							}
-							charxpos += spriteFrame->width + scriptEng.operands[4];
-						}
-					}
-					id++;
-				}
-            }
-            break;
             case FUNC_DRAWMENU:
                 opcodeSize        = 0;
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
@@ -6113,15 +6025,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SETSCREENFADE:
                 opcodeSize = 0;
                 SetFade(1, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
-                break;
-            case FUNC_SETCLASSICFADE:
-            case FUNC_SETCLASSICFADEOUT:
-                opcodeSize = 0;
-                SetFade(2, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
-                break;
-            case FUNC_SETCLASSICFADEIN:
-                opcodeSize = 0;
-                SetFade(3, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
             case FUNC_SETACTIVEPALETTE:
                 opcodeSize = 0;
@@ -6380,22 +6283,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 DrawRectangle(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
                               scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
                 break;
-			case FUNC_CLASSICTINT:
-			case FUNC_DRAWCLASSICOUT:
-                opcodeSize = 0;
-                DrawClassicFadeOut(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
-                              scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
-                break;
-			case FUNC_DRAWCLASSICIN:
-                opcodeSize = 0;
-                DrawClassicFadeIn(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
-                              scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
-                break;
-            case FUNC_SETTINTTABLE:
-                opcodeSize = 0;
-                GenerateTintTable(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
-                             scriptEng.operands[5], scriptEng.operands[6]);
-                break;
             case FUNC_RESETOBJECTENTITY: {
                 opcodeSize     = 0;
                 Entity *newEnt = &objectEntityList[scriptEng.operands[0]];
@@ -6521,26 +6408,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 else
                     SwapMusicTrack(scriptText, scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
                 break;
-            case FUNC_LOADVIDEO:
-                opcodeSize = 0;
-                PauseSound();
-                if (FindStringToken(scriptText, ".rsv", 1) <= -1)
-                    PlayVideoFile(scriptText, scriptEng.operands[1]); // not an rsv
-                else
-                    scriptInfo->spriteSheetID = AddGraphicsFile(scriptText);
-                ResumeSound();
-                break;
-            case FUNC_NEXTVIDEOFRAME:
-                opcodeSize = 0;
-                UpdateVideoFrame();
-                break;
-            case FUNC_SETMUSICTRACKEX:
-                opcodeSize = 0;
-                if (scriptEng.operands[2] <= 1)
-                    SetMusicTrackEx(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0, scriptEng.operands[3]);
-                else
-                    SetMusicTrackEx(scriptText, scriptEng.operands[1], true, scriptEng.operands[2], scriptEng.operands[3]);
-                break;
             case FUNC_PLAYSFX:
                 opcodeSize = 0;
                 PlaySfx(scriptEng.operands[0], scriptEng.operands[1]);
@@ -6549,80 +6416,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 opcodeSize = 0;
                 StopSfx(scriptEng.operands[0]);
                 break;
-            case FUNC_PAUSESFX:
-                opcodeSize = 0;
-                PauseSfx(scriptEng.operands[0]);
-                break;
-            case FUNC_RESUMESFX:
-                opcodeSize = 0;
-                ResumeSfx(scriptEng.operands[0]);
-                break;
-            case FUNC_PLAYVOICE:
-                opcodeSize = 0;
-                PlayVoice(scriptEng.operands[0], scriptEng.operands[1]);
-                break;
-            case FUNC_STOPVOICE:
-                opcodeSize = 0;
-                StopVoice(scriptEng.operands[0]);
-                break;
-            case FUNC_PAUSEVOICE:
-                opcodeSize = 0;
-                PauseVoice(scriptEng.operands[0]);
-                break;
-            case FUNC_RESUMEVOICE:
-                opcodeSize = 0;
-                ResumeVoice(scriptEng.operands[0]);
-                break;
-            case FUNC_PAUSEALLSFX:
-                opcodeSize = 0;
-                PauseAllSfx();
-                break;
-            case FUNC_RESUMEALLSFX:
-                opcodeSize = 0;
-                ResumeAllSfx();
-                break;
-            case FUNC_PAUSEALLVOICE:
-                opcodeSize = 0;
-                PauseAllVoice();
-                break;
-            case FUNC_RESUMEALLVOICE:
-                opcodeSize = 0;
-                ResumeAllVoice();
-                break;
-            case FUNC_STOPALLSFX:
-                opcodeSize = 0;
-                StopAllSfx();
-                break;
-            case FUNC_STOPALLVOICE:
-                opcodeSize = 0;
-                StopAllVoice();
-                break;
             case FUNC_SETSFXATTRIBUTES:
                 opcodeSize = 0;
                 SetSfxAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
-                break;
-            case FUNC_SETVOICEATTRIBUTES:
-                opcodeSize = 0;
-                SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
-                break;
-            case FUNC_SETMUSICMODIFIER:
-                // SetMusicModifier(int track, int modifier, int data1, int data2)
-                switch (scriptEng.operands[1]) {
-                        // MODIFIER PARAMS:
-                    case AUDIO_MOD_SPEED:
-                        // data1 = playback speed
-                        // (100 is regular speed, lower values are slower, and higher values are faster)
-                        musicTracks[scriptEng.operands[0]].mods.speed = scriptEng.operands[2];
-                        break;
-                }
-                break;
-            case FUNC_SETSFXPITCH:
-                opcodeSize = 0;
-                SetSfxPitch(scriptEng.operands[0], scriptEng.operands[1]);
-                break;
-            case FUNC_SETVOICEPITCH:
-                opcodeSize = 0;
-                SetVoicePitch(scriptEng.operands[0], scriptEng.operands[1]);
                 break;
             case FUNC_OBJECTTILECOLLISION:
                 opcodeSize = 0;
@@ -6930,22 +6726,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 }
                 break;
             }
-            case FUNC_GETTEXTINFO_16: {
-                TextMenu *menu = &gameMenu[scriptEng.operands[1]];
-                switch (scriptEng.operands[2]) {
-                    case TEXTINFO_TEXTDATA:
-						end = scriptEng.operands[4] << 1;
-						front = end + 1;
-                        end = scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
-                        front = scriptEng.operands[0] = (menu->textData[menu->entryStart[scriptEng.operands[3]] + front]) << 8;
-						scriptEng.operands[0] = end + front;
-						//scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
-                        break;
-                    case TEXTINFO_TEXTSIZE: scriptEng.operands[0] = menu->entrySize[scriptEng.operands[3]] >> 1; break;
-                    case TEXTINFO_ROWCOUNT: scriptEng.operands[0] = menu->rowCount; break;
-                }
-                break;
-            }
 #if !RETRO_REV02
             case FUNC_DRAWTEXT: {
                 opcodeSize        = 0;
@@ -7022,20 +6802,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         void (*func)(int *, int *) = (void (*)(int *, int *))nativeFunction[scriptEng.operands[0]];
                         if (func)
                             func(&scriptEng.operands[1], &scriptEng.operands[2]);
-                    }
-                }
-                break;
-            case FUNC_CALLNATIVEFUNCTION3:
-                if (scriptEng.operands[0] >= 0 && scriptEng.operands[0] < NATIIVEFUNCTION_COUNT) {
-                    if (StrLength(scriptText)) {
-                        void (*func)(int *, char *, int *) = (void (*)(int *, char *, int *))nativeFunction[scriptEng.operands[0]];
-                        if (func)
-                            func(&scriptEng.operands[2], scriptText, &scriptEng.operands[3]);
-                    }
-                    else {
-                        void (*func)(int *, int *, int *) = (void (*)(int *, int *, int *))nativeFunction[scriptEng.operands[0]];
-                        if (func)
-                            func(&scriptEng.operands[1], &scriptEng.operands[2], &scriptEng.operands[3]);
                     }
                 }
                 break;
@@ -7248,6 +7014,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
 //-------- New functions start here --------//
 
+            // Function calling
             case FUNC_CALLFUNCTIONOBJECT: {
                 opcodeSize                        = 0;
                 functionStack[functionStackPos]   = scriptCodePtr;
@@ -7264,7 +7031,22 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 objectEntityPos                   = scriptEng.operands[1];
                 break;
             }
+            case FUNC_CALLNATIVEFUNCTION3:
+                if (scriptEng.operands[0] >= 0 && scriptEng.operands[0] < NATIIVEFUNCTION_COUNT) {
+                    if (StrLength(scriptText)) {
+                        void (*func)(int *, char *, int *) = (void (*)(int *, char *, int *))nativeFunction[scriptEng.operands[0]];
+                        if (func)
+                            func(&scriptEng.operands[2], scriptText, &scriptEng.operands[3]);
+                    }
+                    else {
+                        void (*func)(int *, int *, int *) = (void (*)(int *, int *, int *))nativeFunction[scriptEng.operands[0]];
+                        if (func)
+                            func(&scriptEng.operands[1], &scriptEng.operands[2], &scriptEng.operands[3]);
+                    }
+                }
+                break;
 
+            // Website interaction
             case FUNC_CHECKUPDATES: {
                 opcodeSize = 0;
                 sprintf(temporar, "https://%s", scriptText);
@@ -7289,7 +7071,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            // Discord
+            // Discord presence
             case FUNC_SET_PRESENCE_NAME: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7390,9 +7172,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
-            // Controller Functions
+            // Controller management
             case FUNC_VIBRATECONTROLLER: {
                 opcodeSize = 0;
+
+                // VibrateController(controllerID, intensity, duration)
 
                 // Static vibration state management
                 static SDL_GameController *gameControllers[DEFAULT_INPUT_COUNT] = {NULL};
@@ -7443,6 +7227,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 
             case FUNC_SETCONTROLLERLEDCOLOUR: {
                 opcodeSize = 0;
+                // SetControllerLEDColour(controllerID, r, g, b)
                 SetControllerLEDColour(scriptEng.operands[0], (Uint8)scriptEng.operands[1], (Uint8)scriptEng.operands[2], (Uint8)scriptEng.operands[3]);
                 break;
             }
@@ -7460,7 +7245,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         ++currentControllerCount;
                 }
 
-                // On first call, initialize previous count and do not signal a new connection.
                 if (prevControllerCount == -1) {
                     prevControllerCount = currentControllerCount;
                     return;
@@ -7477,13 +7261,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 prevControllerCount = currentControllerCount;
                 break;
             }
-
             case FUNC_CHECKCONTROLLERDISCONNECT: {
                 opcodeSize = 0;
+                scriptEng.checkResult = 0;
+
                 static int prevControllerCount = 0;
                 int currentControllerCount = 0;
 
-                // Count currently connected controllers without opening them
                 int numJoysticks = SDL_NumJoysticks();
                 for (int i = 0; i < numJoysticks; ++i) {
                     if (SDL_IsGameController(i)) {
@@ -7491,7 +7275,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     }
                 }
 
-                // Compare with previous count
                 if (currentControllerCount < prevControllerCount) {
                     PrintLog("Controller disconnected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
                     scriptEng.checkResult = 1; // 1 = disconnected
@@ -7503,7 +7286,304 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             }
 
+            // Music
+            case FUNC_SETMUSICTRACKEX:
+                opcodeSize = 0;
+                // SetMusicTrackEx(track, trackID, loop start, loop end)
+                if (scriptEng.operands[2] <= 1)
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], scriptEng.operands[2], 0, scriptEng.operands[3]);
+                else
+                    SetMusicTrackEx(scriptText, scriptEng.operands[1], true, scriptEng.operands[2], scriptEng.operands[3]);
+                break;
+            case FUNC_SETMUSICMODIFIER:
+                // SetMusicModifier(int track, int modifier, int data1, int data2)
+                switch (scriptEng.operands[1]) {
+                        // MODIFIER PARAMS:
+                    case AUDIO_MOD_SPEED:
+                        // data1 = playback speed
+                        // (100 is regular speed, lower values are slower, and higher values are faster)
+                        musicTracks[scriptEng.operands[0]].mods.speed = scriptEng.operands[2];
+                        break;
+                }
+                break;
+
+            // Sound
+            case FUNC_PAUSESFX:
+                opcodeSize = 0;
+                PauseSfx(scriptEng.operands[0]);
+                break;
+            case FUNC_RESUMESFX:
+                opcodeSize = 0;
+                ResumeSfx(scriptEng.operands[0]);
+                break;
+            case FUNC_PAUSEALLSFX:
+                opcodeSize = 0;
+                PauseAllSfx();
+                break;
+            case FUNC_RESUMEALLSFX:
+                opcodeSize = 0;
+                ResumeAllSfx();
+                break;
+            case FUNC_STOPALLSFX:
+                opcodeSize = 0;
+                StopAllSfx();
+                break;
+            case FUNC_SETSFXPITCH:
+                opcodeSize = 0;
+                // SetSfxPitch(sfxID, pitchLevel)
+                SetSfxPitch(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+
+            // Voice 
+            // Note: these are essentially just a copy and paste of the SFX functions and values,
+            // they just use a different value for volume and were made specifically for games
+            // that will have voice acting, iykyk
+            case FUNC_PLAYVOICE:
+                opcodeSize = 0;
+                PlayVoice(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+            case FUNC_STOPVOICE:
+                opcodeSize = 0;
+                StopVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_PAUSEVOICE:
+                opcodeSize = 0;
+                PauseVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_RESUMEVOICE:
+                opcodeSize = 0;
+                ResumeVoice(scriptEng.operands[0]);
+                break;
+            case FUNC_PAUSEALLVOICE:
+                opcodeSize = 0;
+                PauseAllVoice();
+                break;
+            case FUNC_RESUMEALLVOICE:
+                opcodeSize = 0;
+                ResumeAllVoice();
+                break;
+            case FUNC_STOPALLVOICE:
+                opcodeSize = 0;
+                StopAllVoice();
+                break;
+            case FUNC_SETVOICEATTRIBUTES:
+                opcodeSize = 0;
+                SetVoiceAttributes(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
+                break;
+            case FUNC_SETVOICEPITCH:
+                opcodeSize = 0;
+                SetVoicePitch(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+
+            // Strings
+            // FUNC_INTTOSTR, FUNC_STRLENGTH, FUNC_SETVARIABLEBYNAME, FUNC_CONVERTSTRINGTOBYTE, and FUNC_CONVERTBYTETOSTRING are above
+            case FUNC_GETTEXTINFO_16: {
+                TextMenu *menu = &gameMenu[scriptEng.operands[1]];
+                switch (scriptEng.operands[2]) {
+                    case TEXTINFO_TEXTDATA:
+						end = scriptEng.operands[4] << 1;
+						front = end + 1;
+                        end = scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
+                        front = scriptEng.operands[0] = (menu->textData[menu->entryStart[scriptEng.operands[3]] + front]) << 8;
+						scriptEng.operands[0] = end + front;
+						//scriptEng.operands[0] = menu->textData[menu->entryStart[scriptEng.operands[3]] + end];
+                        break;
+                    case TEXTINFO_TEXTSIZE: scriptEng.operands[0] = menu->entrySize[scriptEng.operands[3]] >> 1; break;
+                    case TEXTINFO_ROWCOUNT: scriptEng.operands[0] = menu->rowCount; break;
+                }
+                break;
+            }
+            case FUNC_DRAWSTRING: {
+				/*
+				script operands
+				0 - sprite
+				1- xpos
+				2 - ypos				
+				3 - width of space
+				4 - letter spacing
+				5 - vertical letter spacing
+				6 - menu
+				7 - menu line
+				*/
+
+                opcodeSize = 0;
+               // int charID = 0;
+				//int wordoffset = 0;
+				int charxpos = scriptEng.operands[1];
+				int charypos = scriptEng.operands[2];
+				int line = scriptEng.operands[7];
+
+				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
+				int id          = tMenu->entryStart[line];
+
+				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
+					int character = tMenu->textData[id];
+					if (character == 64) { //@ symbol line breaks
+						charxpos = scriptEng.operands[1];
+						charypos += scriptEng.operands[5];
+					}
+					else {						
+						if (character == ' ')
+							character = -1;							
+						if (character >= 192) //accented characters
+							character -= 94;
+						else if (character >= 33)
+							character -= 33;
+
+						if (character <= -1) {
+							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
+						}
+						else {
+							character += scriptEng.operands[0];
+							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+							DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+									   spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+							charxpos += spriteFrame->width + scriptEng.operands[4];
+						}
+					}
+					id++;
+				}
+            }
+            break;
+            case FUNC_DRAWSTRINGFX: {
+				/*
+				script operands
+				0 - sprite
+				1- xpos
+				2 - ypos				
+				3 - width of space
+				4 - letter spacing
+				5 - vertical letter spacing
+				6 - menu
+				7 - menu line
+                8 - effect flag
+				*/
+            
+                opcodeSize = 0;
+               // int charID = 0;
+				//int wordoffset = 0;
+				int charxpos = scriptEng.operands[1];
+				int charypos = scriptEng.operands[2];
+				int line = scriptEng.operands[7];
+
+				TextMenu *tMenu = (TextMenu *)&gameMenu[scriptEng.operands[6]];
+				int id          = tMenu->entryStart[line];
+
+				for (int i = 0; i < tMenu->entrySize[line]; ++i) {
+					int character = tMenu->textData[id];
+					if (character == 64) { //@ symbol line breaks
+						charxpos = scriptEng.operands[1];
+						charypos += scriptEng.operands[5];
+					}
+					else {						
+						if (character == ' ')
+							character = -1;							
+						if (character >= 192) //accented characters
+							character -= 94;
+						else if (character >= 33)
+							character -= 33;
+
+						if (character <= -1) {
+							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
+						}
+						else {
+							character += scriptEng.operands[0];
+							spriteFrame = &scriptFrames[scriptInfo->frameListOffset + character];
+							
+							switch (scriptEng.operands[8]) {
+								case FX_SCALE:
+									DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+													scriptInfo->spriteSheetID);
+									break;
+								case FX_ROTATE:
+									DrawSpriteRotated(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													scriptInfo->spriteSheetID);
+									break;
+								case FX_ROTOZOOM:
+									DrawSpriteRotozoom(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													entityScaleX, entityScaleY, scriptInfo->spriteSheetID);
+									break;
+								case FX_INK:
+									switch (entity->inkEffect) {
+										case INK_NONE:
+											DrawSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+											break;
+										case INK_BLEND:
+											DrawBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, scriptInfo->spriteSheetID);
+											break;
+										case INK_ALPHA:
+											DrawAlphaBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+										case INK_ADD:
+											DrawAdditiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+										case INK_SUB:
+											DrawSubtractiveBlendedSprite(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, entity->alpha,
+													scriptInfo->spriteSheetID);
+											break;
+									}
+									break;
+								case FX_TINT:
+									if (entity->inkEffect == INK_ALPHA) {
+										DrawScaledTintMask(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX,
+														spriteFrame->sprY, scriptInfo->spriteSheetID);
+									}
+									else {
+										DrawSpriteScaled(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+														entityScaleX, entityScaleY, spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY,
+														scriptInfo->spriteSheetID);
+									}
+									break;
+								case FX_FLIP:
+									switch (entity->direction) {
+										default:
+										case FLIP_NONE:
+											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos + spriteFrame->pivotY, spriteFrame->width,
+													spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_NONE, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_X:
+											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX, charypos + spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_X, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_Y:
+											DrawSpriteFlipped(charxpos + spriteFrame->pivotX, charypos - spriteFrame->height - spriteFrame->pivotY,
+													spriteFrame->width, spriteFrame->height, spriteFrame->sprX, spriteFrame->sprY, FLIP_Y, scriptInfo->spriteSheetID);
+											break;
+										case FLIP_XY:
+											DrawSpriteFlipped(charxpos - spriteFrame->width - spriteFrame->pivotX,
+													charypos - spriteFrame->height - spriteFrame->pivotY, spriteFrame->width, spriteFrame->height,
+													spriteFrame->sprX, spriteFrame->sprY, FLIP_XY, scriptInfo->spriteSheetID);
+											break;
+									}
+									break;
+								default: // FX_ALL
+									DrawSpriteAllFX(entity->direction, charxpos, charypos, -spriteFrame->pivotX, -spriteFrame->pivotY,
+													spriteFrame->sprX, spriteFrame->sprY, spriteFrame->width, spriteFrame->height, entity->rotation,
+													entityScaleX, entityScaleY, scriptInfo->spriteSheetID, entity->alpha, entity->inkEffect, 0);
+									break;
+							}
+							charxpos += spriteFrame->width + scriptEng.operands[4];
+						}
+					}
+					id++;
+				}
+            }
+            break;
+
+            // Graphics
             case FUNC_DRAWNUMBERSFX: {
+                // Works the same as DrawNumbers, just add the effect flag on the end
                 opcodeSize = 0;
                 int i      = 10;
                 if (scriptEng.operands[6]) {
@@ -7714,6 +7794,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
                 
             case FUNC_DRAWACTNAMEFX: {
+                // Works the same as DrawActName, just add the effect flag on the end
                 opcodeSize = 0;
                 int charID = 0;
 				int wordoffset = 0;
@@ -8394,16 +8475,61 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 }
                 break;
             }
-            
             case FUNC_DRAWMENUFX: {
+                // Works the same as DrawMenu, just add the effect flag on the end
                 opcodeSize = 0;
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
                 // Menu, X, Y, Direction, Scale X, Scale Y, Rotation, Alpha, Effect
                 DrawTextMenuFX(&gameMenu[scriptEng.operands[0]], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4], scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7], scriptEng.operands[8]);
                 break;
             }
+            case FUNC_SETCLASSICFADE:
+            case FUNC_SETCLASSICFADEOUT:
+                opcodeSize = 0;
+                SetFade(2, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
+                break;
+            case FUNC_SETCLASSICFADEIN:
+                opcodeSize = 0;
+                SetFade(3, scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3]);
+                break;
+			case FUNC_CLASSICTINT:
+			case FUNC_DRAWCLASSICOUT:
+                opcodeSize = 0;
+                DrawClassicFadeOut(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                              scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
+                break;
+			case FUNC_DRAWCLASSICIN:
+                opcodeSize = 0;
+                DrawClassicFadeIn(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                              scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7]);
+                break;
+            case FUNC_SETTINTTABLE:
+                opcodeSize = 0;
+                GenerateTintTable(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
+                             scriptEng.operands[5], scriptEng.operands[6]);
+                break;
 
+            // Video
+            case FUNC_LOADVIDEO:
+                opcodeSize = 0;
+                // LoadVideo(video, audioTrack)
+                PauseSound();
+                if (FindStringToken(scriptText, ".rsv", 1) <= -1)
+                    PlayVideoFile(scriptText, scriptEng.operands[1]); // not an rsv
+                else
+                    scriptInfo->spriteSheetID = AddGraphicsFile(scriptText);
+                ResumeSound();
+                break;
+            case FUNC_NEXTVIDEOFRAME:
+                opcodeSize = 0;
+                // ! RSV ONLY !
+                UpdateVideoFrame();
+                break;
+
+            // Username
             case FUNC_GETUSERNAME: {
+                opcodeSize = 0;
+                // GetUsername(menu)
 #if RETRO_USE_STEAMWORKS
                 GetSteamUsername(scriptEng.operands + 1);
 #else
@@ -8411,13 +8537,88 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SETUSERNAME: {
+                opcodeSize = 0;
+                // SetUsername(char username)
                 SetUsername(&scriptText[scriptEng.operands[1]]);
                 break;
             }
 
+            // Math
+            case FUNC_TAN: {
+                scriptEng.operands[0] = Tan512(scriptEng.operands[1]);
+                break;
+            }
+            case FUNC_TAN256: {
+                scriptEng.operands[0] = Tan256(scriptEng.operands[1]);
+                break;
+            }
+            case FUNC_SINCHANGE: {
+                // SinChange(var store, int angle, int RShift, int inc, int dec)
+                scriptEng.operands[0] = scriptEng.operands[3] + (Sin512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
+                break;
+            }
+            case FUNC_COSCHANGE: {
+                // CosChange(var store, int angle, int RShift, int inc, int dec)
+                scriptEng.operands[0] = scriptEng.operands[3] + (Cos512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
+                break;
+            }
+            case FUNC_TANCHANGE: {
+                // TanChange(var store, int angle, int RShift, int inc, int dec)
+                scriptEng.operands[0] = scriptEng.operands[3] + (Tan512(scriptEng.operands[1]) >> scriptEng.operands[2]) - scriptEng.operands[4];
+                break;
+            }
+            case FUNC_ASIN: {
+                // ASin(store, value)
+                float value = scriptEng.operands[1] / 512.0f;
+                scriptEng.operands[0] = (int)(asinf(value) * 40.743664f);
+                break;
+            }
+            case FUNC_ACOS: {
+                // ACos(store, value)
+                float value = scriptEng.operands[1] / 512.0f;
+                scriptEng.operands[0] = (int)(acosf(value) * 40.743664f);
+                break;
+            }
+            case FUNC_ATAN: {
+                // ATan(store, value)
+                float value = scriptEng.operands[1] / 512.0f;
+                scriptEng.operands[0] = (int)(atanf(value) * 40.743664f);
+                break;
+            }
+            case FUNC_CLAMP: {
+                // Clamp(value, min, max, loopValues)
+                int value       = scriptEng.operands[0];
+                int minVal      = scriptEng.operands[1];
+                int maxVal      = scriptEng.operands[2];
+                int loopValues  = scriptEng.operands[3]; // this means if a value goes over max it'll go to 0, and if it goes under the min it'll go to max
+                if (loopValues)
+                {
+                    if (value < minVal)
+                        scriptEng.operands[0] = maxVal;
+                    
+                    if (value > maxVal)
+                        scriptEng.operands[0] = minVal;
+                }
+                else
+                {
+                    if (value < minVal)
+                        scriptEng.operands[0] = minVal;
+                    
+                    if (value > maxVal)
+                        scriptEng.operands[0] = maxVal;
+                }
+                break;
+            }
+            case FUNC_SQUAREROOT: {
+                // SquareRoot(value)
+                // returns the calculated value into the checkResult
+                opcodeSize = 0;
+                scriptEng.checkResult = (int)sqrt(scriptEng.operands[0]);
+                break;
+            }
             case FUNC_CALCULATETOTIMEVALUE: {
+                opcodeSize = 0;
                 int minutes         = scriptEng.operands[0];
                 int seconds         = scriptEng.operands[1];
                 int milliseconds    = scriptEng.operands[2];
@@ -8431,7 +8632,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 scriptEng.checkResult = returnValue;
                 break;
             }
-
             case FUNC_CALCULATEFROMTIMEVALUE: {
                 int timeValue = scriptEng.operands[0];
 
@@ -8440,14 +8640,15 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 scriptEng.operands[3] = timeValue % 100;              // milliseconds
                 break;
             }
-
             case FUNC_CALCULATEPERCENTAGE: {
+                opcodeSize = 0;
                 int currentValue    = scriptEng.operands[0];
                 int totalValue      = scriptEng.operands[1];
                 
                 currentValue *= 100;
                 currentValue /= totalValue;
                 scriptEng.checkResult = currentValue;
+                break;
             }
         }
 
@@ -8508,9 +8709,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP5: scriptEng.temp[5] = scriptEng.operands[i]; break;
                     case VAR_TEMP6: scriptEng.temp[6] = scriptEng.operands[i]; break;
                     case VAR_TEMP7: scriptEng.temp[7] = scriptEng.operands[i]; break;
-                    case VAR_TEMP8: scriptEng.temp[8] = scriptEng.operands[i]; break;
-                    case VAR_TEMP9: scriptEng.temp[9] = scriptEng.operands[i]; break;
-                    case VAR_TEMP10: scriptEng.temp[10] = scriptEng.operands[i]; break;
                     case VAR_CHECKRESULT: scriptEng.checkResult = scriptEng.operands[i]; break;
                     case VAR_ARRAYPOS0: scriptEng.arrayPosition[0] = scriptEng.operands[i]; break;
                     case VAR_ARRAYPOS1: scriptEng.arrayPosition[1] = scriptEng.operands[i]; break;
@@ -9040,7 +9238,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SCREENADJUSTCAMERAY:
                         for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].adjustY = scriptEng.operands[i];
                         break;
-                    case VAR_SCREENTINTTABLE: currentTintTable = scriptEng.operands[i]; break;
                     case VAR_TOUCHSCREENDOWN: break;
                     case VAR_TOUCHSCREENXPOS: break;
                     case VAR_TOUCHSCREENYPOS: break;
@@ -9075,10 +9272,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_KEYPRESSBUTTONR: keyPress[inputCheck].R = scriptEng.operands[i]; break;
                     case VAR_KEYPRESSSTART: keyPress[inputCheck].start = scriptEng.operands[i]; break;
                     case VAR_KEYPRESSSELECT: keyPress[inputCheck].select = scriptEng.operands[i]; break;
-                    case VAR_KEY_PRESSED: break;
-                    case VAR_KEY_DOWN: break;
-                    case VAR_CONTROLLER_PRESSED: break;
-                    case VAR_CONTROLLER_DOWN: break;
 #if RETRO_ACCEPT_OLD_SYNTAX
                     case VAR_INPUTDOWNUP: keyDown[inputCheck].up = scriptEng.operands[i]; break;
                     case VAR_INPUTDOWNDOWN: keyDown[inputCheck].down = scriptEng.operands[i]; break;
@@ -9111,8 +9304,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif					
                     case VAR_MENU1SELECTION: gameMenu[0].selection1 = scriptEng.operands[i]; break;
                     case VAR_MENU2SELECTION: gameMenu[1].selection1 = scriptEng.operands[i]; break;
-                    case VAR_MENU3SELECTION: gameMenu[2].selection1 = scriptEng.operands[i]; break;
-                    case VAR_MENU4SELECTION: gameMenu[3].selection1 = scriptEng.operands[i]; break;
                     case VAR_TILELAYERXSIZE: stageLayouts[arrayVal].xsize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERYSIZE: stageLayouts[arrayVal].ysize = scriptEng.operands[i]; break;
                     case VAR_TILELAYERTYPE: stageLayouts[arrayVal].type = scriptEng.operands[i]; break;
@@ -9167,10 +9358,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         sfxVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
-                    case VAR_ENGINEVOICEVOLUME:
-                        voiceVolume = scriptEng.operands[i];
-                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
-                        break;
                     case VAR_ENGINEBGMVOLUME:
                         bgmVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
@@ -9189,6 +9376,61 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_CAMERAXPOS: camera[arrayVal].xpos = scriptEng.operands[i]; break;
                     case VAR_CAMERAYPOS: camera[arrayVal].ypos = scriptEng.operands[i]; break;
                     case VAR_CAMERAADJUSTY: camera[arrayVal].adjustY = scriptEng.operands[i]; break;
+#if RETRO_USE_HAPTICS
+                    case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
+#endif
+
+                    //-------- New values start here --------//
+
+                    // More Internal Script Values
+                    case VAR_TEMP8: scriptEng.temp[8] = scriptEng.operands[i]; break;
+                    case VAR_TEMP9: scriptEng.temp[9] = scriptEng.operands[i]; break;
+                    case VAR_TEMP10: scriptEng.temp[10] = scriptEng.operands[i]; break;
+
+                    // Strings
+                    case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR1:  StrCopy(scriptEng.tempStr[1],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR2:  StrCopy(scriptEng.tempStr[2],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR3:  StrCopy(scriptEng.tempStr[3],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR4:  StrCopy(scriptEng.tempStr[4],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR5:  StrCopy(scriptEng.tempStr[5],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR6:  StrCopy(scriptEng.tempStr[6],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR7:  StrCopy(scriptEng.tempStr[7],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]); break;
+                    case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]); break;
+
+                    // Keyboard
+                    case VAR_KEY_PRESSED: break;
+                    case VAR_KEY_DOWN: break;
+
+                    // Controller
+                    case VAR_CONTROLLER_VIBRATIONENABLED:   
+                        if (arrayVal > 0) 
+                            {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} 
+                        break;
+                    case VAR_CONTROLLER_PRESSED: break;
+                    case VAR_CONTROLLER_DOWN: break;
+                    case VAR_CONTROLLER_DEVICE: break;
+                    case VAR_CONTROLLER_WIRED: break;
+                    case VAR_CONTROLLER_BATTERYLEVEL: break;
+
+                    // Mouse
+                    case VAR_MOUSE_MOVED: break;
+                    case VAR_MOUSE_HIDE: break;
+                    case VAR_MOUSE1_PRESSED: break;
+                    case VAR_MOUSE2_PRESSED: break;
+
+                    // Audio
+                    case VAR_ENGINEVOICEVOLUME:
+                        voiceVolume = scriptEng.operands[i];
+                        SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
+                        break;
+
+                    // Screen
+                    case VAR_SCREENTINTTABLE: currentTintTable = scriptEng.operands[i]; break;
+
+                    // Camera
                     case VAR_CAMERA_DIRECTION: camera[arrayVal].direction = scriptEng.operands[i]; break;
                     // Optimisation by merging them all maybe
                     case VAR_CAMERA_DRAWLAYER0DIRECTION:
@@ -9203,29 +9445,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                             camera[arrayVal].layerDir[scriptCode[scriptCodePtr - 1] - VAR_CAMERA_DRAWLAYER0DIRECTION] = scriptEng.operands[i];
                         break;
 
-#if RETRO_USE_HAPTICS
-                    case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
-#endif
-                    case VAR_GAME_CHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
-                    case VAR_GAME_NETWORKPING: break;
-                    case VAR_CONTROLLER_DEVICE: break;
-                    case VAR_CONTROLLER_WIRED: break;
-                    case VAR_CONTROLLER_VIBRATIONENABLED:   
-                        if (arrayVal > 0) 
-                            {ControllerVibration[arrayVal - 1] = scriptEng.operands[i];} 
-                        break;
-                    case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR1:  StrCopy(scriptEng.tempStr[1],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR2:  StrCopy(scriptEng.tempStr[2],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR3:  StrCopy(scriptEng.tempStr[3],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR4:  StrCopy(scriptEng.tempStr[4],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR5:  StrCopy(scriptEng.tempStr[5],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR6:  StrCopy(scriptEng.tempStr[6],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR7:  StrCopy(scriptEng.tempStr[7],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR8:  StrCopy(scriptEng.tempStr[8],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR9:  StrCopy(scriptEng.tempStr[9],  scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTR10: StrCopy(scriptEng.tempStr[10], scriptEng.operandStr[i]); break;
-                    case VAR_TEMPSTRUSERNAME: break;
+                    // System/Device
                     case VAR_SYSTEM_TIMEYEAR: break;
                     case VAR_SYSTEM_TIMEMONTH: break;
                     case VAR_SYSTEM_TIMEDAY: break;
@@ -9233,20 +9453,36 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SYSTEM_TIMEMINUTE: break;
                     case VAR_SYSTEM_TIMESECOND: break;
                     case VAR_SYSTEM_TIMEDAYOFWEEK: break;
-                    case VAR_ENGINE_GAMETYPE: break;
+
+                    // Settings/Engine
+                    case VAR_GAME_CHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
                     case VAR_DISCORD_ENABLERPC: useDiscordRPC = scriptEng.operands[i]; break;
-                    case VAR_GAMEPAD_BATTERYLEVEL: break;
-                    case VAR_ENGINE_WINDOWFOCUSED: break;
-                    case VAR_ENGINE_USERNAMELENGTH: break;
+                    case VAR_OPTIONS_DEVMENUFLAG: break;
+                    case VAR_OPTIONS_ENGINEDEBUGMODE: break;
+                    case VAR_ENGINE_GAMETYPE: break;
+                    
+                    // Playtime
                     case VAR_PLAYTIME_HOURS: break;
                     case VAR_PLAYTIME_MINUTES: break;
                     case VAR_PLAYTIME_SECONDS: break;
-                    case VAR_MOUSE_MOVED: break;
-                    case VAR_MOUSE_HIDE: break;
-                    case VAR_MOUSE1_PRESSED: break;
-                    case VAR_MOUSE2_PRESSED: break;
-                    case VAR_OPTIONS_DEVMENUFLAG: break;
-                    case VAR_OPTIONS_ENGINEDEBUGMODE: break;
+
+                    // Network
+                    case VAR_GAME_NETWORKPING: break;
+
+                    // Window
+                    case VAR_ENGINE_WINDOWFOCUSED: break;
+
+                    // Menu
+                    case VAR_MENU3SELECTION: gameMenu[2].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU4SELECTION: gameMenu[3].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU5SELECTION: gameMenu[4].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU6SELECTION: gameMenu[5].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU7SELECTION: gameMenu[6].selection1 = scriptEng.operands[i]; break;
+                    case VAR_MENU8SELECTION: gameMenu[7].selection1 = scriptEng.operands[i]; break;
+
+                    // Username
+                    case VAR_TEMPSTRUSERNAME: break;
+                    case VAR_ENGINE_USERNAMELENGTH: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

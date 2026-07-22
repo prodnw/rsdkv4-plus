@@ -4,12 +4,15 @@
 
 int sinM7LookupTable[0x200];
 int cosM7LookupTable[0x200];
+int tanM7LookupTable[0x200];
 
 int sin512LookupTable[0x200];
 int cos512LookupTable[0x200];
+int tan512LookupTable[0x200];
 
 int sin256LookupTable[0x100];
 int cos256LookupTable[0x100];
+int tan256LookupTable[0x100];
 
 byte arcTan256LookupTable[0x100 * 0x100];
 
@@ -20,6 +23,7 @@ void CalculateTrigAngles()
     for (int i = 0; i < 0x200; ++i) {
         sinM7LookupTable[i] = (sin((i / 256.0) * M_PI) * 4096.0);
         cosM7LookupTable[i] = (cos((i / 256.0) * M_PI) * 4096.0);
+        tanM7LookupTable[i] = (tan((i / 256.0) * M_PI) * 4096.0);
     }
 
     cosM7LookupTable[0x00]  = 0x1000;
@@ -32,9 +36,15 @@ void CalculateTrigAngles()
     sinM7LookupTable[0x100] = 0;
     sinM7LookupTable[0x180] = -0x1000;
 
+    tanM7LookupTable[0x00]  = 0;
+    tanM7LookupTable[0x80]  = 0x1000;
+    tanM7LookupTable[0x100] = 0;
+    tanM7LookupTable[0x180] = -0x1000;
+
     for (int i = 0; i < 0x200; ++i) {
         sin512LookupTable[i] = (sinf((i / 256.0) * M_PI) * 512.0);
         cos512LookupTable[i] = (cosf((i / 256.0) * M_PI) * 512.0);
+        tan512LookupTable[i] = (tanf((i / 256.0) * M_PI) * 512.0);
     }
 
     cos512LookupTable[0x00]  = 0x200;
@@ -47,9 +57,15 @@ void CalculateTrigAngles()
     sin512LookupTable[0x100] = 0;
     sin512LookupTable[0x180] = -0x200;
 
+    tan512LookupTable[0x00]  = 0;
+    tan512LookupTable[0x80]  = 0x200;
+    tan512LookupTable[0x100] = 0;
+    tan512LookupTable[0x180] = -0x200;
+
     for (int i = 0; i < 0x100; i++) {
         sin256LookupTable[i] = (sin512LookupTable[i * 2] >> 1);
         cos256LookupTable[i] = (cos512LookupTable[i * 2] >> 1);
+        tan256LookupTable[i] = (tan512LookupTable[i * 2] >> 1);
     }
 
     for (int Y = 0; Y < 0x100; ++Y) {

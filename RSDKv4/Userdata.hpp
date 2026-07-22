@@ -299,6 +299,7 @@ void GetWindowBorderless();
 void SetWindowBorderless(int *borderless, int *unused);
 void GetWindowVSync();
 void SetWindowVSync(int *enabled, int *unused);
+void SetWindowOpacity(int *opacity, int *unused);
 void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
 void GetWindowBrightness();

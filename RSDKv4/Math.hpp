@@ -16,12 +16,15 @@
 
 extern int sinM7LookupTable[0x200];
 extern int cosM7LookupTable[0x200];
+extern int tanM7LookupTable[0x200];
 
 extern int sin512LookupTable[0x200];
 extern int cos512LookupTable[0x200];
+extern int tan512LookupTable[0x200];
 
 extern int sin256LookupTable[0x100];
 extern int cos256LookupTable[0x100];
+extern int tan256LookupTable[0x100];
 
 extern byte arcTan256LookupTable[0x100 * 0x100];
 
@@ -45,6 +48,14 @@ inline int Cos512(int angle)
     return cos512LookupTable[angle];
 }
 
+inline int Tan512(int angle)
+{
+    if (angle < 0)
+        angle = 0x200 - angle;
+    angle &= 0x1FF;
+    return tan512LookupTable[angle];
+}
+
 inline int Sin256(int angle)
 {
     if (angle < 0)
@@ -59,6 +70,14 @@ inline int Cos256(int angle)
         angle = 0x100 - angle;
     angle &= 0xFF;
     return cos256LookupTable[angle];
+}
+
+inline int Tan256(int angle)
+{
+    if (angle < 0)
+        angle = 0x100 - angle;
+    angle &= 0xFF;
+    return tan256LookupTable[angle];
 }
 
 // Get Arc Tan value

@@ -1751,6 +1751,28 @@ void SetWindowVSync(int *enabled, int *unused)
     Engine.vsync = *enabled;
 }
 
+void SetWindowOpacity(int *opacity, int *unused)
+{
+    if (!opacity)
+        return;
+
+    float value = (float)*opacity;
+
+#if RETRO_USING_SDL2
+    if (Engine.window) {
+        if (value <= 100.0f) {
+            value /= 100.0f;
+        }
+        else {
+            value /= 255.0f;
+        }
+        SDL_SetWindowOpacity(Engine.window, value);
+    }
+#else
+    value = 255.0f;
+#endif
+}
+
 void SetFrameRate(int *enabled, int *unused)
 {
     if (!enabled)
