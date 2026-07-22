@@ -1,6 +1,17 @@
 #ifndef MATH_H
 #define MATH_H
 
+// not "math" but works best here
+#define INT_TO_VOID(x) (void *)(size_t)(x)
+#define VOID_TO_INT(x) (int32)(size_t)(x)
+
+#define MIN(a, b)                      ((a) < (b) ? (a) : (b))
+#define MAX(a, b)                      ((a) > (b) ? (a) : (b))
+#define CLAMP(value, minimum, maximum) (((value) < (minimum)) ? (minimum) : (((value) > (maximum)) ? (maximum) : (value)))
+
+#define TO_FIXED(x)   ((x) << 16)
+#define FROM_FIXED(x) ((x) >> 16)
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327950288
 #endif
