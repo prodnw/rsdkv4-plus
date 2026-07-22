@@ -42,6 +42,10 @@ typedef unsigned short ushort;
 typedef unsigned int uint;
 // typedef unsigned long long ulong;
 
+#if !RETRO_USE_ORIGINAL_CODE
+bool getControllerButton(byte buttonID, int deviceID);
+#endif
+
 // Platforms (RSDKv4 only defines these 7 (I assume), but feel free to add your own custom platform define for easier platform code changes)
 #define RETRO_WIN      (0)
 #define RETRO_OSX      (1)

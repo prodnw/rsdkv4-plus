@@ -757,14 +757,14 @@ void RetroEngine::Run()
 
 #if RETRO_PLATFORM == RETRO_SWITCH
             //it's time for some devmenu switch hacks
-            if (getControllerButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER) && Engine.devMenu) {
-                if (getControllerButton(SDL_CONTROLLER_BUTTON_BACK)) {
+            if (getControllerButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, 0) && Engine.devMenu) {
+                if (getControllerButton(SDL_CONTROLLER_BUTTON_BACK, 0)) {
                     SDL_Event event;
                     event.type           = SDL_KEYDOWN;
                     event.key.keysym.sym = SDLK_ESCAPE;
                     SDL_PushEvent(&event);
                 }
-                if (getControllerButton(SDL_CONTROLLER_BUTTON_ZL)) {
+                if (getControllerButton(SDL_CONTROLLER_BUTTON_ZL, 0)) {
                     if (!masterPaused) masterPaused = true;
                 }
                 else {
@@ -772,13 +772,13 @@ void RetroEngine::Run()
                 }
 
                 if (masterPaused) {
-                    if (getControllerButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)) {
+                    if (getControllerButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, 0)) {
                         if (!devDownTimer++) frameStep = true;
                     }
                     else devDownTimer = 0;
                 }
                 else {
-                    if (getControllerButton(SDL_CONTROLLER_BUTTON_ZR)) {
+                    if (getControllerButton(SDL_CONTROLLER_BUTTON_ZR, 0)) {
                         Engine.gameSpeed = Engine.fastForwardSpeed;
                     }
                     else Engine.gameSpeed = 1;

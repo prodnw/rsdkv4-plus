@@ -4921,7 +4921,13 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: scriptEng.operands[i] = Engine.hapticsEnabled; break;
 #endif
                     case VAR_GAME_CHECKFORUPDATES: scriptEng.operands[i] = CheckForthemUpdates; break;
-                    case VAR_GAME_NETWORKPING: scriptEng.operands[i] = networkPing; break;
+                    case VAR_GAME_NETWORKPING:
+#if RETRO_USE_NETWORKING
+                        scriptEng.operands[i] = networkPing;
+#else
+                        scriptEng.operands[i] = 0;
+#endif
+                        break;
                     case VAR_CONTROLLER_DEVICE: {
 #if RETRO_USING_SDL2
                         int deviceType = CONTROLLER_KEYBOARD;
@@ -9197,7 +9203,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_HAPTICSENABLED: Engine.hapticsEnabled = scriptEng.operands[i]; break;
 #endif
                     case VAR_GAME_CHECKFORUPDATES: CheckForthemUpdates = scriptEng.operands[i]; break;
-                    case VAR_GAME_NETWORKPING: networkPing = scriptEng.operands[i]; break;
+                    case VAR_GAME_NETWORKPING: break;
                     case VAR_CONTROLLER_DEVICE: break;
                     case VAR_CONTROLLER_WIRED: break;
                     case VAR_CONTROLLER_VIBRATIONENABLED:   
