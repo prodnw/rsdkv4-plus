@@ -21,6 +21,22 @@ TrackInfo musicTracks[TRACK_COUNT];
 SFXInfo sfxList[SFX_COUNT];
 char sfxNames[SFX_COUNT][0x40];
 
+// Audio Muffle stuff
+int mUnderwaterEffect = 0;
+float mVolumeMultiplier = 1.0f;
+static inline const constexpr size_t MAX_NUM_CHANNELS = 2;
+static inline const constexpr size_t OUTPUT_BUFFER_SIZE = 1024;
+static inline const constexpr size_t ACCUMULATION_BUFFER_SIZE = 128;
+
+struct MusicMuffleChannelData {
+    float mAccumulator;
+    size_t mIndexInHistory;
+    float mHistoryBuffer[ACCUMULATION_BUFFER_SIZE];
+    int mOutputBuffer[OUTPUT_BUFFER_SIZE] = { 0 };
+};
+
+static MusicMuffleChannelData mChannelData[MAX_NUM_CHANNELS];
+
 int currentStreamIndex = 0;
 StreamFile streamFile[STREAMFILE_COUNT];
 StreamInfo streamInfo[STREAMFILE_COUNT];
@@ -368,6 +384,9 @@ void ProcessAudioPlayback(void *userdata, Uint8 *stream, int len)
 
         // Mix music
         ProcessMusicStream(mix_buffer, samples_to_do * sizeof(Sint16));
+
+        // Apply muffle effect if needed
+        ApplyMusicMuffle(mix_buffer, samples_to_do);
 
 #if RETRO_USING_SDL2
         // Process music being played by a ogv video
@@ -1109,14 +1128,14 @@ void SetSfxPitch(int sfxID, int pitchLevel)
     UnlockAudioDevice();
 }
 
-void SetVoicePitch(int voiceID, int pitchLevel)
+void SetVoicePitch(int sfxID, int pitchLevel)
 {
     if (pitchLevel < 1)
         pitchLevel = 1;
 
     LockAudioDevice();
     for (int i = 0; i < CHANNEL_COUNT; ++i) {
-        if (sfxChannels[i].isVoice && sfxChannels[i].sfxID == voiceID) {
+        if (sfxChannels[i].isVoice && sfxChannels[i].sfxID == sfxID) {
             sfxChannels[i].pitch = pitchLevel;
         }
     }
@@ -1164,4 +1183,63 @@ void SetVoiceAttributes(int sfx, int loopCount, sbyte pan)
     sfxInfo->pan         = pan;
     sfxInfo->sfxID       = sfx;
     UnlockAudioDevice();
+}
+
+// Music muffling code borrowed from Sonic 3 A.I.R.
+// Credits to Eukaryot
+void SetMusicMuffle(int effect, float volumeMultiplier)
+{
+    LockAudioDevice();
+    mVolumeMultiplier = volumeMultiplier;
+
+    int newEffect = effect;
+    if (newEffect < 0)
+        newEffect = 0;
+    if (newEffect > ACCUMULATION_BUFFER_SIZE)
+        newEffect = ACCUMULATION_BUFFER_SIZE;
+
+    if (newEffect == mUnderwaterEffect)
+        return;
+
+    if (newEffect <= 0) {
+        // Effect gets switched off, nothing to do
+    }
+    else if (mUnderwaterEffect <= 0) {
+        // Effect gets switched on, start with empty history and accumulator
+        for (size_t k = 0; k < CHANNEL_COUNT; ++k) 
+        {
+            mChannelData[k].mAccumulator = 0;
+            mChannelData[k].mIndexInHistory = 0;
+            memset(mChannelData[k].mHistoryBuffer, 0, sizeof(mChannelData[k].mHistoryBuffer));
+        }
+    }
+
+    mUnderwaterEffect = newEffect;
+    UnlockAudioDevice();
+}
+
+static void ApplyMusicMuffle(Sint32 *dst, size_t count)
+{
+    if (mUnderwaterEffect <= 0 || !streamInfoPtr)
+        return;
+
+    float effectStrength = ((float)mUnderwaterEffect / (float)ACCUMULATION_BUFFER_SIZE) * mVolumeMultiplier;
+
+    if (effectStrength < 0.0f)
+        effectStrength = 0.0f;
+    if (effectStrength > 1.00f)
+        effectStrength = 1.00f;
+
+    // Effects gets reduced or extended, keep the history and recalculate the accumulators
+    for (size_t i = 0; i < count; ++i) 
+    {
+        const size_t ch = i & 1;
+
+        const float prev = mChannelData[ch].mAccumulator;
+        const float cur  = (float)dst[i];
+        const float out  = prev * (1.0f - effectStrength) + cur * effectStrength;
+
+        mChannelData[ch].mAccumulator = out;
+        dst[i] = (Sint32)out;
+    }
 }

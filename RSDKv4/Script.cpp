@@ -731,6 +731,7 @@ const FunctionInfo functions[] = {
     // Music
     FunctionInfo("SetMusicTrackEx", 4),
     FunctionInfo("SetMusicModifier", 4),
+    FunctionInfo("SetMusicMuffle", 1),
 
     // Sound
     FunctionInfo("PauseSfx", 1),
@@ -1581,6 +1582,7 @@ enum ScrFunc {
     // Music
     FUNC_SETMUSICTRACKEX,
     FUNC_SETMUSICMODIFIER,
+    FUNC_SETMUSICMUFFLE,
 
     // Sound
     FUNC_PAUSESFX,
@@ -7305,6 +7307,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         musicTracks[scriptEng.operands[0]].mods.speed = scriptEng.operands[2];
                         break;
                 }
+                break;
+            case FUNC_SETMUSICMUFFLE:
+                // SetMusicMuffle(int muffleIntensity)
+                SetMusicMuffle(scriptEng.operands[0], 1.0f);
                 break;
 
             // Sound

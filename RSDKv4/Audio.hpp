@@ -194,6 +194,8 @@ inline void StopMusic(bool setStatus)
 #endif
 }
 
+void SetSfxName(const char *sfxName, int sfxID);
+
 void LoadSfx(char *filePath, byte sfxID);
 void PlaySfx(int sfx, bool loop);
 void PlayVoice(int sfx, bool loop);
@@ -233,7 +235,8 @@ void SetVoicePitch(int sfxID, int pitchLevel);
 void SetSfxAttributes(int sfx, int loopCount, sbyte pan);
 void SetVoiceAttributes(int sfx, int loopCount, sbyte pan);
 
-void SetSfxName(const char *sfxName, int sfxID);
+void SetMusicMuffle(int effect, float volumeMultiplier);
+static void ApplyMusicMuffle(Sint32 *dst, size_t count);
 
 #if !RETRO_USE_ORIGINAL_CODE
 // Helper Funcs
