@@ -257,6 +257,7 @@ const char variableNames[][0x20] = {
     "screen.shakeX",
     "screen.shakeY",
     "screen.adjustCameraY",
+    "screen.tintTable",
 
     "touchscreen.down",
     "touchscreen.xpos",
@@ -737,7 +738,7 @@ const FunctionInfo functions[] = {
     FunctionInfo("ClassicTint", 8),    // alias of DrawClassicFadeOut
     FunctionInfo("DrawClassicFadeOut", 8),
     FunctionInfo("DrawClassicFadeIn", 8),
-    FunctionInfo("SetTintTable", 6),
+    FunctionInfo("SetTintTable", 7), // one more parameter than v2 for the palette bank ID
 
     // Video
     FunctionInfo("LoadVideo", 2),
@@ -1120,6 +1121,7 @@ enum ScrVar {
     VAR_SCREENSHAKEX,
     VAR_SCREENSHAKEY,
     VAR_SCREENADJUSTCAMERAY,
+    VAR_SCREENTINTTABLE,
     VAR_TOUCHSCREENDOWN,
     VAR_TOUCHSCREENXPOS,
     VAR_TOUCHSCREENYPOS,
@@ -4755,6 +4757,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SCREENSHAKEX: scriptEng.operands[i] = camera[0].shakeX; break;
                     case VAR_SCREENSHAKEY: scriptEng.operands[i] = camera[0].shakeY; break;
                     case VAR_SCREENADJUSTCAMERAY: scriptEng.operands[i] = camera[0].adjustY; break;
+                    case VAR_SCREENTINTTABLE: scriptEng.operands[i] = currentTintTable; break;
                     case VAR_TOUCHSCREENDOWN: scriptEng.operands[i] = touchDown[arrayVal]; break;
                     case VAR_TOUCHSCREENXPOS: scriptEng.operands[i] = touchX[arrayVal]; break;
                     case VAR_TOUCHSCREENYPOS: scriptEng.operands[i] = touchY[arrayVal]; break;
@@ -6391,7 +6394,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             case FUNC_SETTINTTABLE:
                 opcodeSize = 0;
                 GenerateTintTable(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4],
-                             scriptEng.operands[5]);
+                             scriptEng.operands[5], scriptEng.operands[6]);
                 break;
             case FUNC_RESETOBJECTENTITY: {
                 opcodeSize     = 0;
@@ -9037,6 +9040,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_SCREENADJUSTCAMERAY:
                         for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) camera[c].adjustY = scriptEng.operands[i];
                         break;
+                    case VAR_SCREENTINTTABLE: currentTintTable = scriptEng.operands[i]; break;
                     case VAR_TOUCHSCREENDOWN: break;
                     case VAR_TOUCHSCREENXPOS: break;
                     case VAR_TOUCHSCREENYPOS: break;

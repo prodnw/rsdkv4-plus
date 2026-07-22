@@ -2,7 +2,8 @@
 
 ushort blendLookupTable[0x20 * 0x100];
 ushort subtractLookupTable[0x20 * 0x100];
-ushort tintLookupTable[0x10000];
+ushort tintLookupTable[TINTTABLE_COUNT][0x10000];
+int currentTintTable = 0;
 
 // Extras used in blending
 #define maxVal(a, b) (a >= b ? a : b)
@@ -729,15 +730,51 @@ void GenerateBlendLookupTable(void)
         }
     }
 
-    for (int i = 0; i < 0x10000; i++) {
-        int tintValue      = ((i & 0x1F) + ((i & 0x7E0) >> 6) + ((i & 0xF800) >> 11)) / 3 + 6;
-        tintLookupTable[i] = 0x841 * minVal(tintValue, 0x1F);
+	for (int t = 0; t < TINTTABLE_COUNT; t++) {
+        for (int i = 0; i < 0x10000; i++) {
+            int tintValue      = ((i & 0x1F) + ((i & 0x7E0) >> 6) + ((i & 0xF800) >> 11)) / 3 + 6;
+            tintLookupTable[t][i] = 0x841 * minVal(tintValue, 0x1F);
+//            if ((i % 3) == 1)
+//                tintLookupTable[t][0xFFFF - i] = i;
+//            else
+//                tintLookupTable[t][0xFFFF - i] = -i;
+        }
     }
 }
 
-void GenerateTintTable(short alpha, short a2, byte type, byte a4, byte a5, byte tableID) 
+void GenerateTintTable(short alpha, short a2, byte colourMode, byte startIndex, byte paletteCount, byte tintID, int paletteID)
 {
+    // TODO: if youre wondering what a2 is... idk either lmao
+    // i managed to figure out the rest of the parameters though - Kotas
+    ushort *tintTable = tintLookupTable[tintID];
+    activePalette32 = fullPalette32[paletteID];
 
+    switch (colourMode) {
+        case 0:
+        	byte average;
+            for (int i = 0; i < 0x10000; ++i) {
+                average      = (byte)((activePalette32[i].b + activePalette32[i].g + activePalette32[i].r) / 3);
+//                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFFFF - alpha) *            average + alpha * a2) >> 8) / 0x100;
+                tintTable[i] = paletteCount + startIndex * (((0xFFFF - alpha) * average + alpha * a2) >> 16) / 0x10000;
+            }
+            break;
+        case 1:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].r + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        case 2:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].g + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        case 3:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].b + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        default: break;
+    }
 }
 
 void ClearGraphicsData()
@@ -3290,6 +3327,8 @@ void DrawTintRectangle(int XPos, int YPos, int width, int height)
     if (width < 0 || height < 0)
         return;
 
+    ushort *tintTable = tintLookupTable[currentTintTable];
+
     int yOffset = GFX_LINESIZE - width;
     for (ushort *frameBufferPtr = &Engine.frameBuffer[XPos + GFX_LINESIZE * YPos];; frameBufferPtr += yOffset) {
         height--;
@@ -3297,7 +3336,7 @@ void DrawTintRectangle(int XPos, int YPos, int width, int height)
             break;
         int w = width;
         while (w--) {
-            *frameBufferPtr = tintLookupTable[*frameBufferPtr];
+            *frameBufferPtr = tintTable[*frameBufferPtr];
             ++frameBufferPtr;
         }
     }
@@ -3350,6 +3389,8 @@ void DrawScaledTintMask(int direction, int XPos, int YPos, int pivotX, int pivot
     if (width <= 0 || height <= 0)
         return;
 
+    ushort *tintTable = tintLookupTable[currentTintTable];
+
     GFXSurface *surface = &gfxSurface[sheetID];
     int pitch           = GFX_LINESIZE - width;
     int gfxwidth        = surface->width;
@@ -3364,7 +3405,7 @@ void DrawScaledTintMask(int direction, int XPos, int YPos, int pivotX, int pivot
             int w         = width;
             while (w--) {
                 if (*gfxDataPtr > 0)
-                    *frameBufferPtr = tintLookupTable[*frameBufferPtr];
+                    *frameBufferPtr = tintTable[*frameBufferPtr];
                 int offsetX = finalscaleX + roundXPos;
                 gfxDataPtr -= offsetX >> 11;
                 gfxPitch += offsetX >> 11;
@@ -3386,7 +3427,7 @@ void DrawScaledTintMask(int direction, int XPos, int YPos, int pivotX, int pivot
             int w         = width;
             while (w--) {
                 if (*gfxData > 0)
-                    *frameBufferPtr = tintLookupTable[*frameBufferPtr];
+                    *frameBufferPtr = tintTable[*frameBufferPtr];
                 int offsetX = finalscaleX + roundXPos;
                 gfxData += offsetX >> 11;
                 gfxPitch += offsetX >> 11;

@@ -15,6 +15,8 @@
 #define DRAWLAYER_COUNT (7)
 #endif
 
+#define TINTTABLE_COUNT (4)
+
 //changing DrawFXFlags so they can be merged with binary
 #define FX_FLIP (1)
 #define FX_ROTATE (2)
@@ -60,7 +62,8 @@ struct DisplaySettings {
 
 extern ushort blendLookupTable[0x20 * 0x100];
 extern ushort subtractLookupTable[0x20 * 0x100];
-extern ushort tintLookupTable[0x10000];
+extern ushort tintLookupTable[TINTTABLE_COUNT][0x10000];
+extern int currentTintTable;
 
 extern int SCREEN_XSIZE_CONFIG;
 extern int SCREEN_XSIZE;
@@ -101,7 +104,7 @@ void RenderFromRetroBuffer();
 void ReleaseRenderDevice(bool refresh = false);
 
 void GenerateBlendLookupTable();
-void GenerateTintTable(short alpha, short a2, byte type, byte a4, byte a5, byte tableID);
+void GenerateTintTable(short alpha, short a2, byte colourMode, byte startIndex, byte paletteCount, byte tintID, int paletteID);
 
 void ClearGraphicsData();
 void ClearScreen(byte index);
