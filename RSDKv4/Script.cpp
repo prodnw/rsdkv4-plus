@@ -5993,10 +5993,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 textMenuSurfaceNo     = scriptInfo->spriteSheetID;
                 
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 DrawTextMenu(&gameMenu[scriptEng.operands[0]], scriptEng.operands[1], scriptEng.operands[2]);
                 break;
@@ -6263,10 +6263,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 break;
             case FUNC_SETUPMENU: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize     = 0;
                 TextMenu *menu = &gameMenu[scriptEng.operands[0]];
@@ -6277,10 +6277,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             case FUNC_ADDMENUENTRY: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize                           = 0;
                 TextMenu *menu                       = &gameMenu[scriptEng.operands[0]];
@@ -6290,10 +6290,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             }
             case FUNC_EDITMENUENTRY: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize     = 0;
                 TextMenu *menu = &gameMenu[scriptEng.operands[0]];
@@ -6734,10 +6734,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
             case FUNC_LOADTEXTFILE: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize     = 0;
                 TextMenu *menu = &gameMenu[scriptEng.operands[0]];
@@ -6768,10 +6768,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #if !RETRO_REV02
             case FUNC_DRAWTEXT: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize        = 0;
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
@@ -6783,10 +6783,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
             case FUNC_GETVERSIONNUMBER: {
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 opcodeSize                           = 0;
                 TextMenu *menu                       = &gameMenu[scriptEng.operands[0]];
@@ -8554,10 +8554,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 textMenuSurfaceNo = scriptInfo->spriteSheetID;
                 
                 // no going out of bounds!!
-                if (scriptEng.operands[0] < 0)
-                    scriptEng.operands[0] = 0;
-                if (scriptEng.operands[0] > TEXTMENU_COUNT)
-                    scriptEng.operands[0] = TEXTMENU_COUNT - 1;
+                if (scriptEng.operands[0]  < 0)
+                    scriptEng.operands[0]  = 0;
+                if (scriptEng.operands[0] >= TEXTMENU_COUNT)
+                    scriptEng.operands[0]  = TEXTMENU_COUNT - 1;
                 
                 // Menu, X, Y, Direction, Scale X, Scale Y, Rotation, Alpha, Effect
                 DrawTextMenuFX(&gameMenu[scriptEng.operands[0]], scriptEng.operands[1], scriptEng.operands[2], scriptEng.operands[3], scriptEng.operands[4], scriptEng.operands[5], scriptEng.operands[6], scriptEng.operands[7], scriptEng.operands[8]);
