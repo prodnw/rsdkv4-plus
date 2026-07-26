@@ -33,7 +33,7 @@ env:
   WIN32_FLAGS: "-DVCPKG_TARGET_TRIPLET=x86-windows-static -DCMAKE_PREFIX_PATH=C:/vcpkg/installed/x86-windows-static/ -A Win32"
   WIN64_FLAGS: "-DVCPKG_TARGET_TRIPLET=x64-windows-static -DCMAKE_PREFIX_PATH=C:/vcpkg/installed/x64-windows-static/"
   # FIXME: For some reason ubuntu enables _FORTIFY_SOURCE by default, so let's override it to prevent IO bugs
-  GENERAL_LINUX_FLAGS: "-DCMAKE_CXX_FLAGS='-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0'"
+  GENERAL_LINUX_FLAGS: "-DCMAKE_CXX_FLAGS='-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0' -DRETRO_FORCE_CASE_INSENSITIVE"
 
 jobs:
   v4-windows:
@@ -130,7 +130,7 @@ jobs:
       - name: Build RSDKv4 Android
         working-directory: ./android
         run: |
-          ./gradlew.bat assembleDebug --no-daemon -PABIFILTERS="armeabi-v7a;arm64-v8a" -PRETRO_DISABLE_PLUS=ON -PCMAKE_BUILD_TYPE=Release -PRETRO_SDL_VERSION=2 -PRETRO_USE_HW_RENDER=OFF -PRETRO_USE_STEAM=OFF -PRETRO_USE_DISCORD=OFF
+          ./gradlew.bat assembleDebug --no-daemon -PABIFILTERS="armeabi-v7a;arm64-v8a" -PRETRO_DISABLE_PLUS=ON -PCMAKE_BUILD_TYPE=Release -PRETRO_SDL_VERSION=2 -PRETRO_USE_HW_RENDER=OFF -PRETRO_USE_STEAM=OFF -PRETRO_USE_DISCORD=OFF -PRETRO_FORCE_CASE_INSENSITIVE
       - name: Upload artifact Android
         uses: actions/upload-artifact@v4
         with:
