@@ -164,6 +164,7 @@ bool ProcessEvents()
             case SDL_KEYDOWN:
                 switch (Engine.sdlEvents.key.keysym.sym) {
                     default: break;
+                    case SDLK_AC_BACK:
                     case SDLK_ESCAPE:
                         if (Engine.devMenu) {
 #if RETRO_USE_MOD_LOADER
