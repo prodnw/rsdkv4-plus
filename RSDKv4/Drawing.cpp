@@ -565,9 +565,62 @@ void GenerateBlendLookupTable(void)
         }
     }
 
-    for (int i = 0; i < 0x10000; i++) {
-        int tintValue      = ((i & 0x1F) + ((i & 0x7E0) >> 6) + ((i & 0xF800) >> 11)) / 3 + 6;
-        tintLookupTable[i] = 0x841 * minVal(tintValue, 0x1F);
+	for (int t = 0; t < TINTTABLE_COUNT; t++) {
+        for (int i = 0; i < 0x10000; i++) {
+            int tintValue      = ((i & 0x1F) + ((i & 0x7E0) >> 6) + ((i & 0xF800) >> 11)) / 3 + 6;
+            tintLookupTable[t][i] = 0x841 * minVal(tintValue, 0x1F);
+//            if ((i % 3) == 1)
+//                tintLookupTable[t][0xFFFF - i] = i;
+//            else
+//                tintLookupTable[t][0xFFFF - i] = -i;
+        }
+    }
+}
+
+void GenerateTintTable(short alpha, short a2, byte colourMode, byte startIndex, byte paletteCount, byte tintID, int paletteID)
+{
+    // TODO: if youre wondering what a2 is... idk either lmao
+    // i managed to figure out the rest of the parameters though - Kotas
+    ushort *tintTable = tintLookupTable[tintID];
+    activePalette32 = fullPalette32[paletteID];
+
+    switch (colourMode) {
+        case 0:
+        	byte average;
+            for (int i = 0; i < 0x10000; ++i) {
+                average      = (byte)((activePalette32[i].b + activePalette32[i].g + activePalette32[i].r) / 3);
+//                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFFFF - alpha) *            average + alpha * a2) >> 16) / 0x10000;
+                tintTable[i] = paletteCount + startIndex * (((0xFFFF - alpha) * average + alpha * a2) >> 16);
+//                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * average + alpha * a2) >> 8) / 256;
+            }
+            break;
+        case 1:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].r + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        case 2:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].g + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        case 3:
+            for (int i = 0; i < 0x10000; ++i) {
+                tintTable[i] = paletteCount + startIndex * ((ushort)((0xFF - alpha) * activePalette32[i].b + alpha * a2) >> 8) / 0x100;
+            }
+            break;
+        default: break;
+    }
+}
+
+void ClearGraphicsData()
+{
+    for (int i = 0; i < SURFACE_COUNT; ++i) MEM_ZERO(gfxSurface[i]);
+    gfxDataPosition = 0;
+    
+    for (int c = 0; c < DEFAULT_CAMERA_COUNT; ++c) {
+        for (int i = 0; i < DRAWLAYER_COUNT; ++i) camera[c].layerDir[i] = FLIP_NONE;
+        camera[c].direction = FLIP_NONE;
     }
 }
 
@@ -1338,18 +1391,38 @@ void DrawDebugOverlays()
     }
 
     if (Engine.showPaletteOverlay) {
-        for (int p = 0; p < PALETTE_COUNT; ++p) {
+//        for (int p = 0; p < PALETTE_COUNT; ++p) {
+//#if RETRO_VANILLA_LIKE
+//            int x = (SCREEN_XSIZE - (0x10 << 3));
+//#else
+//            int x = (SCREEN_XSIZE - (0x20 << 3));
+//#endif
+//            int y = (SCREEN_YSIZE - (0x10 << 2));
+//            for (int c = 0; c < PALETTE_COLOR_COUNT; ++c) {
+//                int g = fullPalette32[p][c].g;
+//                // HQ mode overrides any magenta px, so slightly change the g channel since it has the most bits to make it "not quite magenta"
+//                if (drawStageGFXHQ && fullPalette32[p][c].r == 0xFF && fullPalette32[p][c].g == 0x00 && fullPalette32[p][c].b == 0xFF)
+//                    g += 8;
+//
+//                DrawRectangle(x + ((c & 0xF) << 1) + ((p % (PALETTE_COUNT / 2)) * (2 * 16)),
+//                              y + ((c >> 4) << 1) + ((p / (PALETTE_COUNT / 2)) * (2 * 16)), 2, 2, fullPalette32[p][c].r, g, fullPalette32[p][c].b,
+//                              0xFF);
+//            }
+//        }
+        for (int p = 0; p < TINTTABLE_COUNT; ++p) {
+#if RETRO_VANILLA_LIKE
             int x = (SCREEN_XSIZE - (0x10 << 3));
-            int y = (SCREEN_YSIZE - (0x10 << 2));
-            for (int c = 0; c < PALETTE_COLOR_COUNT; ++c) {
-                int g = fullPalette32[p][c].g;
-                // HQ mode overrides any magenta px, so slightly change the g channel since it has the most bits to make it "not quite magenta"
-                if (drawStageGFXHQ && fullPalette32[p][c].r == 0xFF && fullPalette32[p][c].g == 0x00 && fullPalette32[p][c].b == 0xFF)
-                    g += 8;
+#else
+            int x = (SCREEN_XSIZE - (0x20 << 3));
+#endif
+            int y = (SCREEN_YSIZE - (0x10 << 3));
+            for (int c = 0; c < 0x10000; ++c) {
+                int r = tintLookupTable[p][c] & 0xFF0000;
+                int g = tintLookupTable[p][c] & 0x00FF00;
+                int b = tintLookupTable[p][c] & 0x0000FF;
 
-                DrawRectangle(x + ((c & 0xF) << 1) + ((p % (PALETTE_COUNT / 2)) * (2 * 16)),
-                              y + ((c >> 4) << 1) + ((p / (PALETTE_COUNT / 2)) * (2 * 16)), 2, 2, fullPalette32[p][c].r, g, fullPalette32[p][c].b,
-                              0xFF);
+                DrawRectangle(x + ((c & 0x1F) << 1) + ((p % (TINTTABLE_COUNT)) * (2 * 0x20)),
+                              y + ((c >> 5) << 1), 2, 2, r, g, b, 0xFF);
             }
         }
     }
