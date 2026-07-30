@@ -468,6 +468,7 @@ const char variableNames[][0x20] = {
     "options.devMenuFlag",      // From a global variable to an engine variable
     "options.engineDebugMode",  // From a global variable to an engine variable
     "engine.gameType",
+	"engine.entityCount",
 
     // Playtime
     "playtime.hours",
@@ -1360,6 +1361,7 @@ enum ScrVar {
     VAR_OPTIONS_DEVMENUFLAG,
     VAR_OPTIONS_ENGINEDEBUGMODE,
     VAR_ENGINE_GAMETYPE,
+	VAR_ENGINE_ENTITY_COUNT,
 
     // Playtime
     VAR_PLAYTIME_HOURS,
@@ -5211,6 +5213,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_OPTIONS_DEVMENUFLAG: scriptEng.operands[i] = Engine.devMenu; break;
                     case VAR_OPTIONS_ENGINEDEBUGMODE: scriptEng.operands[i] = engineDebugMode; break;
                     case VAR_ENGINE_GAMETYPE: scriptEng.operands[i] = Engine.gameType; break;
+					case VAR_ENGINE_ENTITY_COUNT: scriptEng.operands[i] = ENTITY_COUNT; break;
 
                     // Playtime
                     case VAR_PLAYTIME_HOURS: scriptEng.operands[i] = GetPlaytimeSeconds() / 3600; break;
@@ -9540,6 +9543,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_OPTIONS_DEVMENUFLAG: break;
                     case VAR_OPTIONS_ENGINEDEBUGMODE: break;
                     case VAR_ENGINE_GAMETYPE: break;
+                    case VAR_ENGINE_ENTITY_COUNT: break;
                     
                     // Playtime
                     case VAR_PLAYTIME_HOURS: break;
