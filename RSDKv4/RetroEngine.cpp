@@ -10,6 +10,7 @@ bool engineDebugMode = false;
 #endif
 
 static int connectedControllerCount = 0;
+bool enginestruggle = false;
 
 void AddPlaytimeMilliseconds(unsigned int ms);
 unsigned int GetPlaytimeSeconds();
@@ -699,8 +700,11 @@ void RetroEngine::Run()
 		//it still syncs to the screen
         //if (!vsync) {
             curTicks = SDL_GetPerformanceCounter();
-            if (curTicks < prevTicks + targetFreq)
+            if (curTicks < prevTicks + targetFreq) {
+				//the engine got a chance to wait, no need to square
+				enginestruggle = false;
                 continue;
+			}
             prevTicks = curTicks;
         //}
 
@@ -742,6 +746,9 @@ void RetroEngine::Run()
                 }
 #endif
             }
+			if (enginestruggle == true)
+				DrawRectangle(SCREEN_XSIZE - 5, SCREEN_YSIZE - 5, 3, 3, 0xFF, 0x00, 0x00, 0xFF);
+			enginestruggle = true;
 
 #if !RETRO_USE_ORIGINAL_CODE
             if (!masterPaused || frameStep) {
