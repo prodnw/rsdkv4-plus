@@ -148,6 +148,11 @@ void ProcessStage(void)
             stageMinutes                 = 0;
             stageMode                    = STAGEMODE_NORMAL;
 
+#if RETRO_USING_SDL2
+            // Reset window transparency on start-up just in case
+            SDL_SetWindowOpacity(Engine.window, 255.0f);
+#endif
+
 #if RSDK_AUTOBUILD // Now it works with various games. TODO: update this if it needs to, but it should be fine?
             if (!hasPlusDLC) {
                 switch (Engine.gameType) {
