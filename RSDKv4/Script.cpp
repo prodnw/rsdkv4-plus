@@ -438,6 +438,8 @@ const char variableNames[][0x20] = {
 
     // Audio
     "engine.voiceVolume",
+    "sfx.globalCount",
+    "sfx.stageCount",
 
     // Screen
     "screen.tintTable",
@@ -725,6 +727,7 @@ const FunctionInfo functions[] = {
 
     // Controller management
     FunctionInfo("VibrateController", 3),
+    FunctionInfo("VibrateAllControllers", 2),
     FunctionInfo("SetControllerLEDColour", 4),
     FunctionInfo("CheckControllerConnect", 0),
     FunctionInfo("CheckControllerDisconnect", 0),
@@ -1330,7 +1333,9 @@ enum ScrVar {
     VAR_MOUSE2_PRESSED,
 
     // Audio
-    VAR_ENGINEVOICEVOLUME,
+    VAR_ENGINE_VOICEVOLUME,
+    VAR_SFX_GLOBALCOUNT,
+    VAR_SFX_STAGECOUNT,
 
     // Screen
     VAR_SCREENTINTTABLE,
@@ -1577,6 +1582,7 @@ enum ScrFunc {
 
     // Controller management
     FUNC_VIBRATECONTROLLER,
+    FUNC_VIBRATEALLCONTROLLERS,
     FUNC_SETCONTROLLERLEDCOLOUR,
     FUNC_CHECKCONTROLLERCONNECT,
     FUNC_CHECKCONTROLLERDISCONNECT,
@@ -5081,7 +5087,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         scriptEng.operands[i] = isWired;
                         break;
                     }
-                    case VAR_CONTROLLER_BATTERYLEVEL: scriptEng.operands[i] = GetGamepadBatteryLevel(); break;
+                    case VAR_CONTROLLER_BATTERYLEVEL: scriptEng.operands[i] = GetGamepadBatteryLevel(arrayVal); break;
                 
                     // Mouse
                     case VAR_MOUSE_MOVED: {
@@ -5099,7 +5105,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         lastMouseY = mouseY;
                         break;
                     }
-
                     case VAR_MOUSE_HIDE: {
                         if (scriptEng.operands[i] == 1) {
                             SDL_ShowCursor(SDL_DISABLE);
@@ -5108,13 +5113,11 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                         }
                         break;
                     }
-
                     case VAR_MOUSE1_PRESSED: {
                         int mouseState = SDL_GetMouseState(NULL, NULL);
                         scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT)) ? 1 : 0;
                         break;
                     }
-
                     case VAR_MOUSE2_PRESSED: {
                         int mouseState = SDL_GetMouseState(NULL, NULL);
                         scriptEng.operands[i] = (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) ? 1 : 0;
@@ -5122,7 +5125,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     }
 
                     // Audio
-                    case VAR_ENGINEVOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
+                    case VAR_ENGINE_VOICEVOLUME: scriptEng.operands[i] = voiceVolume; break;
+                    case VAR_SFX_GLOBALCOUNT: scriptEng.operands[i] = globalSFXCount; break;
+                    case VAR_SFX_STAGECOUNT: scriptEng.operands[i] = stageSFXCount; break;
 
                     // Screen
                     case VAR_SCREENTINTTABLE: scriptEng.operands[i] = currentTintTable; break;
@@ -7112,9 +7117,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Unsuccessfully loaded website: %s", temporar);
                 break;
             }
-
             case FUNC_LOADWEBSITE: {
             	opcodeSize = 0;
+#if RETRO_USING_SDL2
                 sprintf(temporar, "https://%s", scriptText);
 
 				PrintLog("Loading website: %s", temporar);
@@ -7122,6 +7127,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					PrintLog("Successfully loaded website!: %s", temporar);
 				else
 					PrintLog("Unsuccessfully loaded website: %s", temporar);
+#else
+                PrintLog("Unable to open website. SDL2 is required.");
+#endif
                 break;
             }
 
@@ -7133,7 +7141,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_DETAILS: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7141,7 +7148,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_STATE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7149,7 +7155,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_LARGEIMAGE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7163,7 +7168,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_LARGETEXT: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7171,7 +7175,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_SMALLIMAGE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7185,7 +7188,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_SET_PRESENCE_SMALLTEXT: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7193,7 +7195,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_UPDATE_PRESENCE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7201,7 +7202,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_CLEAR_PRESENCE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7209,7 +7209,6 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 #endif
                 break;
             }
-
             case FUNC_CLEAR_PRESENCE_TYPE: {
                 opcodeSize = 0;
 #if RETRO_USE_DISCORD_SDK
@@ -7229,114 +7228,30 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
             // Controller management
             case FUNC_VIBRATECONTROLLER: {
                 opcodeSize = 0;
-
                 // VibrateController(controllerID, intensity, duration)
-
-                // Static vibration state management
-                static SDL_GameController *gameControllers[DEFAULT_INPUT_COUNT] = {NULL};
-                static int vibrationDuration[DEFAULT_INPUT_COUNT] = {0};
-                static Uint16 vibrationLeft[DEFAULT_INPUT_COUNT] = {0};
-                static Uint16 vibrationRight[DEFAULT_INPUT_COUNT] = {0};
-                static bool initialized = false;
-
-                // Initialize controllers
-                if (!initialized) {
-                    for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-                        gameControllers[i] = SDL_GameControllerOpen(i);
-                    }
-                    initialized = true;
-                }
-
-                int controllerIndex = scriptEng.operands[0]; // Controller index (-1 = all enabled controllers, otherwise 0 for P1, 1 for P2, etc)
-                int intensity = scriptEng.operands[1];
-                int duration = scriptEng.operands[2];
-
-                if (controllerIndex == -1) {
-                    // Vibrate all enabled controllers
-                    for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
-                        if (ControllerVibration[i] && gameControllers[i]) {
-                            SDL_Joystick *joystick = SDL_GameControllerGetJoystick(gameControllers[i]);
-                            if (joystick && SDL_JoystickHasRumble(joystick)) {
-                                vibrationDuration[i] = duration * 10; // Convert to milliseconds
-                                vibrationLeft[i] = intensity;
-                                vibrationRight[i] = intensity;
-                                SDL_JoystickRumble(joystick, intensity, intensity, vibrationDuration[i]);
-                            }
-                        }
-                    }
-                } else if (controllerIndex >= 0 && controllerIndex < DEFAULT_INPUT_COUNT) {
-                    // Vibrate specific controller
-                    if (ControllerVibration[controllerIndex] && gameControllers[controllerIndex]) {
-                        SDL_Joystick *joystick = SDL_GameControllerGetJoystick(gameControllers[controllerIndex]);
-                        if (joystick && SDL_JoystickHasRumble(joystick)) {
-                            vibrationDuration[controllerIndex] = duration * 10; // Convert to milliseconds
-                            vibrationLeft[controllerIndex] = intensity;
-                            vibrationRight[controllerIndex] = intensity;
-                            SDL_JoystickRumble(joystick, intensity, intensity, vibrationDuration[controllerIndex]);
-                        }
-                    }
-                }
+                VibrateController(scriptEng.operands[0], scriptEng.operands[1], scriptEng.operands[2]);
                 break;
             }
-
+            case FUNC_VIBRATEALLCONTROLLERS: {
+                opcodeSize = 0;
+                // VibrateAllControlles(intensity, duration)
+                VibrateAllControllers(scriptEng.operands[0], scriptEng.operands[1]);
+                break;
+            }
             case FUNC_SETCONTROLLERLEDCOLOUR: {
                 opcodeSize = 0;
                 // SetControllerLEDColour(controllerID, r, g, b)
                 SetControllerLEDColour(scriptEng.operands[0], (Uint8)scriptEng.operands[1], (Uint8)scriptEng.operands[2], (Uint8)scriptEng.operands[3]);
                 break;
             }
-
             case FUNC_CHECKCONTROLLERCONNECT: {
                 opcodeSize = 0;
-                scriptEng.checkResult = 0;
-
-                static int prevControllerCount = -1;
-                int currentControllerCount     = 0;
-
-                int numJoysticks = SDL_NumJoysticks();
-                for (int i = 0; i < numJoysticks; ++i) {
-                    if (SDL_IsGameController(i))
-                        ++currentControllerCount;
-                }
-
-                if (prevControllerCount == -1) {
-                    prevControllerCount = currentControllerCount;
-                    return;
-                }
-
-                if (currentControllerCount > prevControllerCount) {
-                    PrintLog("Controller connected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
-                    scriptEng.checkResult = 1;
-                }
-                else {
-                    scriptEng.checkResult = 0;
-                }
-
-                prevControllerCount = currentControllerCount;
+                CheckControllerConnect();
                 break;
             }
             case FUNC_CHECKCONTROLLERDISCONNECT: {
                 opcodeSize = 0;
-                scriptEng.checkResult = 0;
-
-                static int prevControllerCount = 0;
-                int currentControllerCount = 0;
-
-                int numJoysticks = SDL_NumJoysticks();
-                for (int i = 0; i < numJoysticks; ++i) {
-                    if (SDL_IsGameController(i)) {
-                        ++currentControllerCount;
-                    }
-                }
-
-                if (currentControllerCount < prevControllerCount) {
-                    PrintLog("Controller disconnected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
-                    scriptEng.checkResult = 1; // 1 = disconnected
-                } else {
-                    scriptEng.checkResult = 0; // 0 = no disconnect
-                }
-
-                prevControllerCount = currentControllerCount;
+                CheckControllerDisconnect();
                 break;
             }
 
@@ -9505,10 +9420,12 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_MOUSE2_PRESSED: break;
 
                     // Audio
-                    case VAR_ENGINEVOICEVOLUME:
+                    case VAR_ENGINE_VOICEVOLUME:
                         voiceVolume = scriptEng.operands[i];
                         SetGameVolumes(bgmVolume, sfxVolume, voiceVolume);
                         break;
+                    case VAR_SFX_GLOBALCOUNT: break;
+                    case VAR_SFX_STAGECOUNT: break;
 
                     // Screen
                     case VAR_SCREENTINTTABLE: currentTintTable = scriptEng.operands[i]; break;

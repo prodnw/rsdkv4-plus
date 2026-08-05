@@ -1751,26 +1751,55 @@ void SetWindowVSync(int *enabled, int *unused)
     Engine.vsync = *enabled;
 }
 
+void GetWindowOpacity() 
+{ 
+#if RETRO_USING_SDL2
+    float opacityValue = 0;
+    if (SDL_GetWindowOpacity(Engine.window, &opacityValue) == 0)
+        scriptEng.checkResult = (int)(opacityValue * 255.0f);
+    else
+        scriptEng.checkResult = 255;
+#else
+    PrintLog("Can't get the window opacity, you need SDL2!");
+#endif
+}
+
 void SetWindowOpacity(int *opacity, int *unused)
 {
     if (!opacity)
         return;
 
-    float value = (float)*opacity;
+    float opacityValue = (float)*opacity;
 
 #if RETRO_USING_SDL2
     if (Engine.window) {
-        if (value <= 100.0f) {
-            value /= 100.0f;
+        if (opacityValue <= 0.0f) {
+            opacityValue /= 0.0f;
         }
         else {
-            value /= 255.0f;
+            opacityValue /= 255.0f;
         }
-        SDL_SetWindowOpacity(Engine.window, value);
+        SDL_SetWindowOpacity(Engine.window, opacityValue);
     }
 #else
-    value = 255.0f;
+    opacityValue = 255.0f;
+    PrintLog("Can't set the window opacity, you need SDL2!");
 #endif
+}
+
+void SetWindowShake(int *intensity, int *duration, int *unused)
+{
+    if (!intensity || !duration)
+        return;
+
+    if (*intensity < 0)
+        *intensity = 0;
+    
+    if (*intensity > 4)
+        *intensity = 4;
+
+    Engine.windowShakeStrength  = *intensity;
+    Engine.windowShakeTimer     = *duration;
 }
 
 void SetFrameRate(int *enabled, int *unused)
@@ -1833,6 +1862,22 @@ void ApplyWindowChanges()
             LoadMesh(fileName, meshList[i].textureID);
         }
     }
+}
+
+void MinimizeEngineWindow()
+{
+#if RETRO_USING_SDL2
+    SDL_MinimizeWindow(Engine.window);
+#endif
+}
+
+void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2)
+{
+#if RETRO_USING_SDL2
+    TextMenu *menu                       = &gameMenu[*textMenu];
+    menu->entryHighlight[menu->rowCount] = *highlight;
+    AddTextMenuEntry(menu, SDL_GetWindowTitle(Engine.window));
+#endif
 }
 
 #if RETRO_CHECKUPDATE

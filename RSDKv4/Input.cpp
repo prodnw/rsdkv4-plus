@@ -656,51 +656,192 @@ void HapticEffect(int *hapticID, int *a2, int *a3, int *a4)
 }
 #endif
 
+// sdl2 this sdl2 that
+
 // Set the LED color on a specific controller that supports it
 void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b)
 {
 #if RETRO_USING_SDL2
-    if (SDL_IsGameController(controllerID)) {
+    if (SDL_IsGameController(controllerID)) 
+    {
         SDL_GameController *controller = SDL_GameControllerOpen(controllerID);
-        if (controller) {
-            if (SDL_GameControllerSetLED(controller, r, g, b) == 0) {
-                const char* name = SDL_GameControllerName(controller);
-                PrintLog("Set LED color for controller %d (%s) to (%d, %d, %d)", controllerID, name ? name : "Unknown", r, g, b);
-            } else {
+        if (controller)
+        {
+            const char* name = SDL_GameControllerName(controller);
+            if (SDL_GameControllerHasLED(controller))
+            {
+                SDL_GameControllerSetLED(controller, r, g, b);
+                PrintLog("Set LED colour for controller %d (%s) to (%d, %d, %d)", controllerID, name ? name : "Unknown", r, g, b);
+            } 
+            else
+            {
                 PrintLog("Controller %d does not support RGB LED", controllerID);
             }
             SDL_GameControllerClose(controller);
-        } else {
+        } 
+        else 
+        {
             PrintLog("Failed to open controller %d", controllerID);
         }
     }
 #endif
 }
 
-int GetGamepadBatteryLevel()
+int GetGamepadBatteryLevel(int controllerID)
 {
 #if RETRO_USING_SDL2
-    // Load battery level from the first connected gamepad
-    if (gamepadCount > 0 && controllers.size() > 0) {
-        SDL_GameController *controller = controllers[0].devicePtr;
-        if (controller) {
-            SDL_Joystick *joystick = SDL_GameControllerGetJoystick(controller);
-            if (joystick) {
-                SDL_JoystickPowerLevel powerLevel = SDL_JoystickCurrentPowerLevel(joystick);
-                
-                // Hey Vegeta, what does that scouter say about his power level?
-                switch (powerLevel) {
-                    case SDL_JOYSTICK_POWER_UNKNOWN: return 100;
-                    case SDL_JOYSTICK_POWER_EMPTY: return 0;
-                    case SDL_JOYSTICK_POWER_LOW: return 25;
-                    case SDL_JOYSTICK_POWER_MEDIUM: return 50;
-                    case SDL_JOYSTICK_POWER_FULL: return 100;
-                    case SDL_JOYSTICK_POWER_WIRED: return 100;
-                    default: return 100;
-                }
-            }
+    int controller = controllerID;
+
+    if (controllerID < 0 || controllerID >= (int)controllers.size())
+        return 100;
+
+    InputDevice &device = controllers[controllerID];
+    if (!device.devicePtr)
+        return 100;
+
+    SDL_Joystick *joystick = SDL_GameControllerGetJoystick(device.devicePtr);
+    if (joystick) {
+        SDL_JoystickPowerLevel powerLevel = SDL_JoystickCurrentPowerLevel(joystick);
+        switch (powerLevel) {
+            case SDL_JOYSTICK_POWER_EMPTY:  return 0;
+            case SDL_JOYSTICK_POWER_LOW:    return 25;
+            case SDL_JOYSTICK_POWER_MEDIUM: return 50;
+            case SDL_JOYSTICK_POWER_FULL:   return 100;
+            case SDL_JOYSTICK_POWER_WIRED:  return 100;
+            case SDL_JOYSTICK_POWER_UNKNOWN:
+            default:                        return 100;
         }
     }
-#endif
+#else
+    PrintLog("No SDL2 detected. Unable to get battery level of controller.");
     return 100; // Default to full
+#endif
+}
+
+void VibrateController(int controllerID, int intensity, int duration)
+{
+#if RETRO_USING_SDL2
+    if (controllers.empty())
+        return;
+
+    if (controllerID < 0 || controllerID >= (int)controllers.size())
+        return;
+
+    if (!ControllerVibration[controllerID])
+        return;
+
+    InputDevice &device = controllers[controllerID];
+    if (!device.devicePtr)
+        return;
+
+    if (device.hapticPtr) {
+        SDL_HapticRumblePlay(device.hapticPtr, intensity / 32767.0f, duration);
+    }
+    else {
+        SDL_Joystick *joystick = SDL_GameControllerGetJoystick(device.devicePtr);
+        if (joystick && SDL_JoystickHasRumble(joystick))
+            SDL_JoystickRumble(joystick, intensity, intensity, duration);
+    }
+#else
+    PrintLog("No SDL2 detected. Unable to rumble controller %d.", controllerID);
+#endif
+}
+
+void VibrateAllControllers(int intensity, int duration)
+{
+#if RETRO_USING_SDL2
+    if (controllers.empty())
+        return;
+
+    for (int i = 0; i < (int)controllers.size(); ++i) {
+        if (!ControllerVibration[i])
+            continue;
+
+        InputDevice &device = controllers[i];
+        if (!device.devicePtr)
+            continue;
+
+        if (device.hapticPtr) {
+            SDL_HapticRumblePlay(device.hapticPtr, intensity / 32767.0f, duration);
+        }
+        else {
+            SDL_Joystick *joystick = SDL_GameControllerGetJoystick(device.devicePtr);
+            if (joystick && SDL_JoystickHasRumble(joystick))
+                SDL_JoystickRumble(joystick, intensity, intensity, duration);
+        }
+    }
+#else
+    PrintLog("No SDL2 detected. Unable to rumble controllers.");
+#endif
+}
+
+void CheckControllerConnect()
+{
+#if RETRO_USING_SDL2
+    scriptEng.checkResult = 0;
+
+    static int prevControllerCount = -1;
+    int currentControllerCount     = 0;
+
+    // Go through each input ID
+    for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+        // Check for new controllers per player
+        if (SDL_IsGameController(i))
+            ++currentControllerCount;
+    }
+
+    // Change the controller count
+    if (prevControllerCount == -1) {
+        prevControllerCount = currentControllerCount;
+        return;
+    }
+
+    if (currentControllerCount > prevControllerCount) {
+        // Controller has been connected!!!!!!!!!!!!!!!!!!!!
+        PrintLog("New controller connected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+        scriptEng.checkResult = 1;
+    }
+    else {
+        // "There's nothing" -Chris
+        scriptEng.checkResult = 0;
+    }
+
+    prevControllerCount = currentControllerCount;
+#else
+    scriptEng.checkResult = 0;
+    PrintLog("No SDL2 detected. Unable to check controller connections.");
+#endif
+}
+
+void CheckControllerDisconnect()
+{
+#if RETRO_USING_SDL2
+    scriptEng.checkResult = 0;
+
+    static int prevControllerCount = 0;
+    int currentControllerCount = 0;
+
+    // Go through each input ID
+    for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
+        // Check for new controllers per player
+        if (SDL_IsGameController(i))
+            ++currentControllerCount;
+    }
+
+    // Change the controller count (this time we're using < oo scary)
+    if (currentControllerCount < prevControllerCount) {
+        // Disconnected
+        scriptEng.checkResult = 1;
+        PrintLog("Controller disconnected! Previous: %d, Current: %d", prevControllerCount, currentControllerCount);
+    } 
+    else {
+        // Nothin' happened
+        scriptEng.checkResult = 0;
+    }
+
+    prevControllerCount = currentControllerCount;
+#else
+    scriptEng.checkResult = 0;
+    PrintLog("No SDL2 detected. Unable to check controller connections.");
+#endif
 }

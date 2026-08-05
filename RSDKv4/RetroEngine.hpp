@@ -536,6 +536,12 @@ public:
 
     int windowXSize; // width of window/screen in the previous frame
     int windowYSize; // height of window/screen in the previous frame
+
+    int windowShakeStrength = 0;
+    int windowShakeTimer    = 0;
+    int windowShakeFrame    = 0;
+    int WindowShakeX        = 0;
+    int WindowShakeY        = 0;
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE

@@ -111,6 +111,7 @@ bool ProcessEvents()
 
                     touchXF[0] = (((touchX[0] - displaySettings.offsetX) / (float)displaySettings.width) * SCREEN_XSIZE_F) - SCREEN_CENTERX_F;
                     touchYF[0] = -(((touchY[0] / (float)displaySettings.height) * SCREEN_YSIZE_F) - SCREEN_CENTERY_F);
+                    
                     touchX[0]  = ((touchX[0] - displaySettings.offsetX) / (float)displaySettings.width) * SCREEN_XSIZE;
                     touchY[0]  = (touchY[0] / (float)displaySettings.height) * SCREEN_YSIZE;
 
@@ -205,8 +206,12 @@ bool ProcessEvents()
                             Engine.gameMode = ENGINE_MAINGAME;
                             SetGlobalVariableByName("lampPostID", 0); // For S1
                             SetGlobalVariableByName("starPostID", 0); // For S2
-                            
-                            SetGlobalVariableByName("Warp.XPos", 0);
+                            SetGlobalVariableByName("Warp.XPos", 0);  // For SCD
+
+                            if (musicStatus == MUSIC_STOPPED || musicStatus == MUSIC_PAUSED) {
+                                musicPosition = 0;
+                                musicSeekPos = 0;
+                            }
                         }
                         break;
 
@@ -226,8 +231,13 @@ bool ProcessEvents()
                             Engine.gameMode = ENGINE_MAINGAME;
                             SetGlobalVariableByName("lampPostID", 0); // For S1
                             SetGlobalVariableByName("starPostID", 0); // For S2
-                            
-                            SetGlobalVariableByName("Warp.XPos", 0);
+                            SetGlobalVariableByName("Warp.XPos", 0);  // For SCD
+
+
+                            if (musicStatus == MUSIC_STOPPED || musicStatus == MUSIC_PAUSED) {
+                                musicPosition = 0;
+                                musicSeekPos = 0;
+                            }
                         }
                         break;
 
@@ -243,11 +253,21 @@ bool ProcessEvents()
                         }
                         break;
 
-#if RETRO_PLATFORM != RETRO_OSX
+#if RETRO_PLATFORM == RETRO_OSX
+                    case SDLK_F6:
+                        if (Engine.masterPaused)
+                            Engine.frameStep = true;
+                        break;
+
+                    case SDLK_F7:
+                        if (Engine.devMenu)
+                            Engine.masterPaused ^= 1;
+                        break;
+#else
                     case SDLK_F6:
                         if (Engine.devMenu) {
                             playerListPos++;
-                            if (playerListPos > playerCount) {
+                            if (playerListPos >= playerCount) {
                                 playerListPos = 0;
                             }
                             stageMode       = STAGEMODE_LOAD;
@@ -276,17 +296,7 @@ bool ProcessEvents()
                             Engine.gameSpeed = Engine.fastForwardSpeed;
                         break;
 
-#if RETRO_PLATFORM == RETRO_OSX
-                    case SDLK_F6:
-                        if (Engine.masterPaused)
-                            Engine.frameStep = true;
-                        break;
-
-                    case SDLK_F7:
-                        if (Engine.devMenu)
-                            Engine.masterPaused ^= 1;
-                        break;
-#else
+#if RETRO_PLATFORM != RETRO_OSX
                     case SDLK_F11:
                     case SDLK_INSERT:
                         if (Engine.masterPaused)
@@ -339,6 +349,13 @@ void RetroEngine::Init()
 #endif
 #if RETRO_USE_NETWORKING
     InitNetwork();
+#endif
+
+#if RETRO_PLATFORM == RETRO_ANDROID
+    char androidBuffer[0x100];
+    sprintf(androidBuffer, BASE_PATH ".nomedia");
+    FILE *f = fopen(androidBuffer, "w");
+    if (f) fclose(f);
 #endif
 
     char dest[0x200];
@@ -753,6 +770,7 @@ void RetroEngine::Run()
 #if !RETRO_USE_ORIGINAL_CODE
             if (!masterPaused || frameStep) {
 #endif
+                ApplyWindowShake();
                 FlipScreen();
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -1523,10 +1541,14 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("SetWindowBorderless", SetWindowBorderless);
     AddNativeFunction("GetWindowVSync", GetWindowVSync);
     AddNativeFunction("SetWindowVSync", SetWindowVSync);
+    AddNativeFunction("GetWindowOpacity", GetWindowOpacity);
     AddNativeFunction("SetWindowOpacity", SetWindowOpacity);
+    AddNativeFunction("SetWindowShake", SetWindowShake);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
+    AddNativeFunction("MinimizeWindow", MinimizeEngineWindow);
+    AddNativeFunction("GetWindowTitle", GetWindowTitle);
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);
     AddNativeFunction("GetModDescription", GetModDescription);

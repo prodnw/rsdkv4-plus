@@ -16,11 +16,11 @@ int SCREEN_XSIZE_CONFIG = 426;
 int SCREEN_XSIZE        = 426;
 int SCREEN_CENTERX      = 426 / 2;
 
-float SCREEN_XSIZE_F   = 426;
-float SCREEN_CENTERX_F = 426 / 2;
+int SCREEN_XSIZE_F   = 426;
+int SCREEN_CENTERX_F = 426 / 2;
 
-float SCREEN_YSIZE_F   = SCREEN_YSIZE;
-float SCREEN_CENTERY_F = SCREEN_YSIZE / 2;
+int SCREEN_YSIZE_F   = SCREEN_YSIZE;
+int SCREEN_CENTERY_F = SCREEN_YSIZE / 2;
 
 int touchWidth     = SCREEN_XSIZE;
 int touchHeight    = SCREEN_YSIZE;
@@ -42,6 +42,10 @@ GLint defaultFramebuffer = -1;
 GLuint framebufferHiRes  = -1;
 GLuint renderbufferHiRes = -1;
 GLuint videoBuffer       = -1;
+#endif
+
+#if RETRO_USING_SDL2
+#include "SDL_image.h"
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -1147,6 +1151,50 @@ void SetupViewport()
 
     if (transfer && Engine.frameBuffer)
         TransferRetroBuffer();
+}
+
+void ApplyWindowShake()
+{
+#if RETRO_USING_SDL2
+    // note: this locks the window into the centre of the screen though it's not like it would matter much since you SURELY wouldn't
+    // be playing this with a small scale on the top left corner of the screen, right!!!!!
+
+    // windows can get pretty crazy, so we'll need to limit things to prevent anything, well bad
+    if (Engine.windowShakeStrength > 4)
+        Engine.windowShakeStrength = 4;
+    
+    // get the window position
+    if (Engine.windowShakeFrame == 0) 
+    {
+        int currentX = Engine.WindowShakeX;
+        int currentY = Engine.WindowShakeY;
+        SDL_GetWindowPosition(Engine.window, &currentX, &currentY);
+        Engine.WindowShakeX = currentX;
+        Engine.WindowShakeY = currentY;
+    }
+    
+    // automatically decrease the timer, since it gets set when you call the native func lol
+    Engine.windowShakeTimer--;
+    if (Engine.windowShakeTimer <= 0) 
+    {
+        // stop shaking
+        Engine.windowShakeStrength = 0;
+        Engine.windowShakeFrame    = 0;
+        SDL_SetWindowPosition(Engine.window, Engine.WindowShakeX, Engine.WindowShakeY);
+    }
+    else
+    {
+        // spooky ghooost oooooo
+        Engine.windowShakeFrame++;
+
+        int signX = (Engine.windowShakeFrame & 1) ? -1 : 1;
+        int signY = (Engine.windowShakeFrame & 2) ? -1 : 1;
+
+        int offsetX = signX * Engine.windowShakeStrength;
+        int offsetY = signY * (Engine.windowShakeStrength / 2);
+        SDL_SetWindowPosition(Engine.window, Engine.WindowShakeX + offsetX, Engine.WindowShakeY + offsetY);
+    }
+#endif
 }
 
 void SetFullScreen(bool fs)

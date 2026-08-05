@@ -168,6 +168,10 @@ void HapticEffect(int *id, int *a2, int *a3, int *a4);
 #endif
 
 void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
-int GetGamepadBatteryLevel();
+int GetGamepadBatteryLevel(int controllerID);
+void VibrateController(int controllerID, int intensity, int duration);
+void VibrateAllControllers(int intensity, int duration);
+void CheckControllerConnect();
+void CheckControllerDisconnect();
 
 #endif // !INPUT_H
