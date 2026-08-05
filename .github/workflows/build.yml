@@ -45,7 +45,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 sdl2-image libogg libtheora libvorbis curl --triplet=x86-windows-static
+        run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x86-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}} 
@@ -68,7 +68,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 sdl2-image libogg libtheora libvorbis curl --triplet=x64-windows-static
+        run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x64-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN64_FLAGS}}
@@ -125,11 +125,6 @@ jobs:
           Invoke-WebRequest -Uri "https://libsdl.org/release/SDL2-2.28.3.zip" -OutFile "SDL2.zip"
           Expand-Archive -Path SDL2.zip -DestinationPath ./android/app/jni/
           Rename-Item ./android/app/jni/SDL2-2.28.3 SDL
-      - name: Download SDL2_image
-        run: |
-          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.12/SDL2_image-2.8.12.zip" -OutFile "SDL2_image.zip"
-          Expand-Archive -Path SDL2_image.zip -DestinationPath ./android/app/jni/
-          Rename-Item ./android/app/jni/SDL2_image-2.8.12 SDL_image
       - name: Move & Copy stuff
         run: |
           Copy-Item -Path ./dependencies/all/theoraplay -Destination ./dependencies/android/app/jni/src/dependencies/android/
@@ -161,7 +156,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libglew-dev libglfw3-dev libsdl2-dev libsdl2-image-dev libogg-dev libtheora-dev libvorbis-dev libcurl4-openssl-dev
+          sudo apt-get install libglew-dev libglfw3-dev libsdl2-dev libogg-dev libtheora-dev libvorbis-dev libcurl4-openssl-dev
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_LINUX_FLAGS}}

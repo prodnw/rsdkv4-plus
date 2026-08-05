@@ -44,10 +44,6 @@ GLuint renderbufferHiRes = -1;
 GLuint videoBuffer       = -1;
 #endif
 
-#if RETRO_USING_SDL2
-#include "SDL_image.h"
-#endif
-
 #if !RETRO_USE_ORIGINAL_CODE
 // enable integer scaling, which is a modification of enhanced scaling
 bool integerScaling = false;
