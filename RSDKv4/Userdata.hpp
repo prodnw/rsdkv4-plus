@@ -306,8 +306,6 @@ void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
 void ApplyWindowChanges();
 void MinimizeEngineWindow();
-void HideEngineWindow();
-void ShowEngineWindow();
 void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2);
 int CheckUpdates(char website[]);
 
