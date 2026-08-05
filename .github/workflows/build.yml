@@ -45,7 +45,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 sdl2_image libogg libtheora libvorbis curl --triplet=x86-windows-static
+        run: vcpkg install glew sdl2 sdl2-image libogg libtheora libvorbis curl --triplet=x86-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}} 
@@ -68,7 +68,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 sdl2_image libogg libtheora libvorbis curl --triplet=x64-windows-static
+        run: vcpkg install glew sdl2 sdl2-image libogg libtheora libvorbis curl --triplet=x64-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN64_FLAGS}}
