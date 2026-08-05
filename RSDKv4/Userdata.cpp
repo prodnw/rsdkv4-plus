@@ -323,8 +323,10 @@ void InitUserdata()
 
     // if on android make a ".nomedia" file to prevent media scanning
 #if RETRO_PLATFORM == RETRO_ANDROID
-    sprintf(buffer, "%s/.nomedia", gamePath);
+	char androidBuffer[0x100];
+    sprintf(androidBuffer, "%s/.nomedia", gamePath);
 #endif
+	
     FileIO *file = fOpen(buffer, "rb");
     if (!file) {
         IniParser ini;
