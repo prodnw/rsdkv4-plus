@@ -27,7 +27,7 @@ on:
          description: 'Android'
 
 env:
-  GENERAL_FLAGS: "-DRETRO_DISABLE_PLUS=ON -DCMAKE_BUILD_TYPE=Release -DRETRO_SDL_VERSION=2 -DRETRO_USE_HW_RENDER=OFF -DRETRO_USE_STEAM=OFF -DRETRO_USE_DISCORD=OFF -DRETRO_ICON_NAME=\"RSDKv4 Decomp Icon.ico\" -DRETRO_OUTPUT_NAME=\"RSDKv4+\""
+  GENERAL_FLAGS: "-DRETRO_DISABLE_PLUS=ON -DCMAKE_BUILD_TYPE=Release -DRETRO_SDL_VERSION=2 -DRETRO_USE_HW_RENDER=OFF -DRETRO_USE_STEAM=OFF -DRETRO_USE_DISCORD=OFF -DRETRO_USE_CURL=ON -DRETRO_UPDATE_CHECKER=ON -DRETRO_ICON_NAME=\"RSDKv4 Decomp Icon.ico\" -DRETRO_OUTPUT_NAME=\"RSDKv4+\""
   # Normally you would use $VCPKG_INSTALLATION_PATH, but it's broken...so hardcode C:/vcpkg
   GENERAL_WIN_FLAGS: "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
   WIN32_FLAGS: "-DVCPKG_TARGET_TRIPLET=x86-windows-static -DCMAKE_PREFIX_PATH=C:/vcpkg/installed/x86-windows-static/ -A Win32"
@@ -45,7 +45,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x86-windows-static
+        run: vcpkg install glew sdl2 sdl2_image libogg libtheora libvorbis curl --triplet=x86-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN32_FLAGS}} 
@@ -68,7 +68,7 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: vcpkg install glew sdl2 libogg libtheora libvorbis curl --triplet=x64-windows-static
+        run: vcpkg install glew sdl2 sdl2_image libogg libtheora libvorbis curl --triplet=x64-windows-static
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_WIN_FLAGS}} ${{env.WIN64_FLAGS}}
@@ -98,12 +98,15 @@ jobs:
           Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/vorbis/libvorbis-1.3.7.zip" -OutFile "libvorbis.zip"
           Expand-Archive -Path libvorbis.zip -DestinationPath ./dependencies/android/
           Rename-Item ./dependencies/android/libvorbis-1.3.7 libvorbis
+
           Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/ogg/libogg-1.3.5.zip" -OutFile "libogg.zip"
           Expand-Archive -Path libogg.zip -DestinationPath ./dependencies/android/app/jni/src/dependencies/android/
           Rename-Item ./dependencies/android/app/jni/src/dependencies/android/libogg-1.3.5 libogg
+
           Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/vorbis/libvorbis-1.3.7.zip" -OutFile "libvorbis.zip"
           Expand-Archive -Path libvorbis.zip -DestinationPath ./dependencies/android/app/jni/src/dependencies/android/
           Rename-Item ./dependencies/android/app/jni/src/dependencies/android/libvorbis-1.3.7 libvorbis
+
           Invoke-WebRequest -Uri "https://ftp.osuosl.org/pub/xiph/releases/theora/libtheora-1.1.1.zip" -OutFile "libtheora.zip"
           Expand-Archive -Path libtheora.zip -DestinationPath ./dependencies/android
           Rename-Item ./dependencies/android/libtheora-1.1.1 libtheora
@@ -112,13 +115,24 @@ jobs:
           Invoke-WebRequest -Uri "https://github.com/nigels-com/glew/releases/download/glew-2.2.0/glew-2.2.0-win32.zip" -OutFile "GLEW.zip"
           Expand-Archive -Path GLEW.zip -DestinationPath ./dependencies/android/
           Rename-Item ./dependencies/android/glew-2.2.0 glew
+      - name: Download cURL
+        run: |
+          Invoke-WebRequest -Uri "https://curl.se/download/curl-8.6.0.zip" -OutFile "curl.zip"
+          Expand-Archive -Path curl.zip -DestinationPath ./dependencies/android/
+          Rename-Item ./dependencies/android/curl-8.6.0 curl
       - name: Download SDL2
         run: |
           Invoke-WebRequest -Uri "https://libsdl.org/release/SDL2-2.28.3.zip" -OutFile "SDL2.zip"
           Expand-Archive -Path SDL2.zip -DestinationPath ./android/app/jni/
           Rename-Item ./android/app/jni/SDL2-2.28.3 SDL
+      - name: Download SDL2_image
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/libsdl-org/SDL_image/releases/download/release-2.8.12/SDL2_image-2.8.12.zip" -OutFile "SDL2_image.zip"
+          Expand-Archive -Path SDL2_image.zip -DestinationPath ./android/app/jni/
+          Rename-Item ./android/app/jni/SDL2_image-2.8.12 SDL_image
       - name: Move & Copy stuff
         run: |
+          Copy-Item -Path ./dependencies/all/theoraplay -Destination ./dependencies/android/app/jni/src/dependencies/android/
           Copy-Item -Path ./dependencies/android/app/jni/src/dependencies/android\* -Destination ./dependencies/
           Copy-Item -Path ./dependencies/android/app/jni/src/dependencies/android/libogg/ -Destination ./dependencies/android/ -recurse
           Copy-Item -Path ./dependencies/android/config_types.h -Destination ./dependencies/android/libogg/include/ogg/
@@ -130,7 +144,7 @@ jobs:
       - name: Build RSDKv4 Android
         working-directory: ./android
         run: |
-          ./gradlew.bat assembleDebug --no-daemon -PABIFILTERS="armeabi-v7a;arm64-v8a" -PRETRO_DISABLE_PLUS=ON -PCMAKE_BUILD_TYPE=Release -PRETRO_SDL_VERSION=2 -PRETRO_USE_HW_RENDER=OFF -PRETRO_USE_STEAM=OFF -PRETRO_USE_DISCORD=OFF -PRETRO_FORCE_CASE_INSENSITIVE=ON -PRETRO_VANILLA_LIKE=ON
+          ./gradlew.bat assembleDebug --no-daemon -PABIFILTERS="armeabi-v7a;arm64-v8a" -PRETRO_DISABLE_PLUS=ON -PCMAKE_BUILD_TYPE=Release -PRETRO_SDL_VERSION=2 -PRETRO_USE_HW_RENDER=OFF -PRETRO_USE_STEAM=OFF -PRETRO_USE_DISCORD=OFF -PRETRO_FORCE_CASE_INSENSITIVE=ON -PRETRO_VANILLA_LIKE=ON -PRETRO_USE_CURL=ON -PRETRO_UPDATE_CHECKER=ON
       - name: Upload artifact Android
         uses: actions/upload-artifact@v4
         with:
@@ -147,7 +161,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install libglew-dev libglfw3-dev libsdl2-dev libogg-dev libtheora-dev libvorbis-dev libcurl4-openssl-dev
+          sudo apt-get install libglew-dev libglfw3-dev libsdl2-dev libsdl2-image-dev libogg-dev libtheora-dev libvorbis-dev libcurl4-openssl-dev
       - name: Build RSDKv4
         run: |
           cmake -B build ${{env.GENERAL_FLAGS}} ${{env.GENERAL_LINUX_FLAGS}}

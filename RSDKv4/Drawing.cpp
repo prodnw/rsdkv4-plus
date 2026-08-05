@@ -44,10 +44,8 @@ GLuint renderbufferHiRes = -1;
 GLuint videoBuffer       = -1;
 #endif
 
-#if !RSDK_AUTOBUILD
-    #if RETRO_USING_SDL2
-    #include "SDL_image.h"
-    #endif
+#if RETRO_USING_SDL2
+#include "SDL_image.h"
 #endif
 
 #if !RETRO_USE_ORIGINAL_CODE

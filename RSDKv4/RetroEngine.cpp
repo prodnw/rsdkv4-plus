@@ -351,13 +351,6 @@ void RetroEngine::Init()
     InitNetwork();
 #endif
 
-#if RETRO_PLATFORM == RETRO_ANDROID
-    char androidBuffer[0x100];
-    sprintf(androidBuffer, BASE_PATH ".nomedia");
-    FILE *f = fopen(androidBuffer, "w");
-    if (f) fclose(f);
-#endif
-
     char dest[0x200];
 #if RETRO_PLATFORM == RETRO_UWP
     static char resourcePath[256] = { 0 };
