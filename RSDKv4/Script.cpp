@@ -7407,14 +7407,19 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 						charxpos = scriptEng.operands[1];
 						charypos += scriptEng.operands[5];
 					}
-					else {						
-						if (character == ' ')
-							character = -1;							
-						if (character >= 192) //accented characters
-							character -= 94;
-						else if (character >= 33)
-							character -= 33;
-
+					else {
+						if (character < 0x21) //characters below 0x21 are invalid
+							character = -1;
+						else if (character < 0xC0) {
+							if (character > 0x7E) //characters between 0x7F and 0xBF are invalid
+								character = -1;
+							else
+								character -= 0x21; //characters between 0x21 and 0x7E are moved to between 0x00 and 0x5D
+						}					
+						else
+							character -= 0x61; //character between 0xC0 and 0xFF are moved to between 0x5E and 0x9C
+							
+							
 						if (character <= -1) {
 							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
 						}
@@ -7467,12 +7472,16 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 						charypos += scriptEng.operands[5];
 					}
 					else {						
-						if (character == ' ')
-							character = -1;							
-						if (character >= 192) //accented characters
-							character -= 94;
-						else if (character >= 33)
-							character -= 33;
+						if (character < 0x21) //characters below 0x21 are invalid
+							character = -1;
+						else if (character < 0xC0) {
+							if (character > 0x7E) //characters between 0x7F and 0xBF are invalid
+								character = -1;
+							else
+								character -= 0x21; //characters between 0x21 and 0x7E are moved to between 0x00 and 0x5D
+						}					
+						else
+							character -= 0x61; //character between 0xC0 and 0xFF are moved to between 0x5E and 0x9C
 
 						if (character <= -1) {
 							charxpos += scriptEng.operands[3] + scriptEng.operands[4]; // spaceWidth + spacing
