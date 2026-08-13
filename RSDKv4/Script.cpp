@@ -22,6 +22,11 @@
 extern float networkPing;
 extern bool useDiscordRPC;
 
+unsigned int playtimeDays = 0;
+unsigned int playtimeHours = 0;
+unsigned int playtimeMinutes = 0;
+unsigned int playtimeSeconds = 0;
+
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
 
@@ -473,6 +478,7 @@ const char variableNames[][0x20] = {
 	"engine.entityCount",
 
     // Playtime
+    "playtime.days",
     "playtime.hours",
     "playtime.minutes",
     "playtime.seconds",
@@ -1369,6 +1375,7 @@ enum ScrVar {
 	VAR_ENGINE_ENTITY_COUNT,
 
     // Playtime
+    VAR_PLAYTIME_DAYS,
     VAR_PLAYTIME_HOURS,
     VAR_PLAYTIME_MINUTES,
     VAR_PLAYTIME_SECONDS,
@@ -4181,18 +4188,6 @@ void ClearScriptData()
     SetObjectTypeName("Blank Object", OBJ_TYPE_BLANKOBJECT);
 }
 
-unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions (reset on full engine reset)
-
-void AddPlaytimeMilliseconds(unsigned int ms)
-{
-    totalPlaytimeMs += ms;
-}
-
-unsigned int GetPlaytimeSeconds()
-{
-    return (unsigned int)(totalPlaytimeMs / 1000ULL);
-}
-
 void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 {
     bool running      = true;
@@ -5221,9 +5216,26 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					case VAR_ENGINE_ENTITY_COUNT: scriptEng.operands[i] = ENTITY_COUNT; break;
 
                     // Playtime
-                    case VAR_PLAYTIME_HOURS: scriptEng.operands[i] = GetPlaytimeSeconds() / 3600; break;
-                    case VAR_PLAYTIME_MINUTES: scriptEng.operands[i] = (GetPlaytimeSeconds() % 3600) / 60; break;
-                    case VAR_PLAYTIME_SECONDS: scriptEng.operands[i] = GetPlaytimeSeconds() % 60; break;
+                    case VAR_PLAYTIME_DAYS: {
+                        GetTotalPlaytime(&playtimeDays, &playtimeHours, &playtimeMinutes, &playtimeSeconds);
+                        scriptEng.operands[i] = playtimeDays;
+                        break;
+                    }
+                    case VAR_PLAYTIME_HOURS: {
+                        GetTotalPlaytime(&playtimeDays, &playtimeHours, &playtimeMinutes, &playtimeSeconds);
+                        scriptEng.operands[i] = playtimeHours;
+                        break;
+                    }
+                    case VAR_PLAYTIME_MINUTES: {
+                        GetTotalPlaytime(&playtimeDays, &playtimeHours, &playtimeMinutes, &playtimeSeconds);
+                        scriptEng.operands[i] = playtimeMinutes;
+                        break;
+                    }
+                    case VAR_PLAYTIME_SECONDS: {
+                        GetTotalPlaytime(&playtimeDays, &playtimeHours, &playtimeMinutes, &playtimeSeconds);
+                        scriptEng.operands[i] = playtimeSeconds;
+                        break;
+                    }
 
                     // Network
                     case VAR_GAME_NETWORKPING:
@@ -9472,6 +9484,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINE_ENTITY_COUNT: break;
                     
                     // Playtime
+                    case VAR_PLAYTIME_DAYS: break;
                     case VAR_PLAYTIME_HOURS: break;
                     case VAR_PLAYTIME_MINUTES: break;
                     case VAR_PLAYTIME_SECONDS: break;

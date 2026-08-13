@@ -9,14 +9,31 @@ bool engineDebugMode = false;
 #include <unistd.h>
 #endif
 
-static int connectedControllerCount = 0;
 bool enginestruggle = false;
 
-void AddPlaytimeMilliseconds(unsigned int ms);
-unsigned int GetPlaytimeSeconds();
-extern unsigned long long totalPlaytimeMs;
-
 RetroEngine Engine = RetroEngine();
+
+// Playtime stuff
+unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions (reset on full engine reset)
+void AddPlaytimeMilliseconds(unsigned int ms)
+{
+    totalPlaytimeMs += ms;
+}
+
+void GetTotalPlaytime(unsigned int *days, unsigned int *hours, unsigned int *minutes, unsigned int *seconds)
+{
+    unsigned long long totalSeconds = totalPlaytimeMs / 1000ULL;
+    unsigned long long remainingSeconds = totalSeconds % 86400ULL;
+
+    if (days)
+        *days = (unsigned int)(totalSeconds / 86400ULL);
+    if (hours)
+        *hours = (unsigned int)(remainingSeconds / 3600ULL);
+    if (minutes)
+        *minutes = (unsigned int)((remainingSeconds % 3600ULL) / 60ULL);
+    if (seconds)
+        *seconds = (unsigned int)(remainingSeconds % 60ULL);
+}
 
 #if !RETRO_USE_ORIGINAL_CODE
 inline int GetLowerRate(int intendRate, int targetRate)
@@ -75,21 +92,12 @@ bool ProcessEvents()
                 break;
             case SDL_CONTROLLERDEVICEADDED:
                 controllerInit(Engine.sdlEvents.cdevice.which);
-
-                // fast update: increment connected count and notify script
-                ++connectedControllerCount;
-                scriptEng.checkResult = 0; // 0 = no disconnect (added)
-                PrintLog("Controller added, now %d connected", connectedControllerCount);
+                PrintLog("Controller added.");
                 break;
 
             case SDL_CONTROLLERDEVICEREMOVED:
                 controllerClose(Engine.sdlEvents.cdevice.which);
-                if (connectedControllerCount > 0)
-                    --connectedControllerCount;
-
-                // immediate notify to script that a disconnect happened
-                scriptEng.checkResult = 1; // 1 = disconnected
-                PrintLog("Controller removed, now %d connected", connectedControllerCount);
+                PrintLog("Controller removed.");
                 break;
             case SDL_APP_WILLENTERBACKGROUND:
                 if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
@@ -403,16 +411,6 @@ void RetroEngine::Init()
                 ClearScriptData();
                 initialised = true;
                 running     = true;
-
-#if RETRO_USING_SDL2
-                // initialize connectedControllerCount once SDL is ready
-                connectedControllerCount = 0;
-                int numJoysticks = SDL_NumJoysticks();
-                for (int i = 0; i < numJoysticks; ++i) {
-                    if (SDL_IsGameController(i))
-                        ++connectedControllerCount;
-                }
-#endif
 
 #if !RETRO_USE_ORIGINAL_CODE
                 if ((startList_Game != 0xFF && startList_Game) || (startStage_Game != 0xFF && startStage_Game) || startPlayer != 0xFF) {

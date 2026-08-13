@@ -383,6 +383,10 @@ extern bool engineDebugMode;
 #include "steam/steam_api.h"
 #endif
 
+extern unsigned long long totalPlaytimeMs;
+void AddPlaytimeMilliseconds(unsigned int ms);
+void GetTotalPlaytime(unsigned int *days, unsigned int *hours, unsigned int *minutes, unsigned int *seconds);
+
 class RetroEngine
 {
 public:
