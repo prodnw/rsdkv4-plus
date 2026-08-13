@@ -220,14 +220,14 @@ int ProcessVideo()
             videoSkipped = true;
         }
 
-        if (Engine.gameDeviceType == RETRO_MOBILE) {
-            if (touches > 0) {
-                if (!videoSkipped)
-                    fadeMode = 0;
+#if RETRO_PLATFORM == RETRO_ANDROID
+        if (touches > 0) {
+            if (!videoSkipped)
+                fadeMode = 0;
 
-                videoSkipped = true;
-            }
+            videoSkipped = true;
         }
+#endif
 
         if (fadeMode <= 0) {
             PlaySfxByName("Menu Decide", false);
