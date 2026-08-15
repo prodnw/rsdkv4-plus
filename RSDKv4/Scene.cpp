@@ -875,9 +875,24 @@ void LoadStageFiles(void)
     }
     else {
         PrintLog("Reloading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
-        
+		
         // fixes for palette police (the palette normally doesnt reload,
-        // so palette police will apply to colours it already applied to on the last load)
+        // so palette police will apply to colours it already applied to on the last load)		
+		if (LoadFile("Data/Game/GameConfig.bin", &info)) {
+            byte globalObjectCount = 0;
+            
+            FileRead(&fileBuffer, 1);
+            FileRead(&strBuffer, fileBuffer);
+            FileRead(&fileBuffer, 1);
+            FileRead(&strBuffer, fileBuffer);
+
+            byte buf[3];
+            for (int c = 0; c < 0x60; ++c) {
+                FileRead(buf, 3);
+                SetPaletteEntry(-1, c, buf[0], buf[1], buf[2]);
+            }
+		}
+        
         if (LoadStageFile("StageConfig.bin", stageListPosition, &info)) {
             FileRead(&fileBuffer, 1); // Load Globals
             
