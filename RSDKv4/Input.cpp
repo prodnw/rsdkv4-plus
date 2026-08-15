@@ -712,6 +712,8 @@ int GetGamepadBatteryLevel(int controllerID)
             default:                        return 100;
         }
     }
+    
+    return 100; // Default to full, just so we dont return nothing
 #else
     PrintLog("No SDL2 detected. Unable to get battery level of controller.");
     return 100; // Default to full

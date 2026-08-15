@@ -430,3 +430,4 @@ cmake-build.bat
 ## AppImage
 AppImage/AppDir/.DirIcon
 AppImage/AppDir/usr/bin/*
+AppImage/usage.txt
