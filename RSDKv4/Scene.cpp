@@ -651,9 +651,7 @@ void LoadStageFiles(void)
     char strBuffer[0x100];
 
     StopAllSfx();
-    //if (!CheckCurrentStageFolder(stageListPosition)) {
-	//Nope. When I say LoadStage() you Load the fuckin Stage() ya piece o' shit.
-	if (true) {
+	if (!CheckCurrentStageFolder(stageListPosition)) {
         PrintLog("Loading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
         PrintLog("Playing Character %s - Player ID %d", playerNames[playerListPos].c_str(), playerListPos);
         ReleaseStageSfx();
@@ -873,11 +871,27 @@ void LoadStageFiles(void)
         LoadStageGIFFile(stageListPosition);
         LoadStageCollisions();
         LoadStageBackground();
+        LoadStageChunks(); // moved to here bc this doesnt need to be reloaded i think??
     }
     else {
         PrintLog("Reloading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
+        
+        // fixes for palette police (the palette normally doesnt reload,
+        // so palette police will apply to colours it already applied to on the last load)
+        if (LoadStageFile("StageConfig.bin", stageListPosition, &info)) {
+            FileRead(&fileBuffer, 1); // Load Globals
+            
+            // literally the first thing in here, awesome
+            byte clr[3];
+            for (int i = 0x60; i < 0x80; ++i) {
+                FileRead(&clr, 3);
+                SetPaletteEntry(-1, i, clr[0], clr[1], clr[2]);
+            }
+        }
+        
+        // dont forget this too-
+        LoadStageGIFFile(stageListPosition);
     }
-    LoadStageChunks();
     for (int i = 0; i < TRACK_COUNT; ++i) SetMusicTrack("", i, false, 0);
 
     memset(objectEntityList, 0, ENTITY_COUNT * sizeof(Entity));
