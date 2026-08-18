@@ -16,9 +16,9 @@ on:
        windows-x64: 
          type: boolean
          description: 'Windows (x64)'
-       windows-x86:
+       windows-x32:
          type: boolean
-         description: 'Windows (x86)'
+         description: 'Windows (x32)'
        linux: 
          type: boolean
          description: 'Linux'
@@ -37,7 +37,7 @@ env:
 
 jobs:
   v4-windows:
-    if: ${{ github.event.inputs.windows-x86 == 'true' || github.event_name == 'push' }}  
+    if: ${{ github.event.inputs.windows-x32 == 'true' || github.event_name == 'push' }}  
     runs-on: windows-latest
     steps:
       - name: Checkout
