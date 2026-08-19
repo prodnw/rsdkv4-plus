@@ -28,7 +28,7 @@ struct Entity {
     int xvel;
     int yvel;
     int speed;
-    int values[48];
+    int values[64];
     int state;
     int angle;
     int scale;

@@ -658,6 +658,51 @@ void HapticEffect(int *hapticID, int *a2, int *a3, int *a4)
 
 // sdl2 this sdl2 that
 
+// Detect game controller
+int DetectGameController(int controllerID)
+{
+#if RETRO_USING_SDL2
+    int deviceType = CONTROLLER_KEYBOARD;
+    if (controllerID < controllers.size()) {
+        SDL_GameController *controller = controllers[controllerID].devicePtr;
+        if (controller) {
+            const char* controllerName = SDL_GameControllerName(controller);
+            if (controllerName) {
+                // Check for specific controller types
+                if (strstr(controllerName, "Xbox 360")) {
+                    deviceType = CONTROLLER_XBOX_360; // Xbox 360
+                }
+                else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series") || strstr(controllerName, "Xbox")) {
+                    deviceType = CONTROLLER_XBOX; // Xbox One/Series
+                }
+                else if (strstr(controllerName, "PS3") || strstr(controllerName, "PlayStation 3")) {
+                    deviceType = CONTROLLER_PS3; // PS3
+                }
+                else if (strstr(controllerName, "PS4") || strstr(controllerName, "PlayStation 4")) {
+                    deviceType = CONTROLLER_PS4; // PS4
+                }
+                else if (strstr(controllerName, "PS5") || strstr(controllerName, "PlayStation 5")) {
+                    deviceType = CONTROLLER_PS5; // PS5
+                }
+                else if (strstr(controllerName, "Nintendo") || strstr(controllerName, "Joy-Con") || strstr(controllerName, "Switch")) {
+                    deviceType = CONTROLLER_SWITCH;  // Nintendo Switch
+                }
+                else if (strstr(controllerName, "Steam Deck")) {
+                    deviceType = CONTROLLER_STEAM;  // Steam
+                }
+                else {
+                    deviceType = CONTROLLER_UNKNOWN;  // Generic/Other
+                }
+            }
+        }
+    }
+    return deviceType;
+    PrintLog("Supported game controller found! Returned value is %d", deviceType);
+#else
+    return CONTROLLER_KEYBOARD;  // no sdl2? just default to keyboard
+#endif
+}
+
 // Set the LED color on a specific controller that supports it
 void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b)
 {
@@ -672,10 +717,6 @@ void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b)
             {
                 SDL_GameControllerSetLED(controller, r, g, b);
                 PrintLog("Set LED colour for controller %d (%s) to (%d, %d, %d)", controllerID, name ? name : "Unknown", r, g, b);
-            } 
-            else
-            {
-                PrintLog("Controller %d does not support RGB LED", controllerID);
             }
             SDL_GameControllerClose(controller);
         } 
@@ -716,7 +757,7 @@ int GetGamepadBatteryLevel(int controllerID)
     return 100; // Default to full, just so we dont return nothing
 #else
     PrintLog("No SDL2 detected. Unable to get battery level of controller.");
-    return 100; // Default to full
+    return 100; // Default to full again
 #endif
 }
 

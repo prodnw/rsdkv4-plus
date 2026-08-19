@@ -23,15 +23,16 @@ enum InputButtons {
 };
 
 enum ControllerTypes {
-    CONTROLLER_UNKNOWN,
-    CONTROLLER_KEYBOARD,
-    CONTROLLER_XBOX_360,
-    CONTROLLER_XBOX,
-    CONTROLLER_PS3,
-    CONTROLLER_PS4,
-    CONTROLLER_PS5,
-    CONTROLLER_SWITCH,
-    CONTROLLER_STEAM_DECK,
+    CONTROLLER_UNKNOWN = 0, // share the same ID with keyboard as a fallback kind of method
+
+    CONTROLLER_KEYBOARD = 0,
+    CONTROLLER_XBOX_360 = 1,
+    CONTROLLER_XBOX = 2,
+    CONTROLLER_PS3 = 3,
+    CONTROLLER_PS4 = 4,
+    CONTROLLER_PS5 = 5,
+    CONTROLLER_SWITCH = 6,
+    CONTROLLER_STEAM = 7,
 };
 
 struct InputData {
@@ -167,6 +168,7 @@ inline int GetHapticEffectNum()
 void HapticEffect(int *id, int *a2, int *a3, int *a4);
 #endif
 
+int DetectGameController(int controllerID);
 void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
 int GetGamepadBatteryLevel(int controllerID);
 void VibrateController(int controllerID, int intensity, int duration);

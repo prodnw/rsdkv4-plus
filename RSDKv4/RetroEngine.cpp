@@ -10,11 +10,12 @@ bool engineDebugMode = false;
 #endif
 
 bool enginestruggle = false;
+float devMenuHoldTimer = 0.0f;
 
 RetroEngine Engine = RetroEngine();
 
 // Playtime stuff
-unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions (reset on full engine reset)
+unsigned long long totalPlaytimeMs = 0; // accumulated ms across sessions
 void AddPlaytimeMilliseconds(unsigned int ms)
 {
     totalPlaytimeMs += ms;
@@ -22,17 +23,21 @@ void AddPlaytimeMilliseconds(unsigned int ms)
 
 void GetTotalPlaytime(unsigned int *days, unsigned int *hours, unsigned int *minutes, unsigned int *seconds)
 {
+    constexpr unsigned long long SECONDS_PER_DAY = 86400ULL;    // 1 day = 86400 seconds
+    constexpr unsigned long long SECONDS_PER_HOUR = 3600ULL;    // 1 hour = 3600 seconds
+    constexpr unsigned long long SECONDS_PER_MINUTE = 60ULL;    // 1 minutes = 60 seconds
+
     unsigned long long totalSeconds = totalPlaytimeMs / 1000ULL;
-    unsigned long long remainingSeconds = totalSeconds % 86400ULL;
+    unsigned long long remaining = totalSeconds % SECONDS_PER_DAY;
 
     if (days)
-        *days = (unsigned int)(totalSeconds / 86400ULL);
+        *days = (unsigned int)(totalSeconds / SECONDS_PER_DAY);
     if (hours)
-        *hours = (unsigned int)(remainingSeconds / 3600ULL);
+        *hours = (unsigned int)(remaining / SECONDS_PER_HOUR);
     if (minutes)
-        *minutes = (unsigned int)((remainingSeconds % 3600ULL) / 60ULL);
+        *minutes = (unsigned int)((remaining % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
     if (seconds)
-        *seconds = (unsigned int)(remainingSeconds % 60ULL);
+        *seconds = (unsigned int)(remaining % SECONDS_PER_MINUTE);
 }
 
 #if !RETRO_USE_ORIGINAL_CODE
@@ -60,6 +65,33 @@ int devDownTimer = 0;
 bool ProcessEvents()
 {
 #if !RETRO_USE_ORIGINAL_CODE
+    // Dev menu for controllers
+    if (Engine.devMenu) {
+        SDL_GameController *controller = SDL_GameControllerOpen(0);
+        if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START) && SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK)) 
+        {
+            devMenuHoldTimer += Engine.deltaTime;
+            if (devMenuHoldTimer >= 0.8f)
+            {
+#if RETRO_USE_MOD_LOADER
+                // hacky patch because people can escape
+                if (Engine.gameMode == ENGINE_DEVMENU && stageMode == DEVMENU_MODMENU)
+                    RefreshEngine();
+#endif
+                ClearNativeObjects();
+                CREATE_ENTITY(RetroGameLoop);
+                if (Engine.gameDeviceType == RETRO_MOBILE)
+                    CREATE_ENTITY(VirtualDPad);
+                Engine.gameMode = ENGINE_INITDEVMENU;
+            }
+            devMenuHoldTimer = 0.0f;
+        }
+    }
+    else
+    {
+        devMenuHoldTimer = 0.0f;
+    }
+
 #if RETRO_USING_SDL1 || RETRO_USING_SDL2
     while (SDL_PollEvent(&Engine.sdlEvents)) {
 
@@ -174,6 +206,7 @@ bool ProcessEvents()
             case SDL_KEYDOWN:
                 switch (Engine.sdlEvents.key.keysym.sym) {
                     default: break;
+                    // Dev menu for android & pc
                     case SDLK_AC_BACK:
                     case SDLK_ESCAPE:
                         if (Engine.devMenu) {
@@ -240,7 +273,6 @@ bool ProcessEvents()
                             SetGlobalVariableByName("lampPostID", 0); // For S1
                             SetGlobalVariableByName("starPostID", 0); // For S2
                             SetGlobalVariableByName("Warp.XPos", 0);  // For SCD
-
 
                             if (musicStatus == MUSIC_STOPPED || musicStatus == MUSIC_PAUSED) {
                                 musicPosition = 0;
@@ -689,7 +721,6 @@ void RetroEngine::Init()
 
         fClose(f);
     }
-
 #endif
 }
 

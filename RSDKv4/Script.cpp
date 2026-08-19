@@ -1,8 +1,18 @@
 #include "RetroEngine.hpp"
-#include <cmath>
+#include "Userdata.hpp"
+#include "Video.hpp"
 
+#include <cmath>
 #include <SDL.h>
 #include <ctime>
+
+extern float networkPing;
+extern bool useDiscordRPC;
+
+unsigned int playtimeDays = 0;
+unsigned int playtimeHours = 0;
+unsigned int playtimeMinutes = 0;
+unsigned int playtimeSeconds = 0;
 
 // doing this so it's easier, for me at least :)
 #if RETRO_USE_COMPILER
@@ -13,19 +23,8 @@
     #endif
     
     // Aliases & Old Syntax Aliases
-    #define COMMON_SCRIPT_VAR_COUNT (102 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
+    #define COMMON_SCRIPT_VAR_COUNT (118 + OLD_SYNTAX_SCRIPT_VAR_COUNT)
 #endif
-
-#include "Userdata.hpp"
-#include "Video.hpp"
-
-extern float networkPing;
-extern bool useDiscordRPC;
-
-unsigned int playtimeDays = 0;
-unsigned int playtimeHours = 0;
-unsigned int playtimeMinutes = 0;
-unsigned int playtimeSeconds = 0;
 
 #define SCRIPT_VAR_COUNT (COMMON_SCRIPT_VAR_COUNT + 0x1DF)
 int lineID = 0;
@@ -409,6 +408,24 @@ const char variableNames[][0x20] = {
     "temp8",
     "temp9",
     "temp10",
+
+    // More Object Values
+    "object.value48",
+    "object.value49",
+    "object.value50",
+    "object.value51",
+    "object.value52",
+    "object.value53",
+    "object.value54",
+    "object.value55",
+    "object.value56",
+    "object.value57",
+    "object.value58",
+    "object.value59",
+    "object.value60",
+    "object.value61",
+    "object.value62",
+    "object.value63",
 
     // Strings
     "tempStr0",
@@ -1306,6 +1323,24 @@ enum ScrVar {
     VAR_TEMP8,
     VAR_TEMP9,
     VAR_TEMP10,
+
+    // More Object Values
+    VAR_OBJECTVALUE48,
+    VAR_OBJECTVALUE49,
+    VAR_OBJECTVALUE50,
+    VAR_OBJECTVALUE51,
+    VAR_OBJECTVALUE52,
+    VAR_OBJECTVALUE53,
+    VAR_OBJECTVALUE54,
+    VAR_OBJECTVALUE55,
+    VAR_OBJECTVALUE56,
+    VAR_OBJECTVALUE57,
+    VAR_OBJECTVALUE58,
+    VAR_OBJECTVALUE59,
+    VAR_OBJECTVALUE60,
+    VAR_OBJECTVALUE61,
+    VAR_OBJECTVALUE62,
+    VAR_OBJECTVALUE63,
 
     // Strings
 	VAR_TEMPSTR0,
@@ -4983,6 +5018,87 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP9: scriptEng.operands[i] = scriptEng.temp[9]; break;
                     case VAR_TEMP10: scriptEng.operands[i] = scriptEng.temp[10]; break;
 
+                    // More Object Values
+                    case VAR_OBJECTVALUE48: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[48];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE49: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[49];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE50: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[50];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE51: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[51];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE52: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[52];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE53: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[53];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE54: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[54];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE55: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[55];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE56: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[56];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE57: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[57];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE58: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[58];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE59: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[59];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE60: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[60];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE61: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[61];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE62: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[62];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE63: {
+                        scriptEng.operands[i] = objectEntityList[arrayVal].values[63];
+                        break;
+                    }
+
                     // Strings
                     case VAR_TEMPSTR0:  StrCopy(scriptText, scriptEng.tempStr[0]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[0]);  break;
                     case VAR_TEMPSTR1:  StrCopy(scriptText, scriptEng.tempStr[1]);  StrCopy(scriptEng.operandStr[i], scriptEng.tempStr[1]);  break;
@@ -5023,45 +5139,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_CONTROLLER_PRESSED: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].press; break;
                     case VAR_CONTROLLER_DOWN: scriptEng.operands[i] = inputDevice[inputCheck][arrayVal].down(); break;
                     case VAR_CONTROLLER_DEVICE: {
-#if RETRO_USING_SDL2
-                        int deviceType = CONTROLLER_KEYBOARD;
-                        if (arrayVal && arrayVal <= controllers.size()) {
-                            SDL_GameController *controller = controllers[arrayVal - 1].devicePtr;
-                            if (controller) {
-                                const char* controllerName = SDL_GameControllerName(controller);
-                                if (controllerName) {
-                                    // Check for specific controller types
-                                    if (strstr(controllerName, "Xbox 360")) {
-                                        deviceType = CONTROLLER_XBOX_360;
-                                    }
-                                    else if (strstr(controllerName, "Xbox One") || strstr(controllerName, "Xbox Series") || strstr(controllerName, "Xbox")) {
-                                        deviceType = CONTROLLER_XBOX;  // Xbox One/Series
-                                    }
-                                    else if (strstr(controllerName, "PS3") || strstr(controllerName, "PlayStation 3")) {
-                                        deviceType = CONTROLLER_PS3;
-                                    }
-                                    else if (strstr(controllerName, "PS4") || strstr(controllerName, "PlayStation 4")) {
-                                        deviceType = CONTROLLER_PS4;
-                                    }
-                                    else if (strstr(controllerName, "PS5") || strstr(controllerName, "PlayStation 5")) {
-                                        deviceType = CONTROLLER_PS5;
-                                    }
-                                    else if (strstr(controllerName, "Nintendo") || strstr(controllerName, "Joy-Con") || strstr(controllerName, "Switch")) {
-                                        deviceType = CONTROLLER_SWITCH;  // Nintendo Switch/Switch 2
-                                    }
-                                    else if (strstr(controllerName, "Steam Deck")) {
-                                        deviceType = CONTROLLER_STEAM_DECK;  // Steam Deck
-                                    }
-                                    else {
-                                        deviceType = CONTROLLER_UNKNOWN;  // Generic/Other
-                                    }
-                                }
-                            }
-                        }
-                        scriptEng.operands[i] = deviceType;
-#else
-                        scriptEng.operands[i] = CONTROLLER_KEYBOARD;  // no sdl2? just default to keyboard
-#endif
+                        scriptEng.operands[i] = DetectGameController(arrayVal);
                         break;
                     }
                     case VAR_CONTROLLER_WIRED: {
@@ -6909,7 +6987,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // scriptEng.operands[1] = valueID
                 // scriptEng.operands[2] = entitySlot
 
-                if (scriptEng.operands[1] < 48)
+                if (scriptEng.operands[1] < 64)
                     scriptEng.operands[0] = objectEntityList[scriptEng.operands[2]].values[scriptEng.operands[1]];
                 break;
             }
@@ -6920,7 +6998,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                 // scriptEng.operands[2] = entitySlot
 
                 opcodeSize = 0;
-                if (scriptEng.operands[1] < 48)
+                if (scriptEng.operands[1] < 64)
                     objectEntityList[scriptEng.operands[2]].values[scriptEng.operands[1]] = scriptEng.operands[0];
                 break;
             }
@@ -9405,6 +9483,87 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_TEMP8: scriptEng.temp[8] = scriptEng.operands[i]; break;
                     case VAR_TEMP9: scriptEng.temp[9] = scriptEng.operands[i]; break;
                     case VAR_TEMP10: scriptEng.temp[10] = scriptEng.operands[i]; break;
+
+                    // More Object Values
+                    case VAR_OBJECTVALUE48: {
+                        objectEntityList[arrayVal].values[48] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE49: {
+                        objectEntityList[arrayVal].values[49] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE50: {
+                        objectEntityList[arrayVal].values[50] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE51: {
+                        objectEntityList[arrayVal].values[51] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE52: {
+                        objectEntityList[arrayVal].values[52] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE53: {
+                        objectEntityList[arrayVal].values[53] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE54: {
+                        objectEntityList[arrayVal].values[54] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE55: {
+                        objectEntityList[arrayVal].values[55] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE56: {
+                        objectEntityList[arrayVal].values[56] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE57: {
+                        objectEntityList[arrayVal].values[57] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE58: {
+                        objectEntityList[arrayVal].values[58] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE59: {
+                        objectEntityList[arrayVal].values[59] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE60: {
+                        objectEntityList[arrayVal].values[60] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE61: {
+                        objectEntityList[arrayVal].values[61] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE62: {
+                        objectEntityList[arrayVal].values[62] = scriptEng.operands[i];
+                        break;
+                    }
+
+                    case VAR_OBJECTVALUE63: {
+                        objectEntityList[arrayVal].values[63] = scriptEng.operands[i];
+                        break;
+                    }
 
                     // Strings
                     case VAR_TEMPSTR0:  StrCopy(scriptEng.tempStr[0],  scriptEng.operandStr[i]); break;
