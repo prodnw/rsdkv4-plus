@@ -3,12 +3,13 @@
 
 #if RETRO_VANILLA_LIKE
 #define GLOBALVAR_COUNT (0x100)
-#else
-#define GLOBALVAR_COUNT (0x800)
-#endif
-
 #define ACHIEVEMENT_COUNT (0x40)
 #define LEADERBOARD_COUNT (0x80)
+#else
+#define GLOBALVAR_COUNT (0x800)
+#define ACHIEVEMENT_COUNT (0x100)
+#define LEADERBOARD_COUNT (0x100)
+#endif
 
 #define SAVEDATA_SIZE (0x2000)
 
