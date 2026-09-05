@@ -63,8 +63,9 @@ int InitRenderDevice()
 #if RETRO_USING_SDL2
 
 #if RETRO_PLATFORM == RETRO_ANDROID
-    setenv("SDL_AUDIODRIVER", "openslES", 1);   // This is a workaround to eliminate audio delay, since we use SDL 2.28 (as of this commit this is coming from.)
-                                                // This could be resolved by properly updating SDL to 2.32.10, but that'd involve updating a lot of app related files.
+    // This is a workaround to eliminate audio delay, since we use SDL 2.28 (as of this commit this is coming from.)
+    // This could be resolved by properly updating SDL to 2.32.10, but that'd involve updating a lot of app related files.
+    setenv("SDL_AUDIODRIVER", "openslES", 1);
 #endif
 
     SDL_Init(SDL_INIT_EVERYTHING);
@@ -396,7 +397,27 @@ void FlipScreen()
         screenysize *= 2;
     }
 
-    if ((Engine.scalingMode != 0 && !disableEnhancedScaling) && Engine.gameMode != ENGINE_VIDEOWAIT) {
+    if (Engine.gameMode == ENGINE_VIDEOWAIT) {
+        float screenAR = float(SCREEN_XSIZE) / float(SCREEN_YSIZE);
+        if (screenAR > videoAR) {                       // If the screen is wider than the video. (Pillarboxed)
+            uint videoW = uint(SCREEN_YSIZE * videoAR); // This is to force Pillarboxed mode if the screen is wider than the video.
+            destScreenPosRect.x = (SCREEN_XSIZE - videoW) / 2;      // Centers the video horizontally.
+            destScreenPosRect.w = videoW;
+
+            destScreenPosRect.y = 0;
+            destScreenPosRect.h = SCREEN_YSIZE;
+        }
+        else {
+            uint videoH = uint(float(SCREEN_XSIZE) / videoAR); // This is to force letterbox mode if the video is wider than the screen.
+            destScreenPosRect.y = (SCREEN_YSIZE - videoH) / 2;             // Centers the video vertically.
+            destScreenPosRect.h = videoH;
+
+            destScreenPosRect.x = 0;
+            destScreenPosRect.w = SCREEN_XSIZE;
+        }
+        destScreenPos = &destScreenPosRect;
+    }
+    else if (Engine.scalingMode != 0 && !disableEnhancedScaling) {
         // set up integer scaled texture, which is scaled to the largest integer scale of the screen buffer
         // before you make a texture that's larger than the window itself. This texture will then be scaled
         // up to the actual screen size using linear interpolation. This makes even window/screen scales
@@ -426,26 +447,6 @@ void FlipScreen()
         destScreenPos_scaled.h = std::round(screenysize * aspectScale);
         // fill the screen with the texture, making lerp work.
         SDL_RenderSetLogicalSize(Engine.renderer, Engine.windowXSize, Engine.windowYSize);
-    }
-    else if (Engine.gameMode == ENGINE_VIDEOWAIT) {
-        float screenAR = float(SCREEN_XSIZE) / float(SCREEN_YSIZE);
-        if (screenAR > videoAR) {                               // If the screen is wider than the video. (Pillarboxed)
-            uint videoW         = uint(SCREEN_YSIZE * videoAR); // This is to force Pillarboxed mode if the screen is wider than the video.
-            destScreenPosRect.x = (SCREEN_XSIZE - videoW) / 2;  // Centers the video horizontally.
-            destScreenPosRect.w = videoW;
-
-            destScreenPosRect.y = 0;
-            destScreenPosRect.h = SCREEN_YSIZE;
-        }
-        else {
-            uint videoH         = uint(float(SCREEN_XSIZE) / videoAR); // This is to force letterbox mode if the video is wider than the screen.
-            destScreenPosRect.y = (SCREEN_YSIZE - videoH) / 2;         // Centers the video vertically.
-            destScreenPosRect.h = videoH;
-
-            destScreenPosRect.x = 0;
-            destScreenPosRect.w = SCREEN_XSIZE;
-        }
-        destScreenPos = &destScreenPosRect;
     }
 
     int pitch = 0;
@@ -536,12 +537,16 @@ void FlipScreen()
     }
     else {
         // Apply dimming
-        // In RSDKv3, a DrawRectangle would be used for the fade - but I believe that it doesn't draw to the videoBuffer?
-        int fade = Engine.gameMode == ENGINE_VIDEOWAIT ? fadeMode : 0xFF - (dimAmount * 0xFF);
-        SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, fade);
-
-        if (dimAmount < 1.0 || Engine.gameMode == ENGINE_VIDEOWAIT)
+        if (Engine.gameMode == ENGINE_VIDEOWAIT) {
+            SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, fadeMode);
             SDL_RenderFillRect(Engine.renderer, NULL);
+        }
+        else {
+            SDL_SetRenderDrawColor(Engine.renderer, 0, 0, 0, 0xFF - (dimAmount * 0xFF));
+
+            if (dimAmount < 1.0)
+                SDL_RenderFillRect(Engine.renderer, NULL);
+        }
 
         // no change here
         SDL_RenderPresent(Engine.renderer);
@@ -624,58 +629,122 @@ struct DrawVertexCD {
 
 void FlipScreenVideo()
 {
-#if RETRO_USING_OPENGL
-    DrawVertexCD screenVerts[4];
+#if RETRO_USING_OPENGL && (RETRO_USING_SDL1 || RETRO_USING_SDL2)
+    if (videoBuffer <= 0)
+        return;
 
-    screenVerts[0].u = 0;
-    screenVerts[0].v = 0;
+    SDL_Rect destScreenPosRect = {};
 
-    screenVerts[1].u = FACEBUFFER_SIZE;
-    screenVerts[1].v = 0;
+    if (float(SCREEN_XSIZE) / float(SCREEN_YSIZE) > videoAR) { // If the screen is wider than the video. (Pillarboxed)
+        uint videoW         = uint(SCREEN_YSIZE * videoAR);    // This is to force Pillarboxed mode if the screen is wider than the video.
+        destScreenPosRect.x = (SCREEN_XSIZE - videoW) / 2;                 // Centers the video horizontally.
+        destScreenPosRect.w = videoW;
 
-    screenVerts[2].u = 0;
-    screenVerts[2].v = FACEBUFFER_SIZE;
+        destScreenPosRect.y = 0;
+        destScreenPosRect.h = SCREEN_YSIZE;
+    }
+    else {
+        uint videoH = uint(float(SCREEN_XSIZE) / videoAR); // This is to force letterbox mode if the video is wider than the screen.
+        destScreenPosRect.y = (SCREEN_YSIZE - videoH) / 2;             // Centers the video vertically.
+        destScreenPosRect.h = videoH;
 
-    screenVerts[3].u = FACEBUFFER_SIZE;
-    screenVerts[3].v = FACEBUFFER_SIZE;
+        destScreenPosRect.x = 0;
+        destScreenPosRect.w = SCREEN_XSIZE;
+    }
 
-    float best = minVal(viewWidth / (float)videoWidth, viewHeight / (float)videoHeight);
+    GLint viewport[4] = {};
+    glGetIntegerv(GL_VIEWPORT, viewport);
 
-    float w = videoWidth * best;
-    float h = videoHeight * best;
-
-    float x = normalize((viewWidth - w) / 2, 0, viewWidth) * 2 - 1.0f;
-    float y = -(normalize((viewHeight - h) / 2, 0, viewHeight) * 2 - 1.0f);
-
-    w = normalize(w, 0, viewWidth) * 2;
-    h = -(normalize(h, 0, viewHeight) * 2);
-
-    screenVerts[0].x = x;
-    screenVerts[0].y = y;
-
-    screenVerts[1].x = w + x;
-    screenVerts[1].y = y;
-
-    screenVerts[2].x = x;
-    screenVerts[2].y = h + y;
-
-    screenVerts[3].x = w + x;
-    screenVerts[3].y = h + y;
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
+    glViewport(displaySettings.offsetX, 0, displaySettings.width, displaySettings.height);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
     glLoadIdentity();
+
+#if RETRO_PLATFORM == RETRO_ANDROID
+    glOrthof(0.0f, (float)SCREEN_XSIZE, (float)SCREEN_YSIZE, 0.0f, -1.0f, 1.0f);
+#else
+    glOrtho(0.0, (double)SCREEN_XSIZE, (double)SCREEN_YSIZE, 0.0, -1.0, 1.0);
+#endif
+
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DITHER);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+    DrawVertex screenVerts[4] = {};
+
+    ushort indices[] = { 0, 1, 2, 1, 3, 2 };
+
+    float left   = static_cast<float>(destScreenPosRect.x);
+    float top    = static_cast<float>(destScreenPosRect.y);
+    float right  = static_cast<float>(destScreenPosRect.x + destScreenPosRect.w);
+    float bottom = static_cast<float>(destScreenPosRect.y + destScreenPosRect.h);
+
+    screenVerts[0].vertX     = left;
+    screenVerts[0].vertY     = top;
+    screenVerts[0].vertZ     = 0.0f;
+    screenVerts[0].texCoordX = 0.0f;
+    screenVerts[0].texCoordY = 0.0f;
+
+    screenVerts[1].vertX     = right;
+    screenVerts[1].vertY     = top;
+    screenVerts[1].vertZ     = 0.0f;
+    screenVerts[1].texCoordX = 1.0f;
+    screenVerts[1].texCoordY = 0.0f;
+
+    screenVerts[2].vertX     = left;
+    screenVerts[2].vertY     = bottom;
+    screenVerts[2].vertZ     = 0.0f;
+    screenVerts[2].texCoordX = 0.0f;
+    screenVerts[2].texCoordY = 1.0f;
+
+    screenVerts[3].vertX     = right;
+    screenVerts[3].vertY     = bottom;
+    screenVerts[3].vertZ     = 0.0f;
+    screenVerts[3].texCoordX = 1.0f;
+    screenVerts[3].texCoordY = 1.0f;
+
+    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, videoBuffer);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glViewport(viewOffsetX, 0, viewWidth, viewHeight);
-
-    glVertexPointer(2, GL_FLOAT, sizeof(DrawVertexCD), &screenVerts[0].x);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertexCD), &screenVerts[0].u);
-
     glDisable(GL_BLEND);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, &drawVertexList);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(3, GL_FLOAT, sizeof(DrawVertex), &screenVerts[0].vertX);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(DrawVertex), &screenVerts[0].texCoordX);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+
+    if (fadeMode > 0) {
+        glDisable(GL_TEXTURE_2D);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f(0.0f, 0.0f, 0.0f, fadeMode / 255.0f);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    glDisable(GL_BLEND);
+    glEnable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 #endif
 }
 

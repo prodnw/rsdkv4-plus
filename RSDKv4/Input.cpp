@@ -200,7 +200,7 @@ bool getControllerButton(byte buttonID, int deviceID)
 }
 #endif //! RETRO_USING_SDL2
 
-void controllerInit(int controllerID)
+void controllerInit(int controllerID) // controllerID = SDL2 controller index
 {
     for (int i = 0; i < controllers.size(); ++i) {
         if (controllers[i].id == controllerID) {
@@ -234,7 +234,7 @@ void controllerInit(int controllerID)
 #endif
 }
 
-void controllerClose(int controllerID)
+void controllerClose(int controllerID) // controllerID = SDL2 controller id
 {
 #if RETRO_USING_SDL2
     SDL_GameController *controller = SDL_GameControllerFromInstanceID(controllerID);
@@ -269,6 +269,10 @@ void InitInputDevices()
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) { keyPress[i] = InputData(); }
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) { keyDown[i]  = InputData(); }
 #if RETRO_USING_SDL2
+#if RETRO_PLATFORM == RETRO_SWITCH
+    // just gonna override the mapping and be done with it
+    SDL_GameControllerAddMapping("53776974636820436f6e74726f6c6c65,Switch Controller,a:b0,b:b1,back:b11,dpdown:b15,dpleft:b12,dpright:b14,dpup:b13,leftshoulder:b6,leftstick:b4,lefttrigger:b8,leftx:a0,lefty:a1,rightshoulder:b7,rightstick:b5,righttrigger:b9,rightx:a2,righty:a3,start:b10,x:b3,y:b2,");
+#endif
     PrintLog("Initializing gamepads...");
 
     // fix for issue #334 on github, not sure what's going wrong, but it seems to not be initializing the gamepad api maybe?
