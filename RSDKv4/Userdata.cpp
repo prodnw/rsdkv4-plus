@@ -990,10 +990,14 @@ void WriteSettings()
     ini.SetComment("Game", "UpdatesComment", "When enabled, the game will check for updates on startup");
     ini.SetInteger("Game", "CheckForUpdates", CheckForthemUpdates);
     ini.SetComment("Game", "ForcePlatformComment",
-                   "Forces the platform used in scripts, set to -1 to use the current platform.\n; "
-                   "Check the platform aliases for a full list (https://github.com/prodnw/rsdkv4-plus/blob/main/RSDKv4/RetroEngine.hpp#L46)");
+                   "Forces the platform used in scripts (-1 = use the current platform).\n; "
+                   "Check the Platform list for more info: "
+                   "https://prodnw.github.io/RSDK-Modding-Wiki-v4-Plus/RSDKv4/Decompilation/SettingsINI/#platforms");
     ini.SetInteger("Game", "ForcePlatform", forcePlatform);
-    ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts (-1 = use the current platform type, 0 = Standalone, 1 = Mobile)");
+    ini.SetComment("Game", "ForceDeviceTypeComment", "Forces the device type used in scripts.\n; "
+                   "(-1 = use the current device type, 0 = Standalone, 1 = Mobile).\n; "
+                   "Check the Device Type list for more info: "
+                   "https://prodnw.github.io/RSDK-Modding-Wiki-v4-Plus/RSDKv4/Decompilation/SettingsINI/#device-types");
     ini.SetInteger("Game", "ForceDeviceType", forceDeviceType);
     ini.SetComment("Game", "UsernameComment", "The username stored locally for the game");
     ini.SetString("Game", "Username", username);
