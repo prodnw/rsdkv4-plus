@@ -123,13 +123,18 @@ bool ProcessEvents()
                 }
                 break;
             case SDL_CONTROLLERDEVICEADDED:
-                controllerInit(Engine.sdlEvents.cdevice.which);
-                PrintLog("Controller added.");
+                //controllerInit(Engine.sdlEvents.cdevice.which);
+                //controllerInit() is missing somthing, so we're just gonna release and reinit all controllers
+                PrintLog("Controller added, refreshing all controllers.");    
+                ReleaseInputDevices();
+                InitInputDevices();
                 break;
 
             case SDL_CONTROLLERDEVICEREMOVED:
-                controllerClose(Engine.sdlEvents.cdevice.which);
-                PrintLog("Controller removed.");
+                //controllerClose(Engine.sdlEvents.cdevice.which);
+                PrintLog("Controller removed, refreshing all controllers.");    
+                ReleaseInputDevices();
+                InitInputDevices();
                 break;
             case SDL_APP_WILLENTERBACKGROUND:
                 if (Engine.gameMode == ENGINE_MAINGAME && !(disableFocusPause & 1))
