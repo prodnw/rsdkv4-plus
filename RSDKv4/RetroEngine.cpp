@@ -790,8 +790,10 @@ void RetroEngine::Run()
                 }
 #endif
             }
-			if (enginestruggle == true)
-				DrawRectangle(SCREEN_XSIZE - 5, SCREEN_YSIZE - 5, 3, 3, 0xFF, 0x00, 0x00, 0xFF);
+			
+			if (Engine.devMenu && enginestruggle) {
+			    	DrawRectangle(SCREEN_XSIZE - 5, SCREEN_YSIZE - 5, 3, 3, 0xFF, 0x00, 0x00, 0xFF);
+			}
 			enginestruggle = true;
 
 #if !RETRO_USE_ORIGINAL_CODE
