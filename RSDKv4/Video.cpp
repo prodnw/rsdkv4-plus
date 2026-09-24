@@ -250,7 +250,7 @@ int ProcessVideo()
                     return QuitVideo();
                 }
             }
-            
+
             // Play video frames when it's time.
             if (videoVidData && (videoVidData->playms <= now)) {
                 if (vidFrameMS && ((now - videoVidData->playms) >= vidFrameMS)) {
@@ -360,8 +360,8 @@ void SetupVideoBuffer(int width, int height)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
-	
-	if (!videoBuffer || !&videoBuffer || !videoVidData)
+
+    if (!videoBuffer || !&videoBuffer || !videoVidData)
         PrintLog("Failed to create video buffer!");
 #elif RETRO_USING_SDL1
     Engine.videoBuffer = SDL_CreateRGBSurface(0, width, height, 32, 0x000000FF, 0x0000FF00, 0x00FF0000, 0xFF000000);
@@ -380,13 +380,19 @@ void SetupVideoBuffer(int width, int height)
 
 void InitVideoBuffer(int width, int height)
 {
-#if !RETRO_USING_OPENGL && RETRO_USING_SDL2 && RETRO_SOFTWARE_RENDER
-    int size  = width * height;
-    int sizeh = (width / 2) * (height / 2);
-    std::vector<Uint8> frame(size + 2 * sizeh);
-    memset(frame.data(), 0, size);
-    memset(frame.data() + size, 128, 2 * sizeh);
-    SDL_UpdateYUVTexture(Engine.videoBuffer, nullptr, frame.data(), width, frame.data() + size, width / 2, frame.data() + size + sizeh, width / 2);
+#if !RETRO_USING_OPENGL && RETRO_SOFTWARE_RENDER
+    if (Engine.videoBuffer) {
+#if RETRO_USING_SDL2
+        int hw = width / 2;
+        int hh = height / 2;
+
+        auto y  = std::vector<byte>(width * height, 0x00);
+        auto uv = std::vector<byte>(hw * hh, 0x80);
+        SDL_UpdateYUVTexture(Engine.videoBuffer, NULL, y.data(), width, uv.data(), hw, uv.data(), hw);
+#elif RETRO_USING_SDL1
+        SDL_FillRect(Engine.videoBuffer, NULL, SDL_MapRGBA(Engine.videoBuffer->format, 0, 0, 0, 255));
+#endif
+    }
 #endif
 }
 
