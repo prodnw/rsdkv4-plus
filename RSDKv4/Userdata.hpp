@@ -304,11 +304,12 @@ void SetWindowVSync(int *enabled, int *unused);
 void GetWindowOpacity();
 void SetWindowOpacity(int *opacity, int *unused);
 void SetWindowShake(int *intensity, int *duration, int *unused);
+void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2);
+void SetWindowTitle(int *unused, const char *title);
 void GetFrameRate();
 void SetFrameRate(int *enabled, int *unused);
 void ApplyWindowChanges();
 void MinimizeEngineWindow();
-void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2);
 int CheckUpdates(char website[]);
 
 // Remapping

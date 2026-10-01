@@ -1710,6 +1710,27 @@ void GetWindowFullScreen() { scriptEng.checkResult = Engine.isFullScreen; }
 void GetWindowBorderless() { scriptEng.checkResult = Engine.borderless; }
 void GetWindowVSync() { scriptEng.checkResult = Engine.vsync; }
 void GetFrameRate() { scriptEng.checkResult = Engine.refreshRate; }
+void GetWindowOpacity() 
+{ 
+#if RETRO_USING_SDL2
+    float opacityValue = 0;
+    if (SDL_GetWindowOpacity(Engine.window, &opacityValue) == 0)
+        scriptEng.checkResult = (int)(opacityValue * 255.0f);
+    else
+        scriptEng.checkResult = 255;
+#else
+    PrintLog("Can't get the window opacity, you need SDL2!");
+#endif
+}
+
+void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2)
+{
+#if RETRO_USING_SDL2
+    TextMenu *menu                       = &gameMenu[*textMenu];
+    menu->entryHighlight[menu->rowCount] = *highlight;
+    AddTextMenuEntry(menu, SDL_GetWindowTitle(Engine.window));
+#endif
+}
 
 bool changedScreenWidth = false;
 void SetScreenWidth(int *width, int *unused)
@@ -1762,19 +1783,6 @@ void SetWindowVSync(int *enabled, int *unused)
     Engine.vsync = *enabled;
 }
 
-void GetWindowOpacity() 
-{ 
-#if RETRO_USING_SDL2
-    float opacityValue = 0;
-    if (SDL_GetWindowOpacity(Engine.window, &opacityValue) == 0)
-        scriptEng.checkResult = (int)(opacityValue * 255.0f);
-    else
-        scriptEng.checkResult = 255;
-#else
-    PrintLog("Can't get the window opacity, you need SDL2!");
-#endif
-}
-
 void SetWindowOpacity(int *opacity, int *unused)
 {
     if (!opacity)
@@ -1811,6 +1819,14 @@ void SetWindowShake(int *intensity, int *duration, int *unused)
 
     Engine.windowShakeStrength  = *intensity;
     Engine.windowShakeTimer     = *duration;
+}
+
+void SetWindowTitle(int *unused, const char *title)
+{
+#if RETRO_USING_SDL2
+    if (Engine.window && title)
+        SDL_SetWindowTitle(Engine.window, title);
+#endif
 }
 
 void SetFrameRate(int *enabled, int *unused)
@@ -1879,15 +1895,6 @@ void MinimizeEngineWindow()
 {
 #if RETRO_USING_SDL2
     SDL_MinimizeWindow(Engine.window);
-#endif
-}
-
-void GetWindowTitle(int *textMenu, int *highlight, int *unused1, int *unused2)
-{
-#if RETRO_USING_SDL2
-    TextMenu *menu                       = &gameMenu[*textMenu];
-    menu->entryHighlight[menu->rowCount] = *highlight;
-    AddTextMenuEntry(menu, SDL_GetWindowTitle(Engine.window));
 #endif
 }
 

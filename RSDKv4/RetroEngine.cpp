@@ -1573,11 +1573,12 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
     AddNativeFunction("GetWindowOpacity", GetWindowOpacity);
     AddNativeFunction("SetWindowOpacity", SetWindowOpacity);
     AddNativeFunction("SetWindowShake", SetWindowShake);
+    AddNativeFunction("GetWindowTitle", GetWindowTitle);
+    AddNativeFunction("SetWindowTitle", SetWindowTitle);
     AddNativeFunction("GetFrameRate", GetFrameRate);
     AddNativeFunction("SetFrameRate", SetFrameRate);
     AddNativeFunction("ApplyWindowChanges", ApplyWindowChanges); // Refresh window after changing window options
     AddNativeFunction("MinimizeWindow", MinimizeEngineWindow);
-    AddNativeFunction("GetWindowTitle", GetWindowTitle);
     AddNativeFunction("GetModCount", GetModCount);
     AddNativeFunction("GetModName", GetModName);
     AddNativeFunction("GetModDescription", GetModDescription);
