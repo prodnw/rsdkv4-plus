@@ -944,12 +944,30 @@ void PlaySfx(int sfx, bool loop)
 {
     LockAudioDevice();
     int sfxChannelID = -1;
+	
+	//check for same sfx already playing
     for (int c = 0; c < CHANNEL_COUNT; ++c) {
-        if (sfxChannels[c].sfxID == sfx || sfxChannels[c].sfxID == -1) {
+        if (sfxChannels[c].sfxID == sfx) {
             sfxChannelID = c;
             break;
         }
     }
+	
+	//if we couldn't find one, look for an unused channel
+	if (sfxChannelID == -1) {
+		for (int c = 0; c < CHANNEL_COUNT; ++c) {
+			if (sfxChannels[c].sfxID == -1) {
+				sfxChannelID = c;
+				break;
+			}
+		}
+	}
+	
+	//no slot found, abandon sfx
+	if (sfxChannelID == -1) {		
+		UnlockAudioDevice();
+		return;
+	}	
 
     ChannelInfo *sfxInfo  = &sfxChannels[sfxChannelID];
     sfxInfo->sfxID        = sfx;
@@ -965,12 +983,30 @@ void PlayVoice(int sfx, bool loop)
 {
     LockAudioDevice();
     int sfxChannelID = -1;
+	
+	//check for same sfx already playing
     for (int c = 0; c < CHANNEL_COUNT; ++c) {
-        if (sfxChannels[c].sfxID == sfx || sfxChannels[c].sfxID == -1) {
+        if (sfxChannels[c].sfxID == sfx) {
             sfxChannelID = c;
             break;
         }
     }
+	
+	//if we couldn't find one, look for an unused channel
+	if (sfxChannelID == -1) {
+		for (int c = 0; c < CHANNEL_COUNT; ++c) {
+			if (sfxChannels[c].sfxID == -1) {
+				sfxChannelID = c;
+				break;
+			}
+		}
+	}
+	
+	//no slot found, abandon sfx
+	if (sfxChannelID == -1) {		
+		UnlockAudioDevice();
+		return;
+	}	
 
     ChannelInfo *sfxInfo  = &sfxChannels[sfxChannelID];
     sfxInfo->sfxID        = sfx;
