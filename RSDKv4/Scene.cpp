@@ -1222,23 +1222,17 @@ void LoadStageChunks()
 
     if (LoadStageFile("128x128Tiles.bin", stageListPosition, &info)) {
         for (int i = 0; i < CHUNKTILE_COUNT; ++i) {
+            // thanks lave!
             FileRead(&entry, 3);
-            entry[0] -= (byte)((entry[0] >> 6) << 6);
-
-            tiles128x128.visualPlane[i] = (byte)(entry[0] >> 4);
-            entry[0] -= 16 * (entry[0] >> 4);
-
-            tiles128x128.direction[i] = (byte)(entry[0] >> 2);
-            entry[0] -= 4 * (entry[0] >> 2);
-
-            tiles128x128.tileIndex[i] = entry[1] + (entry[0] << 8);
+            tiles128x128.visualPlane[i] = ((entry[0] >> 4) & 3);
+            tiles128x128.direction[i] = ((entry[0] >> 2) & 3);
+            tiles128x128.tileIndex[i] = (((entry[0] & 0xC0) << 4) | ((entry[0] & 3) << 8) | entry[1]);
 #if RETRO_SOFTWARE_RENDER
             tiles128x128.gfxDataPos[i] = tiles128x128.tileIndex[i] << 8;
 #endif
 #if RETRO_HARDWARE_RENDER
             tiles128x128.gfxDataPos[i] = tiles128x128.tileIndex[i] << 2;
 #endif
-
             tiles128x128.collisionFlags[0][i] = entry[2] >> 4;
             tiles128x128.collisionFlags[1][i] = entry[2] - ((entry[2] >> 4) << 4);
         }
