@@ -7523,6 +7523,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					}
 					id++;
 				}
+				//once we're done, report the horizontal size of the resulting text
+				scriptEng.checkResult = charxpos;
+				scriptEng.checkResult -= scriptEng.operands[1];
             }
             break;
             case FUNC_DRAWSTRINGFX: {
@@ -7668,6 +7671,9 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
 					}
 					id++;
 				}
+				//once we're done, report the horizontal size of the resulting text
+				scriptEng.checkResult = charxpos;
+				scriptEng.checkResult -= scriptEng.operands[1];
             }
             break;
 
