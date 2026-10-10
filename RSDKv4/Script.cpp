@@ -944,6 +944,10 @@ ScriptVariableInfo scriptValueList[SCRIPT_VAR_COUNT] = {
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "PRIORITY_UNKNOWN", "7"), // identical to "PRIORITY_ACTIVE_SMALL", but kept here for backwards compat purposes
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_NONE", "-1"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_NORMAL", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_P1", "0"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_P2", "1"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_P3", "2"),
+	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CONTROLMODE_P4", "3"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_FOLLOW", "0"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_EXTENDED", "1"),
 	ScriptVariableInfo(VAR_ALIAS, ACCESS_PUBLIC, "CAMERASTYLE_EXTENDED_OFFSET_L", "2"),
