@@ -224,6 +224,21 @@ int AddGraphicsFile(const char *filePath)
 
     return sheetID;
 }
+
+int AddSystemGraphicsFile(const char *filePath)
+{
+    int sheetID = 0;
+    while (StrLength(gfxSurface[sheetID].fileName) > 0) {
+        if (StrComp(gfxSurface[sheetID].fileName, filePath))
+            return sheetID;
+        if (++sheetID == SURFACE_COUNT) // Max Sheet cnt
+            return 0;
+    }
+    LoadGIFFile(filePath, sheetID);
+
+    return sheetID;
+}
+
 void RemoveGraphicsFile(const char *filePath, int sheetID)
 {
     if (sheetID < 0) {

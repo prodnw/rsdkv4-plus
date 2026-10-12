@@ -2,6 +2,7 @@
 #define SPRITE_H
 
 int AddGraphicsFile(const char *filePath);
+int AddSystemGraphicsFile(const char *filePath);
 void RemoveGraphicsFile(const char *filePath, int sheetID);
 
 int LoadBMPFile(const char *filePath, byte sheetID);
