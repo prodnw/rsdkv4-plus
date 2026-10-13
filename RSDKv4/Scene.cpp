@@ -1764,8 +1764,11 @@ void SetPlayerScreenPosition(Entity *target)
 }
 void SetPlayerScreenPositionCDStyle(Entity *target)
 {
+	//set target at player position
     int targetX = target->xpos >> 16;
     int targetY = camera[curCam].adjustY + (target->ypos >> 16);
+	
+	//keep camera within bounds
     if (camera[curCam].newYBoundary1 > camera[curCam].curYBoundary1) {
         if (camera[curCam].newYBoundary1 >= camera[curCam].yScrollOffset)
             camera[curCam].curYBoundary1 = camera[curCam].yScrollOffset;
@@ -1839,8 +1842,10 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
         }
     }
 
+	//different behaviour for on ground vs in air
+	//on ground behaviour first
     if (!target->gravity) {
-        if (target->direction) {
+        if (target->direction) { //facing left
             if (camera[curCam].style == CAMERASTYLE_EXTENDED_OFFSET_R || target->speed < -0x5F5C2) {
                 camera[curCam].shift = 2;
                 if (target->lookPosX <= 63) {
@@ -1858,7 +1863,7 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
                 }
             }
         }
-        else {
+        else { //facing right
             if (camera[curCam].style == CAMERASTYLE_EXTENDED_OFFSET_L || target->speed > 0x5F5C2) {
                 camera[curCam].shift = 1;
                 if (target->lookPosX >= -63) {
@@ -1877,6 +1882,8 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
             }
         }
     }
+	
+	//in air behaviour starts here
     else {
         if (camera[curCam].shift == 1) {
             if (target->lookPosX >= -63) {
