@@ -284,7 +284,8 @@ void ProcessStage(void)
                             case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                             case CAMERASTYLE_EXTENDED:
                             case CAMERASTYLE_EXTENDED_OFFSET_L:
-                            case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+                            case CAMERASTYLE_EXTENDED_OFFSET_R:
+							case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
                             case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                             default: break;
                         }
@@ -363,7 +364,8 @@ void ProcessStage(void)
 //                            case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
 //                            case CAMERASTYLE_EXTENDED:
 //                            case CAMERASTYLE_EXTENDED_OFFSET_L:
-//                            case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+//                            case CAMERASTYLE_EXTENDED_OFFSET_R:
+//                            case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
 //                            case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
 //                            default: break;
 //                        }
@@ -412,7 +414,8 @@ void ProcessStage(void)
                             case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                             case CAMERASTYLE_EXTENDED:
                             case CAMERASTYLE_EXTENDED_OFFSET_L:
-                            case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+                            case CAMERASTYLE_EXTENDED_OFFSET_R:
+							case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
                             case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                             default: break;
                         }
@@ -464,7 +467,8 @@ void ProcessStage(void)
                                 case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                                 case CAMERASTYLE_EXTENDED:
                                 case CAMERASTYLE_EXTENDED_OFFSET_L:
-                                case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+                                case CAMERASTYLE_EXTENDED_OFFSET_R: 
+								case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
                                 case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                                 default: break;
                             }
@@ -558,7 +562,8 @@ void ProcessStage(void)
 //                                case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
 //                                case CAMERASTYLE_EXTENDED:
 //                                case CAMERASTYLE_EXTENDED_OFFSET_L:
-//                                case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+//                                case CAMERASTYLE_EXTENDED_OFFSET_R:
+//                                case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
 //                                case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
 //                                default: break;
 //                            }
@@ -614,7 +619,8 @@ void ProcessStage(void)
                                 case CAMERASTYLE_FOLLOW: SetPlayerScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                                 case CAMERASTYLE_EXTENDED:
                                 case CAMERASTYLE_EXTENDED_OFFSET_L:
-                                case CAMERASTYLE_EXTENDED_OFFSET_R: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
+                                case CAMERASTYLE_EXTENDED_OFFSET_R:
+								case CAMERASTYLE_EXT_AIR: SetPlayerScreenPositionCDStyle(&objectEntityList[camera[currentCamera].target]); break;
                                 case CAMERASTYLE_HLOCKED: SetPlayerHLockedScreenPosition(&objectEntityList[camera[currentCamera].target]); break;
                                 default: break;
                             }
@@ -1885,24 +1891,64 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
 	
 	//in air behaviour starts here
     else {
-        if (camera[curCam].shift == 1) {
-            if (target->lookPosX >= -63) {
-                target->lookPosX -= 2;
-            }
-        }
-        else if (camera[curCam].shift < 1) {
-            if (target->lookPosX < 0) {
-                target->lookPosX += 2;
-            }
-            if (target->lookPosX > 0) {
-                target->lookPosX -= 2;
-            }
-        }
-        else if (camera[curCam].shift == 2) {
-            if (target->lookPosX <= 63) {
-                target->lookPosX += 2;
-            }
-        }
+		if (camera[curCam].style == CAMERASTYLE_EXT_AIR) { //Elsie's new camera mode for consistent in-air camera behaviour
+			if (target->direction) { //facing left
+				if (target->xvel < -0x5F5C2) {
+					camera[curCam].shift = 2;
+					if (target->lookPosX <= 63) {
+						target->lookPosX += 2;
+					}
+				}
+				else {
+					camera[curCam].shift = 0;
+					if (target->lookPosX < 0) {
+						target->lookPosX += 2;
+					}
+
+					if (target->lookPosX > 0) {
+						target->lookPosX -= 2;
+					}
+				}
+			}
+			else { //facing right
+				if (target->xvel > 0x5F5C2) {
+					camera[curCam].shift = 1;
+					if (target->lookPosX >= -63) {
+						target->lookPosX -= 2;
+					}
+				}
+				else {
+					camera[curCam].shift = 0;
+					if (target->lookPosX < 0) {
+						target->lookPosX += 2;
+					}
+
+					if (target->lookPosX > 0) {
+						target->lookPosX -= 2;
+					}
+				}
+			}	
+		}
+		else {
+			if (camera[curCam].shift == 1) {
+				if (target->lookPosX >= -63) {
+					target->lookPosX -= 2;
+				}
+			}
+			else if (camera[curCam].shift < 1) {
+				if (target->lookPosX < 0) {
+					target->lookPosX += 2;
+				}
+				if (target->lookPosX > 0) {
+					target->lookPosX -= 2;
+				}
+			}
+			else if (camera[curCam].shift == 2) {
+				if (target->lookPosX <= 63) {
+					target->lookPosX += 2;
+				}
+			}
+		}
     }
     camera[curCam].xpos = targetX - target->lookPosX;
 
