@@ -791,11 +791,10 @@ void RetroEngine::Run()
 #endif
             }
 			
-			//display frame process time in milliseconds
-			if (Engine.devMenu) {
-				curTicks = SDL_GetPerformanceCounter();
-				curTicks -= prevTicks;
-				curTicks *= 1000000; //turn seconds into microseconds
+			// Display frame process time in milliseconds
+			if (Engine.frameProcessTime) {
+				curTicks  = SDL_GetPerformanceCounter() - prevTicks;
+				curTicks *= 1000000; // turn seconds into microseconds
 				curTicks /= PerformFreq;
 				
 				textSheet = AddSystemGraphicsFile("Data/Game/SystemText.gif");

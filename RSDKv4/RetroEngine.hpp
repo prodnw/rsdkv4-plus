@@ -444,20 +444,21 @@ public:
     int startList_Game  = -1;
     int startStage_Game = -1;
 
-    bool consoleEnabled  = false;
-    bool devMenu         = false;
-    int startList        = -1;
-    int startStage       = -1;
-    int startPlayer      = -1;
-    int startSave        = -1;
-    int gameSpeed        = 1;
-    int fastForwardSpeed = 8;
-    bool masterPaused    = false;
-    bool frameStep       = false;
-    int dimTimer         = 0;
-    int dimLimit         = 0;
-    float dimPercent     = 1.0;
-    float dimMax         = 1.0;
+    bool consoleEnabled   = false;
+    bool devMenu          = false;
+    bool frameProcessTime = false;
+    int startList         = -1;
+    int startStage        = -1;
+    int startPlayer       = -1;
+    int startSave         = -1;
+    int gameSpeed         = 1;
+    int fastForwardSpeed  = 8;
+    bool masterPaused     = false;
+    bool frameStep        = false;
+    int dimTimer          = 0;
+    int dimLimit          = 0;
+    float dimPercent      = 1.0;
+    float dimMax          = 1.0;
 
     char startSceneFolder[0x10];
     char startSceneID[0x10];

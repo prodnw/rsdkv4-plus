@@ -333,6 +333,7 @@ void InitUserdata()
 
         ini.SetBool("Dev", "DevMenu", Engine.devMenu = false);
         ini.SetBool("Dev", "EngineDebugMode", engineDebugMode = false);
+        ini.SetBool("Dev", "FrameProcessTime", Engine.frameProcessTime = false);
         ini.SetBool("Dev", "TxtScripts", forceUseScripts = true);
         forceUseScripts_Config = forceUseScripts;
         ini.SetInteger("Dev", "StartingCategory", Engine.startList = 255);
@@ -540,6 +541,8 @@ void InitUserdata()
             Engine.devMenu = false;
         if (!ini.GetBool("Dev", "EngineDebugMode", &engineDebugMode))
             engineDebugMode = false;
+        if (!ini.GetBool("Dev", "FrameProcessTime", &Engine.frameProcessTime))
+            Engine.frameProcessTime = false;
         if (!ini.GetBool("Dev", "TxtScripts", &forceUseScripts))
             forceUseScripts = true;
         forceUseScripts_Config = forceUseScripts;
@@ -944,6 +947,8 @@ void WriteSettings()
     ini.SetComment("Dev", "DebugModeComment",
                    "Enable this flag to activate features used for debugging the engine (may result in slightly slower game speed)");
     ini.SetBool("Dev", "EngineDebugMode", engineDebugMode);
+    ini.SetComment("Dev", "ProcessTimeComment", "Enable this flag to show how long it took to process the last frame in milliseconds");
+    ini.SetBool("Dev", "FrameProcessTime", Engine.frameProcessTime);
     ini.SetComment("Dev", "ScriptsComment", "Enable this flag to force the engine to load from the scripts folder instead of from bytecode");
     ini.SetBool("Dev", "TxtScripts", forceUseScripts_Config);
     ini.SetComment("Dev", "SCComment", "Sets the starting category ID");
