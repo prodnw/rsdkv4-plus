@@ -24,18 +24,17 @@ char sfxNames[SFX_COUNT][0x40];
 // Audio Muffle stuff
 int mUnderwaterEffect = 0;
 float mVolumeMultiplier = 1.0f;
-static inline const constexpr size_t MAX_NUM_CHANNELS = 2;
-static inline const constexpr size_t OUTPUT_BUFFER_SIZE = 1024;
-static inline const constexpr size_t ACCUMULATION_BUFFER_SIZE = 128;
+#define ACCUMULATION_BUFFER_SIZE (128)
+#define OUTPUT_BUFFER_SIZE      (1024)
 
 struct MusicMuffleChannelData {
     float mAccumulator;
-    size_t mIndexInHistory;
+    int mIndexInHistory;
     float mHistoryBuffer[ACCUMULATION_BUFFER_SIZE];
     int mOutputBuffer[OUTPUT_BUFFER_SIZE] = { 0 };
 };
 
-static MusicMuffleChannelData mChannelData[MAX_NUM_CHANNELS];
+static MusicMuffleChannelData mChannelData[CHANNEL_COUNT];
 
 int currentStreamIndex = 0;
 StreamFile streamFile[STREAMFILE_COUNT];
@@ -1242,7 +1241,7 @@ void SetMusicMuffle(int effect, float volumeMultiplier)
     }
     else if (mUnderwaterEffect <= 0) {
         // Effect gets switched on, start with empty history and accumulator
-        for (size_t k = 0; k < CHANNEL_COUNT; ++k) 
+        for (size_t k = 0; k < CHANNEL_COUNT; ++k)
         {
             mChannelData[k].mAccumulator = 0;
             mChannelData[k].mIndexInHistory = 0;
