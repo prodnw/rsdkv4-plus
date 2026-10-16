@@ -1930,6 +1930,12 @@ void SetPlayerScreenPositionCDStyle(Entity *target)
 			}	
 		}
 		else {
+			//the offset modes are for forcing the camera, let them force in air too
+			if (camera[curCam].style == CAMERASTYLE_EXTENDED_OFFSET_R)
+                camera[curCam].shift = 2;
+            if (camera[curCam].style == CAMERASTYLE_EXTENDED_OFFSET_L)
+                camera[curCam].shift = 1;
+			
 			if (camera[curCam].shift == 1) {
 				if (target->lookPosX >= -63) {
 					target->lookPosX -= 2;
