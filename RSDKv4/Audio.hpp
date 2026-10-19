@@ -75,12 +75,13 @@ struct SFXInfo {
 struct ChannelInfo {
     size_t sampleLength;
     Sint16 *samplePtr;
+    float samplePos = 0.0f;
     int sfxID;
     byte loopSFX;
     sbyte pan;
+    int pitch;
     bool isVoice;
     bool paused;
-    int pitch;
 };
 
 struct StreamFile {
