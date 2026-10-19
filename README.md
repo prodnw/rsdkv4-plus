@@ -220,7 +220,7 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_CURL`: Adds support for cURL, which is used for accessing websites, defaults to `off`.
 - `RETRO_UPDATE_CHECKER`: Adds support for the update checker, which is used for checking updates, defaults to `on` if not on Android, forces `RETRO_USE_CURL` to be set to `on`.
 - `RETRO_ACCEPT_OLD_SYNTAX`: Adds back aliases that were previously defined within the engine and not the script, allowing compatibility for mods that were made with the old syntax, defaults to `off`.
-- `RETRO_ICON_NAME`: Sets the icon for the built executable to use, defaults to `RSDKv4 Decomp Icon.ico`.
+- `RETRO_ICON_NAME`: Sets the icon path relative to `RSDKv4` for the built executable, defaults to `Icons/PC/RSDKv4 Decomp Icon.ico`.
 - `RETRO_VANILLA_LIKE`: Brings back the original limitations of RSDKv4, while keeping new the features, defaults to `off`.
 
 ## Unofficial Branches

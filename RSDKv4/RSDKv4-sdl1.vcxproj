@@ -27,7 +27,7 @@
     <ProjectName>RSDKv4-sdl1</ProjectName>
   </PropertyGroup>
   <PropertyGroup Label="CMakeVariables">
-    <RetroIconName>RSDKv4 Decomp Icon.ico</RetroIconName>
+    <RetroIconName>Icons\PC\RSDKv4 Decomp Icon.ico</RetroIconName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
