@@ -65,9 +65,24 @@ bool ProcessEvents()
 {
 #if !RETRO_USE_ORIGINAL_CODE
     // Dev menu for controllers
-    if (Engine.devMenu) {
-        SDL_GameController *controller = SDL_GameControllerOpen(0);
-        if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START) && SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK)) 
+    if (Engine.devMenu)
+    {
+        bool devMenuShortcutHeld = false;
+#if RETRO_USING_SDL2
+        if (!controllers.empty())
+        {
+            SDL_GameController *controller = controllers[0].devicePtr;
+            if (controller && SDL_GameControllerGetAttached(controller))
+            {
+                SDL_GameControllerUpdate();
+                if (SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_START)
+                    && SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_BACK)) {
+                    devMenuShortcutHeld = true;
+                }
+            }
+        }
+#endif
+        if (devMenuShortcutHeld)
         {
             devMenuHoldTimer += Engine.deltaTime;
             if (devMenuHoldTimer >= 0.8f)
@@ -82,7 +97,11 @@ bool ProcessEvents()
                 if (Engine.gameDeviceType == RETRO_MOBILE)
                     CREATE_ENTITY(VirtualDPad);
                 Engine.gameMode = ENGINE_INITDEVMENU;
+                devMenuHoldTimer = 0.0f;
             }
+        }
+        else
+        {
             devMenuHoldTimer = 0.0f;
         }
     }
