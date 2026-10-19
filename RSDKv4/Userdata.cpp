@@ -1846,6 +1846,7 @@ void SetFrameRate(int *enabled, int *unused)
 
 void ApplyWindowChanges()
 {
+#if RETRO_PLATFORM != RETRO_SWITCH
 #if RETRO_USING_OPENGL
     for (int i = 0; i < TEXTURE_COUNT; ++i) {
         glDeleteTextures(1, &textureList[i].id);
@@ -1894,6 +1895,7 @@ void ApplyWindowChanges()
             LoadMesh(fileName, meshList[i].textureID);
         }
     }
+#endif // RETRO_SWITCH
 }
 
 void MinimizeEngineWindow()
