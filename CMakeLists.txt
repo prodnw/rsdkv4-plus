@@ -13,20 +13,12 @@ option(RETRO_DISABLE_PLUS "Disables Plus. Should be set on for any public releas
 option(RETRO_ORIGINAL_CODE "Removes any change that differs from the original code, a playable game can't be built this way." OFF)
 option(RETRO_USE_STEAM "Enables Plus if Origins Plus is found via Steam API." OFF)
 
-if(ANDROID) # TODO: dunno if its even possible on android, let alone how to do it anyway
-	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
-else()
-	option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." ON)
-endif()
+option(RETRO_UPDATE_CHECKER "Enables or disables the update checker." OFF)
+option(RETRO_USE_CURL "Compiles with cURL." OFF) # RETRO_UPDATE_CHECKER forces this ON
 
-option(RETRO_USE_CURL "Compiles with cURL." OFF)
 option(RETRO_ACCEPT_OLD_SYNTAX "Allows compatibility with the old syntax." OFF)
 
-if(ANDROID)
-    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." OFF)
-else()
-    option(RETRO_USE_DISCORD "Adds custom Discord RPC that says what zone you're on, the character you're playing as and some of your stats in the stage." ON)
-endif()
+option(RETRO_USE_DISCORD "Adds custom Discord RPC features usable by mods." OFF)
 
 # note: sdl3 isn't actually in the engine BUT it is something I would like after looking at the features
 set(RETRO_SDL_VERSION 2 CACHE STRING "Select between SDL3, SDL2 and SDL1, defaults to SDL2")
