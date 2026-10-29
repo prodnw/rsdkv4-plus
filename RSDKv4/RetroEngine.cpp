@@ -329,12 +329,12 @@ bool ProcessEvents()
 #else
                     case SDLK_F6:
                         if (Engine.devMenu) {
-                            playerListPos++;
-                            if (playerListPos >= playerCount) {
-                                playerListPos = 0;
-                            }
-                            stageMode       = STAGEMODE_LOAD;
-                            Engine.gameMode = ENGINE_MAINGAME;
+                            // playerListPos++;
+                            // if (playerListPos >= playerCount) {
+                            //     playerListPos = 0;
+                            // }
+                            // stageMode       = STAGEMODE_LOAD;
+                            // Engine.gameMode = ENGINE_MAINGAME;
                         }
                         break;
 #endif
