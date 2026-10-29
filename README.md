@@ -2,7 +2,7 @@
 
 A complete decompilation of Retro Engine v4 and the menus from Sonic 1 and 2 (2013).
 
-This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones
+This project is a fork of RSDKv4, which was used to develop the mobile remakes of Sonic 1 and 2 (2013) and aims to improve many already existing functions and add a big variety of new ones.
 
 # **LIST OF THE NEW FEATURES & CHANGES (A MORE DETAILED CHANGELOG WILL BE PROVIDED SOON)**
  * SteamAPI has been implemented. If you own Sonic Origins on Steam, Origins features will be enabled and if you own Sonic Origins Plus you can play as Amy! (can be toggled, see [here](#compiling))
@@ -104,16 +104,6 @@ https://prodnw.github.io/RSDK-Modding-Wiki-v4-Plus/
  * Skyward - Other misc. stuff
  * AlyStyle - v4+ Icon
 
-# To-Dos:
-- [ ] Improve online by a LOT, this would mean lobbies for competition, lobbies for co-op, better servers, etc.
-- [ ] Port plenty of features from previous RSDK versions that aren't in v4.
-- [ ] Backport a huge variety of features from v5/v5u (e.g. DrawLine, PNG Images, and more.)
-- [ ] Continue adding plenty of QoL features along with fixing any normal v4 bugs.
-
-# ModAPI To-Dos:
-- [ ] Add mod icons, would be useful to show if there is a big list of mods.
-- [ ] Add a feature for mod dependencies which checks if you have a certain mod installed for another to work properly.
-
 # **SUPPORT THE OFFICIAL RELEASE OF SONIC 1 & 2**
 + Without assets from the official releases, this decompilation will not run.
 
@@ -145,6 +135,9 @@ If you want to transfer your save(s) from the official mobile version(s), the **
   * `F8` and `F9` will visualize touch screen and object hitboxes.
   * `F10` will activate a palette overlay that shows the game's 8 internal palettes in real time.
 * Added the idle screen dimming feature from Sonic Mania Plus, as well as allowing the user to disable it or set how long it takes for the screen to dim.
+
+# (WINDOWS) Note
+To run the EXE files, you need to have the [C++ Redistribute](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-supported-redistributable-version) installed.
 
 # How to Build
 
@@ -214,6 +207,8 @@ The following cmake arguments are available when compiling:
 - `RETRO_USE_HW_RENDER`: Enables the Hardware Renderer used by the main menu and touch controls UI. Takes a boolean, defaults to `on`.
 - `RETRO_ORIGINAL_CODE`: Removes any custom code. *A playable game will not be built with this enabled.* Takes a boolean, defaults to `off`.
 - `RETRO_SDL_VERSION`: *Only change this if you know what you're doing.* Switches between using SDL1 or SDL2. Takes an integer of either `1` or `2`, defaults to `2`.
+
+### RSDKv4+ flags
 - `RETRO_USE_STEAM`: Enables the use of the SteamAPI, which can detects if you own [Sonic Origins](https://store.steampowered.com/app/1794960/Sonic_Origins/) and enable features specific to Origins. It also detects if you own [Sonic Origins Plus](https://store.steampowered.com/app/2343200/Sonic_Origins__Plus_Expansion_Pack/) and enables those features as well.
   - Defaults to `off`, requires the [Steamworks SDK](https://partner.steamgames.com/downloads/list) extracted to `./dependencies/all/steamworks_sdk`.
 - `RETRO_USE_DISCORD`: Toggles whether or not Discord RPC is enabled, defaults to `on` if not on Android, requires the [Discord SDK](https://discord.com/developers/docs/developer-tools/game-sdk#getting-started) `sdk` folder extracted to `./dependencies/all/discord_game_sdk`.
@@ -223,7 +218,7 @@ The following cmake arguments are available when compiling:
 - `RETRO_ICON_NAME`: Sets the icon path relative to `RSDKv4` for the built executable, defaults to `Icons/PC/RSDKv4 Decomp Icon.ico`.
 - `RETRO_VANILLA_LIKE`: Brings back the original limitations of RSDKv4, while keeping new the features, defaults to `off`.
 
-## Unofficial Branches
+## Unofficial Branches (Please note these are just for regular v4, not RSDKv4+.)
 Follow the installation instructions in the readme of each branch.
 * For the **PlayStation Vita**, go to [Xeeynamo's fork](https://github.com/xeeynamo/Sonic-1-2-2013-Decompilation).
 * For the **Nintendo Switch**, go to [heyjoeway's fork](https://github.com/heyjoeway/Sonic-1-2-2013-Decompilation).
