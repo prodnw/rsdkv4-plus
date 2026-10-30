@@ -516,7 +516,10 @@ const char variableNames[][0x20] = {
 
     // Username
     "tempStrUsername",
-    "engine.usernameLength"
+    "engine.usernameLength",
+
+    // DLC checking
+    "game.hasPlusDlc"
 };
 #endif
 
@@ -1437,6 +1440,9 @@ enum ScrVar {
     // Username
     VAR_TEMPSTRUSERNAME,
     VAR_ENGINE_USERNAMELENGTH,
+
+    // DLC checking
+    VAR_GAME_HASPLUSDLC,
 
     // Max variable count
     VAR_MAX_CNT
@@ -5352,6 +5358,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Username
                     case VAR_TEMPSTRUSERNAME:  StrCopy(scriptText, username); StrCopy(scriptEng.operandStr[i], username); break;
                     case VAR_ENGINE_USERNAMELENGTH: scriptEng.operands[i] = StrLength(username); break;
+                    case VAR_GAME_HASPLUSDLC: scriptEng.operands[i] = hasPlusDLC; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -9676,6 +9683,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Username
                     case VAR_TEMPSTRUSERNAME: break;
                     case VAR_ENGINE_USERNAMELENGTH: break;
+                    case VAR_GAME_HASPLUSDLC: break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
