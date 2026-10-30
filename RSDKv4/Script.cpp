@@ -519,7 +519,7 @@ const char variableNames[][0x20] = {
     "engine.usernameLength",
 
     // DLC checking
-    "game.hasPlusDlc"
+    "game.hasPlusDLC"
 };
 #endif
 
