@@ -5358,7 +5358,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Username
                     case VAR_TEMPSTRUSERNAME:  StrCopy(scriptText, username); StrCopy(scriptEng.operandStr[i], username); break;
                     case VAR_ENGINE_USERNAMELENGTH: scriptEng.operands[i] = StrLength(username); break;
-                    case VAR_GAME_HASPLUSDLC: scriptEng.operands[i] = hasPlusDLC; break;
+                    case VAR_GAME_HASPLUSDLC: scriptEng.operands[i] = hasPlusDLC || !RSDK_AUTOBUILD; break;
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
