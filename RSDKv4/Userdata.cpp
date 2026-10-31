@@ -84,6 +84,7 @@ bool useSteam                = false;
 bool useSteam_Config         = false;
 bool useDiscordRPC           = true;
 bool useDiscordRPC_Config    = true;
+bool DLCOverride      = false;
 
 extern void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
 
@@ -328,7 +329,7 @@ void InitUserdata()
 #endif
 	
     FileIO *file = fOpen(buffer, "rb");
-    if (!file) {
+    if (!file) { //no file found, set some defaults
         IniParser ini;
 
         ini.SetBool("Dev", "DevMenu", Engine.devMenu = false);
@@ -379,6 +380,7 @@ void InitUserdata()
 #if RETRO_USE_DISCORD_SDK
         ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
 #endif
+		ini.SetBool("Game", "DLCOverride", DLCOverride = false);
 
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
@@ -533,7 +535,7 @@ void InitUserdata()
 
         ini.Write(buffer);
     }
-    else {
+    else { //file loaded, read options and fill in defaults for missing values
         fClose(file);
         IniParser ini(buffer, false);
 
@@ -614,6 +616,9 @@ void InitUserdata()
             useDiscordRPC = true;
         useDiscordRPC_Config = useDiscordRPC;
 #endif
+
+        if (!ini.GetBool("Game", "DLCOverride", &DLCOverride))
+            DLCOverride = false;
 
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
@@ -939,7 +944,7 @@ void InitUserdata()
 }
 
 void WriteSettings()
-{
+{   // write file, with current values
     IniParser ini;
 
     ini.SetComment("Dev", "DevMenuComment", "Enable this flag to activate dev menu via the ESC key");
@@ -1014,6 +1019,8 @@ void WriteSettings()
     ini.SetComment("Game", "UseDiscordRPCComment", "Enable this flag to enable the use of Discord Rich Presence");
     ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC_Config);
 #endif
+    ini.SetComment("Game", "DLCOverrideComment", "Enable this flag to override DLC checks");
+    ini.SetBool("Game", "DLCOverride", DLCOverride);
 
 #if RETRO_USE_NETWORKING
     ini.SetComment("Network", "HostComment", "The host (IP address or \"URL\") that the game will try to connect to");

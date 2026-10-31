@@ -211,6 +211,7 @@ extern bool useSteam;
 extern bool useSteam_Config;
 extern bool useDiscordRPC;
 extern bool useDiscordRPC_Config;
+extern bool DLCOverride;
 bool ReadSaveRAMData();
 bool WriteSaveRAMData();
 
