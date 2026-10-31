@@ -1555,6 +1555,7 @@ bool RetroEngine::LoadGameConfig(const char *filePath)
 #endif
     }
 
+	//Comment this out, we're handling it in the script parser now
     //SetGlobalVariableByName("game.hasPlusDLC", hasPlusDLC || !RSDK_AUTOBUILD);
 
     // These need to be set every time its reloaded

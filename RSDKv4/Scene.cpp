@@ -154,7 +154,7 @@ void ProcessStage(void)
 #endif
 
 #if RSDK_AUTOBUILD // Now it works with various games. TODO: update this if it needs to, but it should be fine?
-            if (!hasPlusDLC) {
+            if (!hasPlusDLC && !DLCOverride) {
                 switch (Engine.gameType) {
                     // Forever and Absolute has their own Amy, so....
                     case GAME_SONIC1:
@@ -187,11 +187,6 @@ void ProcessStage(void)
                         
                     case GAME_SONICCDINFINITE: // prevent players from using Knuckles without DLC
                         if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES"))
-                            playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES_TAILS"))
-                            playerListPos = 0;
-                        else if (GetGlobalVariableByName("PLAYER_KNUCKLES") && playerListPos == GetGlobalVariableByName("PLAYER_KNUCKLES")
-                                 && GetGlobalVariableByName("stage.player2Enabled"))
                             playerListPos = 0;
                         break;
                 }
