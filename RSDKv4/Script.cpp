@@ -8,7 +8,6 @@
 
 extern float networkPing;
 extern bool useDiscordRPC;
-extern bool DLCOverride;
 unsigned int playtimeDays = 0;
 unsigned int playtimeHours = 0;
 unsigned int playtimeMinutes = 0;
@@ -519,7 +518,7 @@ const char variableNames[][0x20] = {
     "engine.usernameLength",
 
     // DLC checking
-    "game.hasPlusDLC"
+    "game.DLCOverride"
 };
 #endif
 
@@ -1442,7 +1441,7 @@ enum ScrVar {
     VAR_ENGINE_USERNAMELENGTH,
 
     // DLC checking
-    VAR_GAME_HASPLUSDLC,
+    VAR_GAME_DLC_OVERRIDE,
 
     // Max variable count
     VAR_MAX_CNT
@@ -5358,7 +5357,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Username
                     case VAR_TEMPSTRUSERNAME:  StrCopy(scriptText, username); StrCopy(scriptEng.operandStr[i], username); break;
                     case VAR_ENGINE_USERNAMELENGTH: scriptEng.operands[i] = StrLength(username); break;
-                    case VAR_GAME_HASPLUSDLC: scriptEng.operands[i] = hasPlusDLC || !RSDK_AUTOBUILD || DLCOverride; break;
+                    case VAR_GAME_DLC_OVERRIDE: {
+						scriptEng.operands[i] = DLCOverride;
+						break;
+					}
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant
@@ -9683,10 +9685,10 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     // Username
                     case VAR_TEMPSTRUSERNAME: break;
                     case VAR_ENGINE_USERNAMELENGTH: break;
-                    case VAR_GAME_HASPLUSDLC:
-						if (hasPlusDLC || !RSDK_AUTOBUILD)
-							DLCOverride = scriptEng.operands[i];
+                    case VAR_GAME_DLC_OVERRIDE: {
+						DLCOverride = scriptEng.operands[i];
 						break;
+					}
                 }
             }
             else if (opcodeType == SCRIPTVAR_INTCONST) { // int constant

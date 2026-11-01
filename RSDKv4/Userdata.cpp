@@ -84,7 +84,7 @@ bool useSteam                = false;
 bool useSteam_Config         = false;
 bool useDiscordRPC           = true;
 bool useDiscordRPC_Config    = true;
-bool DLCOverride      = false;
+bool DLCOverride             = false;
 
 extern void SetControllerLEDColour(int controllerID, Uint8 r, Uint8 g, Uint8 b);
 
@@ -381,7 +381,6 @@ void InitUserdata()
         ini.SetBool("Game", "UseDiscordRPC", useDiscordRPC = true);
 #endif
 		ini.SetBool("Game", "DLCOverride", DLCOverride = false);
-
 #if RETRO_USE_NETWORKING
         ini.SetString("Network", "Host", (char *)"127.0.0.1");
         StrCopy(networkHost, "127.0.0.1");
@@ -619,7 +618,6 @@ void InitUserdata()
 
         if (!ini.GetBool("Game", "DLCOverride", &DLCOverride))
             DLCOverride = false;
-
 #if RETRO_USE_NETWORKING
         if (!ini.GetString("Network", "Host", networkHost))
             StrCopy(networkHost, "127.0.0.1");
