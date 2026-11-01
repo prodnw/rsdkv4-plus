@@ -660,7 +660,7 @@ void FlipScreenVideo()
     glPushMatrix();
     glLoadIdentity();
 
-#if RETRO_PLATFORM == RETRO_ANDROID
+#if RETRO_PLATFORM == RETRO_ANDROID || RETRO_PLATFORM == RETRO_SWITCH
     glOrthof(0.0f, (float)SCREEN_XSIZE, (float)SCREEN_YSIZE, 0.0f, -1.0f, 1.0f);
 #else
     glOrtho(0.0, (double)SCREEN_XSIZE, (double)SCREEN_YSIZE, 0.0, -1.0, 1.0);
