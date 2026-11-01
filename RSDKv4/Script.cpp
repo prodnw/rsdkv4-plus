@@ -9687,6 +9687,7 @@ void ProcessScript(int scriptCodeStart, int jumpTableStart, byte scriptEvent)
                     case VAR_ENGINE_USERNAMELENGTH: break;
                     case VAR_GAME_DLC_OVERRIDE: {
 						DLCOverride = scriptEng.operands[i];
+						SetGlobalVariableByName("game.hasPlusDLC", hasPlusDLC || !RSDK_AUTOBUILD || DLCOverride);
 						break;
 					}
                 }
