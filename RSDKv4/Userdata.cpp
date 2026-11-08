@@ -529,7 +529,7 @@ void InitUserdata()
 #endif
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller%d", i + 1);
-			ini.SetInteger("Controller ID Mappings", inputBuffer, controllerIDMap[i] = i);
+			ini.SetInteger("Controller ID Mappings", inputBuffer, controllerIDMap[i] = i - 1);
 		}
 
         ini.Write(buffer);
@@ -736,7 +736,7 @@ void InitUserdata()
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].keyMappings))
 				inputDevice[i][INPUT_SELECT].keyMappings = KEYBOARD_MAPPING_UNKNOWN;
 		}
-
+		
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
@@ -768,7 +768,7 @@ void InitUserdata()
 				inputDevice[i][INPUT_START].contMappings = CONTROLLER_MAPPING_START;
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].contMappings))
 				inputDevice[i][INPUT_SELECT].contMappings = CONTROLLER_MAPPING_SELECT;
-
+			
 			if (!ini.GetFloat(inputBuffer, "LStickDeadzone", &LSTICK_DEADZONE[i]))
 				LSTICK_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RStickDeadzone", &RSTICK_DEADZONE[i]))
@@ -782,7 +782,7 @@ void InitUserdata()
 				ControllerVibration[i] = true;
 		}
 #endif
-
+	
 #if RETRO_USING_SDL1
 		if (!ini.GetInteger("Keyboard 1", "Up", &inputDevice[0][INPUT_UP].keyMappings))
 			inputDevice[0][INPUT_UP].keyMappings = SDLK_UP;
@@ -812,7 +812,7 @@ void InitUserdata()
 			inputDevice[0][INPUT_START].keyMappings = SDLK_RETURN;
 		if (!ini.GetInteger("Keyboard 1", "Select", &inputDevice[0][INPUT_SELECT].keyMappings))
 			inputDevice[0][INPUT_SELECT].keyMappings = SDLK_TAB;
-
+		
 		for (int i = 1; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Keyboard %d", i + 1);
 			
@@ -845,7 +845,7 @@ void InitUserdata()
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].keyMappings))
 				inputDevice[i][INPUT_SELECT].keyMappings = SDLK_TAB;
 		}
-
+		
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller %d", i + 1);
 			
@@ -877,7 +877,7 @@ void InitUserdata()
 				inputDevice[i][INPUT_START].contMappings = 8;
 			if (!ini.GetInteger(inputBuffer, "Select", &inputDevice[i][INPUT_SELECT].contMappings))
 				inputDevice[i][INPUT_SELECT].contMappings = 14;
-
+            
 			if (!ini.GetFloat(inputBuffer, "LStickDeadzone", &LSTICK_DEADZONE[i]))
 				LSTICK_DEADZONE[i] = 0.3;
 			if (!ini.GetFloat(inputBuffer, "RStickDeadzone", &RSTICK_DEADZONE[i]))
@@ -892,13 +892,23 @@ void InitUserdata()
 		}
 #endif
 		
+		// Make the IDs start from 1 if it was previously 0
+		// TODO: remove these 2 lines in like a few months, along with the ones below
+		int val = 0;
+		ini.GetInteger("Controller ID Mappings", "Controller1", &val);
+		
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller%d", i + 1);
+			
 			if (!ini.GetInteger("Controller ID Mappings", inputBuffer, &controllerIDMap[i]))
 				controllerIDMap[i] = i;
+			else if (val == 0) { // TODO: remove these 2 lines, along with the ones above
+				ini.SetInteger("Controller ID Mappings", inputBuffer, i + 1);
+			} else
+				controllerIDMap[i] -= 1;
 		}
-    }
-
+	}
+	
 #if RETRO_USING_SDL2
     // Support for extra controller types SDL doesn't recognise
 #if RETRO_PLATFORM == RETRO_UWP
@@ -1114,11 +1124,11 @@ void WriteSettings()
 	}
 	
 	ini.SetComment("Controller ID Mappings", "ICMappingsComment",
-					"Controller to Input ID mappings, in the format of \n; "
+					"Controller to Input ID mappings, in the format of\n; "
 					"Gamepad number = Player number");
 	for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 		sprintf(buf[0], "Controller%d", i + 1);
-		ini.SetInteger("Controller ID Mappings", buf[0], controllerIDMap[i]);
+		ini.SetInteger("Controller ID Mappings", buf[0], controllerIDMap[i] + 1);
 	}
 
     char buffer[0x100];
