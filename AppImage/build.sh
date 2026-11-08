@@ -7,19 +7,19 @@ RESET='\e[0m'
 
 # user input
 echo -e "${GREEN}App icons:${RESET}"
-ls "./AppDir/icons/" -1 | cat
+ls "../RSDKv4/Icons/Linux/" -1 | cat
 
-printf "Icon name: ${GREEN}./AppDir/icons/${CYAN}"
+printf "Icon name: ${GREEN}/RSDKv4/Icons/Linux/${CYAN}"
 read NAME
 printf "${RESET}\n"
 
 # make the .DirIcon symlink
-ln -s "./icons/$NAME" "./.DirIcon"
+ln "../RSDKv4/Icons/Linux/$NAME" "./.DirIcon"
 mv -f "./.DirIcon" "./AppDir/.DirIcon"
 
 # build it
-ARCH=x86_64 ./appimagetool-x86_64.AppImage ./AppDir RSDKv4.AppImage
-chmod +x RSDKv4.AppImage
+ARCH=x86_64 ./appimagetool-x86_64.AppImage ./AppDir RSDKv4+.AppImage
+chmod +x RSDKv4+.AppImage
 
 echo "Press any key to continue..."
 read -n1 -s -r
