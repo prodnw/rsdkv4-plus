@@ -22,6 +22,9 @@ CMakeCache.txt
 [Rr]eleases/
 [Bb]uild/
 [Ss]teambuild/
+s1fbuild/
+s2abuild/
+cdibuild/
 x64/
 x86/
 bld/
