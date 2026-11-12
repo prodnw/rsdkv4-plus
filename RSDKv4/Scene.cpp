@@ -315,7 +315,7 @@ void ProcessStage(void)
 #endif
 
             for (currentCamera = 0; currentCamera < cameraCount; ++currentCamera) {
-                FlipFrameBuffer(camera[currentCamera].direction);
+                //FlipFrameBuffer(camera[currentCamera].direction);
                 DrawObjectList(0);
                 DrawObjectList(1);
                 DrawObjectList(2);
@@ -330,7 +330,7 @@ void ProcessStage(void)
                     DrawObjectList(7);
 #endif
                 DrawObjectList(6);
-                FlipFrameBuffer(camera[currentCamera].direction);
+                //FlipFrameBuffer(camera[currentCamera].direction);
 
 #if !RETRO_USE_ORIGINAL_CODE
                 DrawDebugOverlays();
@@ -505,7 +505,7 @@ void ProcessStage(void)
                 ProcessPausedObjects();
 
                 for (currentCamera = 0; currentCamera < cameraCount; ++currentCamera) {
-                    FlipFrameBuffer(camera[currentCamera].direction);
+                    //FlipFrameBuffer(camera[currentCamera].direction);
                     DrawObjectList(0);
                     DrawObjectList(1);
                     DrawObjectList(2);
@@ -520,7 +520,7 @@ void ProcessStage(void)
                         DrawObjectList(7);
 #endif
                     DrawObjectList(6);
-                    FlipFrameBuffer(camera[currentCamera].direction);
+                    //FlipFrameBuffer(camera[currentCamera].direction);
 
 #if !RETRO_USE_ORIGINAL_CODE
                     DrawDebugOverlays();
