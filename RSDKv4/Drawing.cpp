@@ -1365,7 +1365,14 @@ void FlipFrameBuffer(byte direction)
     memcpy(Engine.frameBuffer, Engine.flipBuffer, size * sizeof(ushort));
 }
 
-void DrawObjectList(int Layer) {
+void DrawObjectList(int Layer)
+{
+    // only flip if we need to!!
+    // if the previous draw layer is flipped, dont flip again!!
+    // this saves cpu usage!! (but will also draw tile layers backwards in the first 5 layers - ill redo this whole thing eventually)
+    if (Layer > 0 && camera[currentCamera].layerDir[Layer - 1] != camera[currentCamera].layerDir[Layer])
+        FlipFrameBuffer(camera[currentCamera].layerDir[Layer]);
+    
     int size = drawListEntries[Layer].listSize;
     for (int i = 0; i < size; ++i) {
         objectEntityPos = drawListEntries[Layer].entityRefs[i];
@@ -1375,6 +1382,12 @@ void DrawObjectList(int Layer) {
                 ProcessScript(objectScriptList[type].eventDraw.scriptCodePtr, objectScriptList[type].eventDraw.jumpTablePtr, EVENT_DRAW);
         }
     }
+    
+    // only flip again if we need to!!
+    // if the next draw layer is flipped, dont flip again!!
+    // this saves more cpu usage!! (but will also draw tile layers backwards in the first 5 layers - ill redo this whole thing eventually)
+    if (Layer == DRAWLAYER_COUNT - 1 || (Layer < DRAWLAYER_COUNT - 1 && camera[currentCamera].layerDir[Layer + 1] != camera[currentCamera].layerDir[Layer]))
+        FlipFrameBuffer(camera[currentCamera].layerDir[Layer]);
 }
 void DrawStageGFX()
 {
@@ -1608,7 +1621,6 @@ void DrawStageGFX()
 #endif
             DrawObjectList(7);
 #endif
-		FlipFrameBuffer(camera[currentCamera].direction);
         DrawObjectList(6);
     }
 
@@ -1657,6 +1669,8 @@ void DrawStageGFX()
     if (!drawStageGFXHQ)
         DrawDebugOverlays();
 #endif
+
+    FlipFrameBuffer(camera[currentCamera].direction);
 }
 
 #if !RETRO_USE_ORIGINAL_CODE
