@@ -1340,10 +1340,11 @@ void FlipFrameBuffer(byte direction)
     switch (direction) {
     case FLIP_X:
         for (int y = 0; y < SCREEN_YSIZE; ++y) {
-            for (int x = 0; x < GFX_LINESIZE; ++x) {
-                Engine.flipBuffer[y * GFX_LINESIZE + x] = Engine.frameBuffer[y * GFX_LINESIZE + ((GFX_LINESIZE - x) - 1)];
+            for (int x = 0; x < SCREEN_XSIZE; ++x) {
+                Engine.flipBuffer[y * GFX_LINESIZE + x] = Engine.frameBuffer[y * GFX_LINESIZE + ((SCREEN_XSIZE - x) - 1)];
             }
         }
+		memcpy(Engine.frameBuffer, Engine.flipBuffer, size * sizeof(ushort));
         break;
 
     case FLIP_Y:
@@ -1353,16 +1354,24 @@ void FlipFrameBuffer(byte direction)
                 Engine.flipBuffer[i] = Engine.frameBuffer[(SCREEN_YSIZE - 1 - y) * GFX_LINESIZE + (i % GFX_LINESIZE)];
             }
         }
+		memcpy(Engine.frameBuffer, Engine.flipBuffer, size * sizeof(ushort));
         break;
 
     case FLIP_XY:
-		for (int idx = 0; idx < size; ++idx) {
-            Engine.flipBuffer[idx] = Engine.frameBuffer[(size - idx) - 1];
-		}
+        for (int y = 0; y < SCREEN_YSIZE; ++y) {
+            for (int x = 0; x < SCREEN_XSIZE; ++x) {
+                Engine.flipBuffer[y * GFX_LINESIZE + x] = Engine.frameBuffer[y * GFX_LINESIZE + ((SCREEN_XSIZE - x) - 1)];
+            }
+        }
+        for (int y = 0; y < SCREEN_YSIZE; ++y) {
+            for (int x = 0; x < GFX_LINESIZE; ++x) {
+                i = y * GFX_LINESIZE + x;
+                Engine.frameBuffer[i] = Engine.flipBuffer[(SCREEN_YSIZE - 1 - y) * GFX_LINESIZE + (i % GFX_LINESIZE)];
+            }
+        }
         break;
     }
     
-    memcpy(Engine.frameBuffer, Engine.flipBuffer, size * sizeof(ushort));
 }
 
 void DrawObjectList(int Layer)
