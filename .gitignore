@@ -21,6 +21,7 @@ CMakeCache.txt
 [Rr]elease/
 [Rr]eleases/
 [Bb]uild/
+[Bb]uild-switch/
 [Ss]teambuild/
 s1fbuild/
 s2abuild/
@@ -32,7 +33,6 @@ bin/
 [Bb]in/
 [Oo]bj/
 cmake/
-[Bb]uild-switch/
 
 #dependencies
 /dependencies
@@ -441,3 +441,10 @@ AppImage/usage.txt
 AppImage/cdi.svg
 AppImage/S1F.svg
 AppImage/S2A.svg
+
+## Icons
+RSDKv4/Icons/PC/RSDKv4 CDI Icon.ico
+RSDKv4/Icons/Switch/Essence.jpg
+RSDKv4/Icons/Switch/S1F.jpg
+RSDKv4/Icons/Switch/S2A.jpg
+RSDKv4/Icons/Switch/SCDI.jpg
