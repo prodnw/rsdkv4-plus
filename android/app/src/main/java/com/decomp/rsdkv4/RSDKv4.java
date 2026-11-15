@@ -20,6 +20,7 @@ public class RSDKv4 extends SDLActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        
         if (mHasMultiWindow) {
             pauseNativeThread();
         }
@@ -28,7 +29,7 @@ public class RSDKv4 extends SDLActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        
         if (mHasMultiWindow) {
             resumeNativeThread();
         }
@@ -38,7 +39,7 @@ public class RSDKv4 extends SDLActivity {
         Context c = getApplicationContext();
         requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
         String p = Environment.getExternalStorageDirectory().getAbsolutePath() + "/RSDK/v4-plus";
-        //getExternalStorageDirectory is deprecated. I do not care.
+        // getExternalStorageDirectory is deprecated. I do not care.
         new File(p).mkdirs();
         return p + "/";
     }
