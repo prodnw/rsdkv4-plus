@@ -529,7 +529,8 @@ void InitUserdata()
 #endif
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller%d", i + 1);
-			ini.SetInteger("Controller ID Mappings", inputBuffer, controllerIDMap[i] = i - 1);
+			ini.SetInteger("Controller ID Mappings", inputBuffer, controllerIDMap[i] = i + 1);
+			controllerIDMap[i] -= 1;
 		}
 
         ini.Write(buffer);
@@ -892,19 +893,12 @@ void InitUserdata()
 		}
 #endif
 		
-		// Make the IDs start from 1 if it was previously 0
-		// TODO: remove these 2 lines in like a few months, along with the ones below
-		int val = 0;
-		ini.GetInteger("Controller ID Mappings", "Controller1", &val);
-		
 		for (int i = 0; i < DEFAULT_INPUT_COUNT; i++) {
 			sprintf(inputBuffer, "Controller%d", i + 1);
 			
 			if (!ini.GetInteger("Controller ID Mappings", inputBuffer, &controllerIDMap[i]))
 				controllerIDMap[i] = i;
-			else if (val == 0) { // TODO: remove these 2 lines, along with the ones above
-				ini.SetInteger("Controller ID Mappings", inputBuffer, i + 1);
-			} else
+			else
 				controllerIDMap[i] -= 1;
 		}
 	}
