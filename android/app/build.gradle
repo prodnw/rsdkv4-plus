@@ -8,23 +8,30 @@ else {
 }
 
 def autobuildFlag = false
+def folderPath = "/RSDK/v4-plus"
 
 android {
     ndkVersion "22.1.7171670"
     compileSdkVersion 29
     defaultConfig {
         if (buildAsApplication) {
-            applicationId "com.decomp.rsdkv4.plus"
+            if (project.hasProperty("RETRO_ANDROID_APP_ID")) {
+                applicationId project.findProperty("RETRO_ANDROID_APP_ID")
+            } else {
+                applicationId "com.decomp.rsdkv4.plus"
+            }
         }
+        if (project.hasProperty("RETRO_ANDROID_FOLDER"))
+            folderPath = "/RSDK/" + project.findProperty("RETRO_ANDROID_FOLDER")
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.3.3"
-        if(project.hasProperty("RETRO_DISABLE_PLUS"))
+        if (project.hasProperty("RETRO_DISABLE_PLUS"))
             autobuildFlag = true
         externalNativeBuild {
             cmake {
-                arguments "-DAPP_PLATFORM=android-16", "-DANDROID_STL=c++_static", "-DPLATFORM=Android", "-DRETRO_DISABLE_PLUS=$autobuildFlag"
+                arguments "-DAPP_PLATFORM=android-16", "-DANDROID_STL=c++_static", "-DPLATFORM=Android", "-DRETRO_DISABLE_PLUS=$autobuildFlag", "-DRETRO_FORCE_CASE_INSENSITIVE=ON"
                 abiFilters 'armeabi-v7a', 'arm64-v8a'
             }
         }
