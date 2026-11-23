@@ -892,7 +892,11 @@ void LoadStageFiles(void)
                 FileRead(buf, 3);
                 SetPaletteEntry(-1, c, buf[0], buf[1], buf[2]);
             }
-		}
+        }
+        
+#if RETRO_USE_MOD_LOADER
+        Engine.LoadXMLPalettes();
+#endif
         
         if (LoadStageFile("StageConfig.bin", stageListPosition, &info)) {
             FileRead(&fileBuffer, 1); // Load Globals
