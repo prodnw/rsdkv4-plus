@@ -661,6 +661,13 @@ void LoadStageFiles(void)
 
 #if RETRO_USE_MOD_LOADER
         loadGlobalScripts = false;
+        
+        // StageXMLUseGlobalObjects sets loadGlobalScripts
+        
+        // We're using its return value to determine if Stage.xml has
+        // the useGlobalObjects at all, if it does then we'll just ignore
+        // the value from StageConfig.bin
+        bool hasAttribute = Engine.StageXMLUseGlobalObjects(loadGlobalScripts);
 #else
         bool loadGlobalScripts = false;
 #endif
@@ -668,7 +675,10 @@ void LoadStageFiles(void)
         if (LoadStageFile("StageConfig.bin", stageListPosition, &info)) {
             byte buf = 0;
             FileRead(&buf, 1);
-            loadGlobalScripts = buf;
+#if RETRO_USE_MOD_LOADER
+            if (!hasAttribute)
+#endif
+                loadGlobalScripts = buf;
             CloseFile();
         }
 
@@ -695,10 +705,13 @@ void LoadStageFiles(void)
 					SetObjectTypeName(strBuffer, scriptID + i);
 				}
 
-#if RETRO_USE_MOD_LOADER && RETRO_USE_COMPILER
+#if RETRO_USE_MOD_LOADER
+                modObjCount = modObjCountStore;
+#if RETRO_USE_COMPILER
                 for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
                     SetObjectTypeName(modTypeNames[i], globalObjectCount + i + 1);
                 }
+#endif
 #endif
 
 #if RETRO_USE_COMPILER
@@ -748,22 +761,22 @@ void LoadStageFiles(void)
 
 #if RETRO_USE_MOD_LOADER
             Engine.LoadXMLPalettes();
-#endif
 
-#if RETRO_USE_MOD_LOADER && RETRO_USE_COMPILER
+#if RETRO_USE_COMPILER
             globalObjCount = globalObjectCount;
             for (byte i = 0; i < modObjCount && loadGlobalScripts; ++i) {
                 SetObjectTypeName(modTypeNames[i], scriptID);
 
-                //SetFileInfo here was causing a crash when XML mods were mixed with non XML mods
-                //so GET IT THE FUCK OUTTA HERE
-                //GetFileInfo(&infoStore);
+                // SetFileInfo here was causing a crash when XML mods were mixed with non XML mods
+                // so GET IT THE FUCK OUTTA HERE
+                // GetFileInfo(&infoStore);
                 CloseFile();
                 ParseScriptFile(modScriptPaths[i], scriptID++);
-                //SetFileInfo(&infoStore);
+                // SetFileInfo(&infoStore);
                 if (Engine.gameMode == ENGINE_SCRIPTERROR)
                     return;
             }
+#endif
 #endif
         }
 
@@ -803,6 +816,23 @@ void LoadStageFiles(void)
                 strBuffer[fileBuffer2] = 0;
                 SetObjectTypeName(strBuffer, scriptID + i);
             }
+
+#if RETRO_USE_MOD_LOADER
+#if RETRO_USE_COMPILER
+            GetFileInfo(&info);
+            CloseFile();
+#endif
+            Engine.LoadXMLSoundFX(true);
+#if RETRO_USE_COMPILER
+            if (!loadGlobalScripts)
+                modObjCount = modObjCountStore;
+            Engine.LoadXMLObjects(true);
+            SetFileInfo(&info);
+            for (byte i = 0; i < modObjCount - modObjCountStore; ++i) {
+                SetObjectTypeName(modTypeNames[modObjCountStore + i], (scriptID + stageObjectCount) + i);
+            }
+#endif
+#endif
 
 #if RETRO_USE_COMPILER
 #if !RETRO_USE_ORIGINAL_CODE
@@ -866,6 +896,18 @@ void LoadStageFiles(void)
             LoadBytecode(activeStageList, scriptID);
             SetFileInfo(&infoStore);
 #endif
+
+#if RETRO_USE_MOD_LOADER && RETRO_USE_COMPILER
+            for (byte i = 0; i < modObjCount - modObjCountStore; ++i) {
+                GetFileInfo(&infoStore);
+                CloseFile();
+                ParseScriptFile(modScriptPaths[modObjCountStore + i], (scriptID + stageObjectCount) + i);
+                SetFileInfo(&infoStore);
+                if (Engine.gameMode == ENGINE_SCRIPTERROR)
+                    return;
+            }
+#endif
+
             CloseFile();
         }
 
@@ -876,10 +918,10 @@ void LoadStageFiles(void)
     }
     else {
         PrintLog("Reloading Scene %s - %s", stageListNames[activeStageList], stageList[activeStageList][stageListPosition].name);
-		
+        
         // fixes for palette police (the palette normally doesnt reload,
-        // so palette police will apply to colours it already applied to on the last load)		
-		if (LoadFile("Data/Game/GameConfig.bin", &info)) {
+        // so palette police will apply to colours it already applied to on the last load)
+        if (LoadFile("Data/Game/GameConfig.bin", &info)) {
             byte globalObjectCount = 0;
             
             FileRead(&fileBuffer, 1);
@@ -912,6 +954,10 @@ void LoadStageFiles(void)
         // dont forget this too-
         LoadStageGIFFile(stageListPosition);
     }
+#if RETRO_USE_MOD_LOADER
+    Engine.LoadXMLPalettes(true);
+#endif
+
     for (int i = 0; i < TRACK_COUNT; ++i) SetMusicTrack("", i, false, 0);
 
     memset(objectEntityList, 0, ENTITY_COUNT * sizeof(Entity));
